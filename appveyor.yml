@@ -1,0 +1,37 @@
+version: '{APPVEYOR_REPO_TAG_NAME}.{build}'
+skip_non_tags: true
+init:
+- cmd: >-
+    git clone https://github.com/skvark/opencv-python.git
+
+    xcopy C:\projects\opencv-python\appveyor.yml %APPVEYOR_BUILD_FOLDER%
+clone_script:
+- cmd: 
+install:
+- cmd: >-
+    C:\Python27\Scripts\pip.exe install wheel
+
+    C:\Python27\Scripts\pip.exe install numpy
+
+
+    C:\Python34\Scripts\pip.exe install wheel
+
+    C:\Python34\Scripts\pip.exe install numpy
+build_script:
+- cmd: >-
+    if not exist "%APPVEYOR_BUILD_FOLDER%\build" mkdir "%APPVEYOR_BUILD_FOLDER%\build"
+
+    cmake -G "Visual Studio 14" -H"%APPVEYOR_BUILD_FOLDER%" -B"%APPVEYOR_BUILD_FOLDER%\build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
+
+    cmake --build build --config Release
+
+    cd ..\opencv-python
+
+    C:\Python27\python.exe setup.py bdist_wheel --opencv-version 0.0.0 --binary-path "%APPVEYOR_BUILD_FOLDER%\build\lib\RELEASE"
+    C:\Python35\python.exe python setup.py bdist_wheel --opencv-version 0.0.0 --binary-path "%APPVEYOR_BUILD_FOLDER%\build\lib\python3\Release"
+
+artifacts:
+- path: build\lib\RELEASE\*.pyd
+  name: Python 2
+- path: build\lib\python3\Release\*.pyd
+  name: Python 3
