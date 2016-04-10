@@ -1,37 +1,79 @@
 version: '{APPVEYOR_REPO_TAG_NAME}.{build}'
+
 skip_non_tags: true
-init:
-- cmd: >-
-    git clone https://github.com/skvark/opencv-python.git
 
-    xcopy C:\projects\opencv-python\appveyor.yml %APPVEYOR_BUILD_FOLDER%
 clone_script:
-- cmd: 
+
+- cmd: >-
+
+    git clone https://github.com/Itseez/opencv.git C:\projects\opencv
+    git clone https://github.com/skvark/opencv-python.git C:\projects\opencv-python
+    xcopy C:\projects\opencv-python\appveyor.yml %APPVEYOR_BUILD_FOLDER%
+
+platform:
+  - x86
+  - x64
+
+configuration:
+  - Release
+
+matrix:
+  fast_finish: true
+
 install:
+
 - cmd: >-
-    C:\Python27\Scripts\pip.exe install wheel
 
-    C:\Python27\Scripts\pip.exe install numpy
+    IF "%PLATFORM%" == "x86" (
 
+        C:\Python27\Scripts\pip.exe install wheel
+        C:\Python27\Scripts\pip.exe install numpy
 
-    C:\Python34\Scripts\pip.exe install wheel
+        C:\Python35\Scripts\pip.exe install wheel
+        C:\Python35\Scripts\pip.exe install numpy
 
-    C:\Python34\Scripts\pip.exe install numpy
+    ) ELSE (
+
+        C:\Python27-64\Scripts\pip.exe install wheel
+        C:\Python27-64\Scripts\pip.exe install numpy
+
+        C:\Python35-64\Scripts\pip.exe install wheel
+        C:\Python35-64\Scripts\pip.exe install numpy
+
+    )
+
 build_script:
+
 - cmd: >-
+
     if not exist "%APPVEYOR_BUILD_FOLDER%\build" mkdir "%APPVEYOR_BUILD_FOLDER%\build"
 
-    cmake -G "Visual Studio 14" -H"%APPVEYOR_BUILD_FOLDER%" -B"%APPVEYOR_BUILD_FOLDER%\build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
+    IF "%PLATFORM%" == "x86" (
+        cmake -G "Visual Studio 14" -H"%APPVEYOR_BUILD_FOLDER%" -B"%APPVEYOR_BUILD_FOLDER%\build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
+    ) ELSE (
+        cmake -G "Visual Studio 14 Win64" -H"%APPVEYOR_BUILD_FOLDER%" -B"%APPVEYOR_BUILD_FOLDER%\build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev   
+    )
 
     cmake --build build --config Release
 
     cd ..\opencv-python
 
-    C:\Python27\python.exe setup.py bdist_wheel --opencv-version 0.0.0 --binary-path "%APPVEYOR_BUILD_FOLDER%\build\lib\RELEASE"
-    C:\Python35\python.exe python setup.py bdist_wheel --opencv-version 0.0.0 --binary-path "%APPVEYOR_BUILD_FOLDER%\build\lib\python3\Release"
+    xcopy "%APPVEYOR_BUILD_FOLDER%\build\lib\RELEASE\*.pyd" cv2
+    IF "%PLATFORM%" == "x86" (
+        C:\Python27\python.exe setup.py bdist_wheel --opencv-version 0.0.0
+    ) ELSE (
+        C:\Python27-64\python.exe setup.py bdist_wheel --opencv-version 0.0.0
+    )
+    del cv2\*.pyd
+
+    xcopy "%APPVEYOR_BUILD_FOLDER%\build\lib\python3\Release\*.pyd" cv2
+    IF "%PLATFORM%" == "x86" (
+        C:\Python35\python.exe python setup.py bdist_wheel --opencv-version 0.0.0
+    ) ELSE (
+        C:\Python35-64\python.exe python setup.py bdist_wheel --opencv-version 0.0.0
+    )
 
 artifacts:
-- path: build\lib\RELEASE\*.pyd
-  name: Python 2
-- path: build\lib\python3\Release\*.pyd
-  name: Python 3
+
+- path: ..\opencv-python\dist\*.whl
+  name: %PLATFORM%_wheels
