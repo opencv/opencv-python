@@ -19,8 +19,9 @@ install:
 build_script:
 - cmd: >-
 
-    if not exist "%APPVEYOR_BUILD_FOLDER%\build" mkdir "%APPVEYOR_BUILD_FOLDER%\build"
-    if not exist "%APPVEYOR_BUILD_FOLDER%\build64" mkdir "%APPVEYOR_BUILD_FOLDER%\build64"
+    if not exist "%APPVEYOR_BUILD_FOLDER%\opencv\build" mkdir "%APPVEYOR_BUILD_FOLDER%\opencv\build"
+    
+    if not exist "%APPVEYOR_BUILD_FOLDER%\opencv\build64" mkdir "%APPVEYOR_BUILD_FOLDER%\opencv\build64"
 
     cmake -G "Visual Studio 14" -H"%APPVEYOR_BUILD_FOLDER%\opencv" -B"%APPVEYOR_BUILD_FOLDER%\opencv\build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
     cmake --build build --config Release
@@ -28,19 +29,19 @@ build_script:
     cmake -G "Visual Studio 14 Win64" -H"%APPVEYOR_BUILD_FOLDER%\opencv" -B"%APPVEYOR_BUILD_FOLDER%\opencv\build64" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
     cmake --build build64 --config Release
 
-    xcopy "%APPVEYOR_BUILD_FOLDER%\build\lib\RELEASE\*.pyd" cv2
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
     C:\Python27\python.exe setup.py bdist_wheel --opencv-version 0.0.0
     del cv2\*.pyd
 
-    xcopy "%APPVEYOR_BUILD_FOLDER%\build64\lib\RELEASE\*.pyd" cv2
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\RELEASE\*.pyd" cv2
     C:\Python27-x64\python.exe setup.py bdist_wheel --opencv-version 0.0.0
     del cv2\*.pyd
 
-    xcopy "%APPVEYOR_BUILD_FOLDER%\build\lib\python3\Release\*.pyd" cv2
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\python3\Release\*.pyd" cv2
     C:\Python35\python.exe python setup.py bdist_wheel --opencv-version 0.0.0
     del cv2\*.pyd
 
-    xcopy "%APPVEYOR_BUILD_FOLDER%\build64\lib\python3\Release\*.pyd" cv2
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\python3\Release\*.pyd" cv2
     C:\Python35-x64\python.exe python setup.py bdist_wheel --opencv-version 0.0.0
     del cv2\*.pyd
     
