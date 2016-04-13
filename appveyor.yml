@@ -1,4 +1,6 @@
-version: '{build}'
+version: '{APPVEYOR_REPO_TAG_NAME}.{build}'
+init:
+- cmd: git clone -b master https://github.com/Itseez/opencv.git
 clone_script:
 - cmd: 
 install:
