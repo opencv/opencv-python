@@ -26,11 +26,15 @@ build_script:
     cd opencv
     
     cmake -G "Visual Studio 14" -H"." -B"build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
-    cmake --build build --config Release
+    cd build
+    cmake --build . --config Release
+    cd ..
 
     cmake -G "Visual Studio 14 Win64" -H"." -B"build64" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
-    cmake --build build64 --config Release
+    cd build64
+    cmake --build . --config Release
     
+    cd ..
     cd ..
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
