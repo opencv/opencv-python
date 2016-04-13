@@ -11,10 +11,10 @@ install:
     C:\Python35\Scripts\pip.exe install -r requirements.txt
 
 
-    C:\Python27-64\Scripts\pip.exe install -r requirements.txt
+    C:\Python27-x64\Scripts\pip.exe install -r requirements.txt
 
 
-    C:\Python35-64\Scripts\pip.exe install -r requirements.txt
+    C:\Python35-x64\Scripts\pip.exe install -r requirements.txt
     
 build_script:
 - cmd: >-
@@ -33,7 +33,7 @@ build_script:
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\build64\lib\RELEASE\*.pyd" cv2
-    C:\Python27-64\python.exe setup.py bdist_wheel --opencv-version 0.0.0
+    C:\Python27-x64\python.exe setup.py bdist_wheel --opencv-version 0.0.0
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\build\lib\python3\Release\*.pyd" cv2
@@ -41,7 +41,7 @@ build_script:
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\build64\lib\python3\Release\*.pyd" cv2
-    C:\Python35-64\python.exe python setup.py bdist_wheel --opencv-version 0.0.0
+    C:\Python35-x64\python.exe python setup.py bdist_wheel --opencv-version 0.0.0
     del cv2\*.pyd
     
 artifacts:
