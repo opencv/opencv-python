@@ -22,12 +22,12 @@ build_script:
     if not exist "%APPVEYOR_BUILD_FOLDER%\opencv\build" mkdir "%APPVEYOR_BUILD_FOLDER%\opencv\build"
     
     if not exist "%APPVEYOR_BUILD_FOLDER%\opencv\build64" mkdir "%APPVEYOR_BUILD_FOLDER%\opencv\build64"
-
+    
     cmake -G "Visual Studio 14" -H"%APPVEYOR_BUILD_FOLDER%\opencv" -B"%APPVEYOR_BUILD_FOLDER%\opencv\build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
-    cmake --build build --config Release
+    cmake --build "%APPVEYOR_BUILD_FOLDER%\opencv\build" --config Release
 
     cmake -G "Visual Studio 14 Win64" -H"%APPVEYOR_BUILD_FOLDER%\opencv" -B"%APPVEYOR_BUILD_FOLDER%\opencv\build64" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
-    cmake --build build64 --config Release
+    cmake --build "%APPVEYOR_BUILD_FOLDER%\opencv\build64" --config Release
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
     C:\Python27\python.exe setup.py bdist_wheel --opencv-version 0.0.0
