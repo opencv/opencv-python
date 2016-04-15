@@ -25,7 +25,7 @@ build_script:
     
     cd opencv
     
-    cmake -G "Visual Studio 14" -H"." -B"build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
+    cmake -G "Visual Studio 14" -H"." -B"build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE=C:\Python35\python.exe -DPYTHON3_LIBRARY=C:\Python35\python35.dll -DPYTHON3_INCLUDE_DIR=C:\Python35\include -Wno-dev
     
     cd build
     
@@ -33,7 +33,7 @@ build_script:
     
     cd ..
 
-    cmake -G "Visual Studio 14 Win64" -H"." -B"build64" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
+    cmake -G "Visual Studio 14 Win64" -H"." -B"build64" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE=C:\Python35-x64\python.exe -DPYTHON3_LIBRARY=C:\Python35-x64\python35.dll -DPYTHON3_INCLUDE_DIR=C:\Python35-x64\include -Wno-dev
     
     cd build64
     
