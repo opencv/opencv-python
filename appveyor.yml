@@ -55,7 +55,7 @@ build_script:
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\python3\Release\*.pyd" cv2
     
-    C:\Python35\python.exe python bdist_wheel --opencv-version 0.0.0
+    C:\Python35\python.exe bdist_wheel --opencv-version 0.0.0
     
     del cv2\*.pyd
 
