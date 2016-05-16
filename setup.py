@@ -29,6 +29,7 @@ with open(version_file_path, 'r') as f:
 
         if "CV_VERSION_REVISION" in words:
             opencv_version += words[2]
+            break
 
 
 class BinaryDistribution(Distribution):

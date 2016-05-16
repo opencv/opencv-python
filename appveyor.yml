@@ -68,13 +68,13 @@ build_script:
 before_test:
 - cmd: >-
 
-    C:\Python27\Scripts\pip.exe install --no-index --find-links=dist opencv-python
+    C:\Python27\Scripts\pip.exe install --no-index --find-links=dist\ opencv-python
 
-    C:\Python27-x64\Scripts\pip.exe install --no-index --find-links=dist opencv-python
+    C:\Python27-x64\Scripts\pip.exe install --no-index --find-links=dist\ opencv-python
 
-    C:\Python35\Scripts\pip.exe install --no-index --find-links=dist opencv-python
+    C:\Python35\Scripts\pip.exe install --no-index --find-links=dist\ opencv-python
 
-    C:\Python35-x64\Scripts\pip.exe install --no-index --find-links=dist opencv-python
+    C:\Python35-x64\Scripts\pip.exe install --no-index --find-links=dist\ opencv-python
 
 test_script:
 - cmd: >-
