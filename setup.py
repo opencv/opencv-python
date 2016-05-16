@@ -1,10 +1,20 @@
 from setuptools import setup
+from setuptools.dist import Distribution
+import pip
 import os
 import sys
 
-opencv_version = ""
-binary_path = ""
+numpy_version = ""
 
+# Get required numpy version
+for package in pip.get_installed_distributions():
+    if package.key == "numpy":
+        numpy_version = package.version
+
+# Get OpenCV version from command line args
+opencv_version = ""
+
+# a bit hacky...
 if "--opencv-version" in sys.argv:
     index = sys.argv.index('--opencv-version')
     sys.argv.pop(index)
@@ -12,6 +22,11 @@ if "--opencv-version" in sys.argv:
 else:
     print("Error: no version info (--opencv-version missing), exiting.")
     exit(1)
+
+class BinaryDistribution(Distribution):
+    """ Forces BinaryDistribution. """
+    def has_ext_modules(asd):
+        return True
 
 package_data = {}
 
@@ -23,7 +38,8 @@ else:
 setup(name='opencv-python',
       version=opencv_version,
       description='OpenCV',
+      distclass=BinaryDistribution,
       packages=['cv2'],
       package_data=package_data,
-      install_requires="numpy",
+      install_requires="numpy==%s" % numpy_version,
       )

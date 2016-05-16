@@ -64,7 +64,29 @@ build_script:
     C:\Python35-x64\python.exe setup.py bdist_wheel --opencv-version 0.0.0
     
     del cv2\*.pyd
-    
+
+before_test:
+- cmd: >-
+
+    C:\Python27\Scripts\pip.exe install --no-index --find-links=dist cv2
+
+    C:\Python27-x64\Scripts\pip.exe install --no-index --find-links=dist cv2
+
+    C:\Python35\Scripts\pip.exe install --no-index --find-links=dist cv2
+
+    C:\Python35-x64\Scripts\pip.exe install --no-index --find-links=dist cv2
+
+test_script:
+- cmd: >-
+
+    C:\Python27\python.exe -m unittest tests
+
+    C:\Python27-x64\python.exe -m unittest tests
+
+    C:\Python35\python.exe -m unittest tests
+
+    C:\Python35-x64\python.exe -m unittest tests
+
 artifacts:
 - path: dist\*.whl
   name: wheels
