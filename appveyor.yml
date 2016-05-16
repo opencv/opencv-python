@@ -43,38 +43,38 @@ build_script:
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
     
-    C:\Python27\python.exe setup.py bdist_wheel --opencv-version 0.0.0
+    C:\Python27\python.exe setup.py bdist_wheel
     
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\RELEASE\*.pyd" cv2
     
-    C:\Python27-x64\python.exe setup.py bdist_wheel --opencv-version 0.0.0
+    C:\Python27-x64\python.exe setup.py bdist_wheel
     
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\python3\Release\*.pyd" cv2
     
-    C:\Python35\python.exe setup.py bdist_wheel --opencv-version 0.0.0
+    C:\Python35\python.exe setup.py bdist_wheel
     
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\python3\Release\*.pyd" cv2
     
-    C:\Python35-x64\python.exe setup.py bdist_wheel --opencv-version 0.0.0
+    C:\Python35-x64\python.exe setup.py bdist_wheel
     
     del cv2\*.pyd
 
 before_test:
 - cmd: >-
 
-    C:\Python27\Scripts\pip.exe install --no-index --find-links=dist cv2
+    C:\Python27\Scripts\pip.exe install --no-index --find-links=dist opencv-python
 
-    C:\Python27-x64\Scripts\pip.exe install --no-index --find-links=dist cv2
+    C:\Python27-x64\Scripts\pip.exe install --no-index --find-links=dist opencv-python
 
-    C:\Python35\Scripts\pip.exe install --no-index --find-links=dist cv2
+    C:\Python35\Scripts\pip.exe install --no-index --find-links=dist opencv-python
 
-    C:\Python35-x64\Scripts\pip.exe install --no-index --find-links=dist cv2
+    C:\Python35-x64\Scripts\pip.exe install --no-index --find-links=dist opencv-python
 
 test_script:
 - cmd: >-
