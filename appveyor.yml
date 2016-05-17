@@ -65,28 +65,6 @@ build_script:
     
     del cv2\*.pyd
 
-before_test:
-- cmd: >-
-
-    C:\Python27\python.exe -m pip install --ignore-installed --find-links=dist\ opencv-python
-
-    C:\Python27-x64\python.exe -m pip install --ignore-installed --find-links=dist\ opencv-python
-
-    C:\Python35\python.exe -m pip install --ignore-installed --find-links=dist\ opencv-python
-
-    C:\Python35-x64\python.exe -m pip install --ignore-installed --find-links=dist\ opencv-python
-
-test_script:
-- cmd: >-
-
-    C:\Python27\python.exe -m unittest tests
-
-    C:\Python27-x64\python.exe -m unittest tests
-
-    C:\Python35\python.exe -m unittest tests
-
-    C:\Python35-x64\python.exe -m unittest tests
-
 artifacts:
 - path: dist\*.whl
   name: wheels
