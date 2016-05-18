@@ -34,4 +34,4 @@ The project is structured like a normal Python package with a standard ``setup.p
 
 Currently the ``setup.py`` file parses OpenCV version information from the OpenCV sources. OpenCV depends on numpy, so setup.py checks the numpy version also with the help of pip.
 
-As described earlier, the ```.pyd`` file is normally copied to site-packages. I don't want to pollute the root folder, so the ```__init__.py`` file in cv2 folder handles the import logic correctly by importing the actual ```.pyd`` module and replacing the imported cv2 package in ``sys.modudes`` with the ```.pyd`` module.
+As described earlier, the ``.pyd`` file is normally copied to site-packages. I don't want to pollute the root folder, so the ``__init__.py`` file in cv2 folder handles the import logic correctly by importing the actual ``.pyd`` module and replacing the imported cv2 package in ``sys.modudes`` with the ``.pyd`` module.
