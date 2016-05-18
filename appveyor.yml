@@ -88,13 +88,13 @@ test_script:
 
     cd %APPVEYOR_BUILD_FOLDER%
 
-    C:\Python27\python.exe -m unittest tests
+    C:\Python27\python.exe -c "import cv2"
     
-    C:\Python27-x64\python.exe -m unittest tests
+    C:\Python27-x64\python.exe -c "import cv2"
     
-    C:\Python35\python.exe -m unittest tests
+    C:\Python35\python.exe -c "import cv2"
     
-    C:\Python35-x64\python.exe -m unittest tests
+    C:\Python35-x64\python.exe -c "import cv2"
 
 artifacts:
 - path: dist\*.whl
