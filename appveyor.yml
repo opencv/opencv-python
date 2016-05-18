@@ -73,16 +73,20 @@ build_script:
 before_test:
 - cmd: >-
 
-    C:\Python27\python.exe -m pip install --ignore-installed --find-links=dist\ opencv-python
+    cd ..
+
+    C:\Python27\python.exe -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
     
-    C:\Python27-x64\python.exe -m pip install --ignore-installed --find-links=dist\ opencv-python
+    C:\Python27-x64\python.exe -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
     
-    C:\Python35\python.exe -m pip install --ignore-installed --find-links=dist\ opencv-python
+    C:\Python35\python.exe -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
     
-    C:\Python35-x64\python.exe -m pip install --ignore-installed --find-links=dist\ opencv-python
+    C:\Python35-x64\python.exe -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
     
 test_script:
 - cmd: >-
+
+    cd %APPVEYOR_BUILD_FOLDER%
 
     C:\Python27\python.exe -m unittest tests
     
