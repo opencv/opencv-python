@@ -10,6 +10,8 @@ install:
     del tmp
 
     echo %opencv_version%
+
+    appveyor UpdateBuild -Version '%opencv_version%-{build}'
     
     C:\Python27\python.exe -m pip install --upgrade pip
     
@@ -27,8 +29,6 @@ install:
     
     C:\Python35-x64\python.exe -m pip install -r requirements.txt
     
-version: '%opencv_version%-{build}'
-
 build_script:
 - cmd: >-
 
