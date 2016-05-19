@@ -4,33 +4,22 @@ import pip
 import os
 import sys
 
+opencv_version = ""
+
+if "--opencv-version" in sys.argv:
+    index = sys.argv.index('--opencv-version')
+    sys.argv.pop(index)
+    opencv_version = sys.argv.pop(index)
+else:
+    print("Error: no version info (--opencv-version missing), exiting.")
+    exit(1)
+
 numpy_version = ""
 
 # Get required numpy version
 for package in pip.get_installed_distributions():
     if package.key == "numpy":
         numpy_version = package.version
-
-opencv_version = ""
-# dig the version from OpenCV sources
-version_file_path = "opencv/modules/core/include/opencv2/core/version.hpp"
-
-with open(version_file_path, 'r') as f:
-    for line in f:
-        words = line.split()
-
-        if "CV_VERSION_MAJOR" in words:
-            opencv_version += words[2]
-            opencv_version += "."
-
-        if "CV_VERSION_MINOR" in words:
-            opencv_version += words[2]
-            opencv_version += "."
-
-        if "CV_VERSION_REVISION" in words:
-            opencv_version += words[2]
-            break
-
 
 class BinaryDistribution(Distribution):
     """ Forces BinaryDistribution. """

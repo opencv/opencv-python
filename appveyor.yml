@@ -1,9 +1,15 @@
-version: '{build}'
-
 install:
 - cmd: >-
 
     git clone -q --branch=master https://github.com/Itseez/opencv.git "%APPVEYOR_BUILD_FOLDER%\opencv
+
+    C:\Python35\python.exe find_version.py > tmp 
+
+    set /p opencv_version= < tmp
+
+    del tmp
+
+    echo %opencv_version%
     
     C:\Python27\python.exe -m pip install --upgrade pip
     
@@ -21,6 +27,8 @@ install:
     
     C:\Python35-x64\python.exe -m pip install -r requirements.txt
     
+version: '%opencv_version%-{build}'
+
 build_script:
 - cmd: >-
 
@@ -48,25 +56,25 @@ build_script:
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
     
-    C:\Python27\python.exe setup.py bdist_wheel
+    C:\Python27\python.exe setup.py bdist_wheel --opencv-version=%opencv_version%
     
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\RELEASE\*.pyd" cv2
     
-    C:\Python27-x64\python.exe setup.py bdist_wheel
+    C:\Python27-x64\python.exe setup.py bdist_wheel --opencv-version=%opencv_version%
     
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\python3\Release\*.pyd" cv2
     
-    C:\Python35\python.exe setup.py bdist_wheel
+    C:\Python35\python.exe setup.py bdist_wheel --opencv-version=%opencv_version%
     
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\python3\Release\*.pyd" cv2
     
-    C:\Python35-x64\python.exe setup.py bdist_wheel
+    C:\Python35-x64\python.exe setup.py bdist_wheel --opencv-version=%opencv_version%
     
     del cv2\*.pyd
 
@@ -86,13 +94,13 @@ before_test:
 test_script:
 - cmd: >-
 
-    C:\Python27\python.exe -c "import cv2"
+    C:\Python27\python.exe -m unittest tests/test
     
-    C:\Python27-x64\python.exe -c "import cv2"
+    C:\Python27-x64\python.exe -m unittest tests/test
     
-    C:\Python35\python.exe -c "import cv2"
+    C:\Python35\python.exe -m unittest tests/test
     
-    C:\Python35-x64\python.exe -c "import cv2"
+    C:\Python35-x64\python.exe -m unittest tests/test
 
 artifacts:
 - path: dist\*.whl
