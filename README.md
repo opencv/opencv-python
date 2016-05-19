@@ -1,3 +1,5 @@
+![buildstatus](https://ci.appveyor.com/api/projects/status/5kjqpmvll5dwj5jd?svg=true)
+
 # OpenCV on wheels
 
 Work in progress!
