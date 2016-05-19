@@ -11,7 +11,7 @@ install:
 
     echo %opencv_version%
 
-    appveyor UpdateBuild -Version '%opencv_version%-{build}'
+    appveyor UpdateBuild -Version "%opencv_version%-%APPVEYOR_BUILD_NUMBER%"
     
     C:\Python27\python.exe -m pip install --upgrade pip
     
@@ -56,25 +56,25 @@ build_script:
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
     
-    C:\Python27\python.exe setup.py bdist_wheel --opencv-version=%opencv_version%
+    C:\Python27\python.exe setup.py bdist_wheel --opencv-version=%APPVEYOR_BUILD_VERSION%
     
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\RELEASE\*.pyd" cv2
     
-    C:\Python27-x64\python.exe setup.py bdist_wheel --opencv-version=%opencv_version%
+    C:\Python27-x64\python.exe setup.py bdist_wheel --opencv-version=%APPVEYOR_BUILD_VERSION%
     
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\python3\Release\*.pyd" cv2
     
-    C:\Python35\python.exe setup.py bdist_wheel --opencv-version=%opencv_version%
+    C:\Python35\python.exe setup.py bdist_wheel --opencv-version=%APPVEYOR_BUILD_VERSION%
     
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\python3\Release\*.pyd" cv2
     
-    C:\Python35-x64\python.exe setup.py bdist_wheel --opencv-version=%opencv_version%
+    C:\Python35-x64\python.exe setup.py bdist_wheel --opencv-version=%APPVEYOR_BUILD_VERSION%
     
     del cv2\*.pyd
 
