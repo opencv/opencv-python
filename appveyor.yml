@@ -93,14 +93,16 @@ before_test:
     
 test_script:
 - cmd: >-
+    
+    cd %APPVEYOR_BUILD_FOLDER%\tests
 
-    C:\Python27\python.exe -m unittest %APPVEYOR_BUILD_FOLDER%\tests\test
+    C:\Python27\python.exe -m unittest test
     
-    C:\Python27-x64\python.exe -m unittest %APPVEYOR_BUILD_FOLDER%\tests\test
+    C:\Python27-x64\python.exe -m unittest test
     
-    C:\Python35\python.exe -m unittest %APPVEYOR_BUILD_FOLDER%\tests\test
+    C:\Python35\python.exe -m unittest test
     
-    C:\Python35-x64\python.exe -m unittest %APPVEYOR_BUILD_FOLDER%\tests\test
+    C:\Python35-x64\python.exe -m unittest test
 
 artifacts:
 - path: dist\*.whl
