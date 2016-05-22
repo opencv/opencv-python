@@ -31,3 +31,4 @@ before_script:
 script:
   - cd tests
   - python -m unittest test
+  
