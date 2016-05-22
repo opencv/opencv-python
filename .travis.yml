@@ -16,8 +16,9 @@ install:
   - pip install -r requirements.txt
   - cd opencv
   - mkdir build
-  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_opencv_python3=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON2_EXECUTABLE="$VIRTUAL_ENV/bin/python" -DPYTHON2_LIBRARY=/usr/lib/libpython2.7mu.so -DPYTHON2_INCLUDE_DIR=/usr/include/python2.7m -Wno-dev; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_opencv_python2=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE="$VIRTUAL_ENV/bin/python" -DPYTHON3_LIBRARY=/usr/lib/libpython3.5mu.so -DPYTHON3_INCLUDE_DIR=/usr/include/python3.5m -Wno-dev; fi
+  - whereis python
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_opencv_python3=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON2_EXECUTABLE=${VIRTUAL_ENV}/bin/python -DPYTHON2_LIBRARY=/usr/lib/libpython2.7mu.so -DPYTHON2_INCLUDE_DIR=/usr/include/python2.7m -DPYTHON2_PACKAGES_PATH=${VIRTUAL_ENV}/lib/python2.7/site-packages -Wno-dev; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_opencv_python2=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE=${VIRTUAL_ENV}/bin/python -DPYTHON3_LIBRARY=/usr/lib/libpython3.5mu.so -DPYTHON3_INCLUDE_DIR=/usr/include/python3.5m -DPYTHON3_PACKAGES_PATH=${VIRTUAL_ENV}/lib/python3.5/site-packages -Wno-dev; fi
   - cd build 
   - cmake --build . --config Release
   - cd ../..
