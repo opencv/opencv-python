@@ -15,7 +15,7 @@ before_install:
 
 install: 
   - sudo apt-get install cmake
-  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then sudo add-apt-repository ppa:fkrull/deadsnakes -y; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then sudo add-apt-repository ppa:fkrull/deadsnakes -y && sudo apt-get update; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then sudo apt-get install libpython3.5-dev; fi
   - python -m pip install --upgrade pip
   - pip install -r requirements.txt
