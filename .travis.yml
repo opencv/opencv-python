@@ -5,7 +5,7 @@ python:
   - "3.5"
 
 before_install:
-  - git clone -q --branch=master https://github.com/Itseez/opencv.git "%APPVEYOR_BUILD_FOLDER%\opencv
+  - git clone -q --branch=master https://github.com/Itseez/opencv.git opencv
   - python find_version.py > tmp 
   - opencv_version=$(cat tmp)
   - rm tmp
@@ -31,4 +31,3 @@ before_script:
 script:
   - cd tests
   - python -m unittest test
-  
