@@ -14,7 +14,7 @@ before_install:
 install: 
   - python -m pip install --upgrade pip
   - pip install -r requirements.txt
-  - cd ../opencv
+  - cd opencv
   - mkdir build
   - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cmake -H"." -B"build" -DBUILD_opencv_python3=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON2_EXECUTABLE=$VIRTUAL_ENV/python27 -DPYTHON2_LIBRARY=$VIRTUAL_ENV/lib/python27.lib -DPYTHON2_INCLUDE_DIR=$VIRTUAL_ENV/include -Wno-dev; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then cmake -H"." -B"build" -DBUILD_opencv_python2=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE=$VIRTUAL_ENV/python35 -DPYTHON3_LIBRARY=$VIRTUAL_ENV/lib/python35.lib -DPYTHON3_INCLUDE_DIR=$VIRTUAL_ENV/include -Wno-dev; fi
