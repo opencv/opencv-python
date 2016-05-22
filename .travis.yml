@@ -16,8 +16,8 @@ install:
   - pip install -r requirements.txt
   - cd opencv
   - mkdir build
-  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cmake -H"." -B"build" -DBUILD_opencv_python3=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON2_EXECUTABLE="$VIRTUAL_ENV/python" -DPYTHON2_LIBRARY=/usr/lib/libpython2.7mu.so -DPYTHON2_INCLUDE_DIR=/usr/include/python2.7 -Wno-dev; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then cmake -H"." -B"build" -DBUILD_opencv_python2=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE="$VIRTUAL_ENV/python" -DPYTHON3_LIBRARY=/usr/lib/libpython3.5mu.so -DPYTHON3_INCLUDE_DIR=/usr/include/python3.5 -Wno-dev; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cmake -H "." -B "build" -D CMAKE_BUILD_TYPE=RELEASE -D BUILD_opencv_python3=OFF -D BUILD_SHARED_LIBS=OFF -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D PYTHON2_EXECUTABLE="$VIRTUAL_ENV/bin/python" -D PYTHON2_LIBRARY=/usr/lib/libpython2.7mu.so -D PYTHON2_INCLUDE_DIR=/usr/include/python2.7m -Wno-dev; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then cmake -H "." -B "build" -D CMAKE_BUILD_TYPE=RELEASE -D BUILD_opencv_python2=OFF -D BUILD_SHARED_LIBS=OFF -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D PYTHON3_EXECUTABLE="$VIRTUAL_ENV/bin/python" -D PYTHON3_LIBRARY=/usr/lib/libpython3.5mu.so -D PYTHON3_INCLUDE_DIR=/usr/include/python3.5m -Wno-dev; fi
   - cd build 
   - cmake --build . --config Release
   - cd ../..
