@@ -14,6 +14,8 @@ before_install:
   - echo $opencv_version
 
 install: 
+  - sudo apt-get install cmake
+  - sudo add-apt-repository ppa:fkrull/deadsnakes
   - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then sudo apt-get install python2.7-dev; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then sudo apt-get install python3.5-dev; fi
   - python -m pip install --upgrade pip
