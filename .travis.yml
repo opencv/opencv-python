@@ -29,12 +29,12 @@ install:
   - cd build 
   - cmake --build . --config Release
   - cd ../..
-  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cp opencv\build\lib\RELEASE\*.pyd opencv-python/cv2; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then cp opencv\build\lib\python3\Release\*.pyd opencv-python/cv2; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cp opencv/build/lib/RELEASE/*.pyd opencv-python/cv2; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then cp opencv/build/lib/python3/Release/*.pyd opencv-python/cv2; fi
   - python setup.py bdist_wheel --opencv-version "$opencv_version-$TRAVIS_BUILD_NUMBER"
 
 before_script:
-  - pip install --no-index --find-links=opencv-python\dist\ opencv-python
+  - pip install --no-index --find-links=opencv-python/dist/ opencv-python
 
 script:
   - cd tests
