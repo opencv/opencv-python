@@ -1,4 +1,7 @@
-[![buildstatus](https://ci.appveyor.com/api/projects/status/5kjqpmvll5dwj5jd?svg=true)](https://ci.appveyor.com/project/skvark/opencv-python) [![Build Status](https://travis-ci.org/skvark/opencv-python.svg?branch=master)](https://travis-ci.org/skvark/opencv-python)
+| Platform| Status |
+| :---: | :---: |
+| Windows | [![buildstatus](https://ci.appveyor.com/api/projects/status/5kjqpmvll5dwj5jd?svg=true)](https://ci.appveyor.com/project/skvark/opencv-python) |
+| Ubuntu|  [![Build Status](https://travis-ci.org/skvark/opencv-python.svg?branch=master)](https://travis-ci.org/skvark/opencv-python) |
 
 # OpenCV on wheels
 
