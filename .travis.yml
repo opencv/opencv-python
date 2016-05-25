@@ -24,7 +24,7 @@ install:
   - cd opencv
   - mkdir build
   - whereis python
-  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON2_EXECUTABLE=$(which python) -DPYTHON2_LIBRARY=/usr/lib/python2.7/config/libpython2.7.so -DPYTHON2_INCLUDE_DIR=/usr/include/python2.7 -DPYTHON2_PACKAGES_PATH=${VIRTUAL_ENV}/lib/python2.7/site-packages  -Wno-dev; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON2_EXECUTABLE="$VIRTUAL_ENV/bin/python" -DPYTHON2_LIBRARY=/usr/lib/libpython2.7mu.so -DPYTHON2_INCLUDE_DIR=/usr/include/python2.7m -Wno-dev; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE=$(which python) -DPYTHON3_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DPYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") -DPYTHON3_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") -Wno-dev; fi
   - cd build 
   - cmake --build . --config Release
