@@ -30,7 +30,7 @@ install:
   - cd build 
   - cmake --build . --config Release
   - cd ../..
-  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cp opencv/build/lib/python/*.so cv2; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cp opencv/build/lib/*.so cv2; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then cp opencv/build/lib/python3/*.so cv2; fi
   - python setup.py bdist_wheel --opencv-version "$opencv_version-$TRAVIS_BUILD_NUMBER"
 
