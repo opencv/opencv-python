@@ -20,4 +20,5 @@ with open(version_file_path, 'r') as f:
             opencv_version += words[2]
             break
 
-sys.stdout.write(opencv_version)
+with open('cv_version.py', 'w') as f:
+    f.write('opencv_version = "%s"'%opencv_version)

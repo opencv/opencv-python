@@ -13,7 +13,7 @@ At the same time it allows anyone to build a custom version of OpenCV for any Py
 
 ## Why?
 
-1. Installation of OpenCV for Python is pretty hideous: 
+1. Installation of OpenCV for Python is pretty hideous:
 	1. Download OpenCV
 	2. Find cv2.pyd from the package
 		- If it exists, copy it to the root of Python site-packages
@@ -42,6 +42,9 @@ Currently the ``setup.py`` file parses OpenCV version information from the OpenC
 
 As described earlier, the ``.pyd`` file is normally copied to site-packages. I don't want to pollute the root folder, so the ``__init__.py`` file in cv2 folder handles the import logic correctly by importing the actual ``.pyd`` module and replacing the imported cv2 package in ``sys.modudes`` with the ``.pyd`` module.
 
+## Many linux wheels
+Linux wheels are built using [manylinux](https://github.com/pypa/python-manylinux-demo)
+
 ## Versioning
 
 Currently the ``find_version.py`` script searches for the version information from OpenCV sources. The CI build number is then added after the actual OpenCV version to differentiate packages (this repo might have modifications but OpenCV version stays same).
@@ -50,4 +53,4 @@ Currently the ``find_version.py`` script searches for the version information fr
 
 As Python's 2.x releases are slowly approaching legacy state, 2.7.x releases will be the only supported Python 2 versions. On Python 3 side, builds will be run only for the latest release which is at the moment 3.5.1.
 
-There's also a build time limitation (AppVeyor open source builds may take max. 1 hour) which restricts the supported Python versions to two. However, if you wan't to get some other versions, just fork this repo and change the dependencies. 
+There's also a build time limitation (AppVeyor open source builds may take max. 1 hour) which restricts the supported Python versions to two. However, if you wan't to get some other versions, just fork this repo and change the dependencies.
