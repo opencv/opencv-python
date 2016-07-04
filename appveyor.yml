@@ -1,81 +1,73 @@
 install:
 - cmd: >-
 
-    git clone -q --branch=master https://github.com/Itseez/opencv.git "%APPVEYOR_BUILD_FOLDER%\opencv
+    git clone -q --branch=master https://github.com/c-martinez/opencv.git "%APPVEYOR_BUILD_FOLDER%\opencv
 
-    C:\Python35\python.exe find_version.py > tmp 
+    C:\Python35\python.exe find_version.py
 
-    set /p opencv_version= < tmp
-
-    del tmp
-
-    echo %opencv_version%
-
-    appveyor UpdateBuild -Version "%opencv_version%-%APPVEYOR_BUILD_NUMBER%"
-    
     C:\Python27\python.exe -m pip install --upgrade pip
-    
+
     C:\Python27\python.exe -m pip install -r requirements.txt
 
     C:\Python35\python.exe -m pip install --upgrade pip
-    
+
     C:\Python35\python.exe -m pip install -r requirements.txt
 
     C:\Python27-x64\python.exe -m pip install --upgrade pip
-    
+
     C:\Python27-x64\python.exe -m pip install -r requirements.txt
 
     C:\Python35-x64\python.exe -m pip install --upgrade pip
-    
+
     C:\Python35-x64\python.exe -m pip install -r requirements.txt
-    
+
 build_script:
 - cmd: >-
 
     if not exist "%APPVEYOR_BUILD_FOLDER%\opencv\build" mkdir "%APPVEYOR_BUILD_FOLDER%\opencv\build"
-    
+
     if not exist "%APPVEYOR_BUILD_FOLDER%\opencv\build64" mkdir "%APPVEYOR_BUILD_FOLDER%\opencv\build64"
-    
+
     cd opencv
-    
+
     cmake -G "Visual Studio 14" -H"." -B"build" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE=C:/Python35/python.exe -DPYTHON3_LIBRARY=C:/Python35/libs/python35.lib -DPYTHON3_INCLUDE_DIR=C:/Python35/include -Wno-dev
-    
+
     cd build
-    
+
     cmake --build . --config Release
-    
+
     cd ..
 
     cmake -G "Visual Studio 14 Win64" -H"." -B"build64" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE=C:/Python35-x64/python.exe -DPYTHON3_LIBRARY=C:/Python35-x64/libs/python35.lib -DPYTHON3_INCLUDE_DIR=C:/Python35-x64/include -Wno-dev
-    
+
     cd build64
-    
+
     cmake --build . --config Release
-    
+
     cd ..\..
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
-    
-    C:\Python27\python.exe setup.py bdist_wheel --opencv-version %APPVEYOR_BUILD_VERSION%
-    
+
+    C:\Python27\python.exe setup.py bdist_wheel
+
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\RELEASE\*.pyd" cv2
-    
-    C:\Python27-x64\python.exe setup.py bdist_wheel --opencv-version %APPVEYOR_BUILD_VERSION%
-    
+
+    C:\Python27-x64\python.exe setup.py bdist_wheel
+
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\python3\Release\*.pyd" cv2
-    
-    C:\Python35\python.exe setup.py bdist_wheel --opencv-version %APPVEYOR_BUILD_VERSION%
-    
+
+    C:\Python35\python.exe setup.py bdist_wheel
+
     del cv2\*.pyd
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\python3\Release\*.pyd" cv2
-    
-    C:\Python35-x64\python.exe setup.py bdist_wheel --opencv-version %APPVEYOR_BUILD_VERSION%
-    
+
+    C:\Python35-x64\python.exe setup.py bdist_wheel
+
     del cv2\*.pyd
 
 before_test:
@@ -84,24 +76,24 @@ before_test:
     cd ..
 
     C:\Python27\python.exe -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
-    
+
     C:\Python27-x64\python.exe -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
-    
+
     C:\Python35\python.exe -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
-    
+
     C:\Python35-x64\python.exe -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
-    
+
 test_script:
 - cmd: >-
-    
+
     cd %APPVEYOR_BUILD_FOLDER%\tests
 
     C:\Python27\python.exe -m unittest test
-    
+
     C:\Python27-x64\python.exe -m unittest test
-    
+
     C:\Python35\python.exe -m unittest test
-    
+
     C:\Python35-x64\python.exe -m unittest test
 
 artifacts:
