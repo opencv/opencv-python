@@ -1,9 +1,7 @@
 #!/bin/bash
-
 /opt/_internal/cpython-3.5.1/bin/pip3.5 install --upgrade git+git://github.com/pypa/auditwheel
 
-cd /io
-git clone -q --branch=master https://github.com/Itseez/opencv.git opencv
+export $PYTHON_VERSION=${MB_PYTHON_VERSION/./}
 
 for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     $PYBIN/python find_version.py
@@ -12,7 +10,7 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     # Begin build
     cd opencv
     mkdir build
-    if [[ $PYTHON_VERSION == 2* ]]; then
+    if [[ $MB_PYTHON_VERSION == 2* ]]; then
       cmake28 -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
         -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
         -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
@@ -25,7 +23,7 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
       (cd build; make -j5 opencv_python2)
     fi
 
-    if [[ $PYTHON_VERSION == 3* ]]; then
+    if [[ $MB_PYTHON_VERSION == 3* ]]; then
       cmake28 -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
         -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
         -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
@@ -39,11 +37,11 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     fi
     cd ..
 
-    if [[ $PYTHON_VERSION == 2* ]]; then
+    if [[ $MB_PYTHON_VERSION == 2* ]]; then
       cp opencv/build/lib/cv2.so cv2/
     fi
 
-    if [[ $PYTHON_VERSION == 3* ]]; then
+    if [[ $MB_PYTHON_VERSION == 3* ]]; then
       cp opencv/build/lib/python3/*.so cv2/
     fi
 
