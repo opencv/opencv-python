@@ -1,68 +1,137 @@
-notifications:
-  email: false
+env:
+    global:
+        - REPO_DIR=opencv
+        # Commit from opencv that you want to build
+        - BUILD_COMMIT=master
+        # pip dependencies to _build_ your project
+        - BUILD_DEPENDS="Cython numpy"
+        # pip dependencies to _test_ your project.  Include any dependencies
+        # that you need, that are also specified in BUILD_DEPENDS, this will be
+        # a separate install.
+        - TEST_DEPENDS="numpy scipy pytest"
+        - PLAT=x86_64
+        - UNICODE_WIDTH=32
+        - WHEELHOUSE_UPLOADER_USERNAME=travis-worker
+        # Following generated with
+        # travis encrypt -r your-org/your-project-wheels WHEELHOUSE_UPLOADER_SECRET=<the api key>
+        # This is for Rackspace uploads.  Contact Matthew Brett, or the
+        # scikit-learn team, for # permission (and the API key) to upload to
+        # the Rackspace account used here, or use your own account.
+        #- secure:
+        #    "MNKyBWOzu7JAUmC0Y+JhPKfytXxY/ADRmUIMEWZV977FLZPgYctqd+lqel2QIFgdHDO1CIdTSymOOFZckM9ICUXg9Ta+8oBjSvAVWO1ahDcToRM2DLq66fKg+NKimd2OfK7x597h/QmUSl4k8XyvyyXgl5jOiLg/EJxNE2r83IA="
+
+language: python
+# The travis Python version is unrelated to the version we build and test
+# with.  This is set with the MB_PYTHON_VERSION variable.
+python: 3.5
+sudo: required
+dist: trusty
+services: docker
 
 matrix:
   include:
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
-           PYTHON_VERSION=26
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
-           PYTHON_VERSION=27
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
-           PYTHON_VERSION=33
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
-           PYTHON_VERSION=34
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
-           PYTHON_VERSION=35
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
 
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
-           PRE_CMD=linux32
-           PYTHON_VERSION=26
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
-           PRE_CMD=linux32
-           PYTHON_VERSION=27
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
-           PRE_CMD=linux32
-           PYTHON_VERSION=33
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
-           PRE_CMD=linux32
-           PYTHON_VERSION=34
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
-           PRE_CMD=linux32
-           PYTHON_VERSION=35
+actual-matrix:
+  include:
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.6
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.6
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - UNICODE_WIDTH=16
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+        - UNICODE_WIDTH=16
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.3
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.3
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+    - os: osx
+      language: generic
+      env:
+        - MB_PYTHON_VERSION=2.7
+    - os: osx
+      language: generic
+      env:
+        - MB_PYTHON_VERSION=3.4
+    - os: osx
+      language: generic
+      env:
+        - MB_PYTHON_VERSION=3.5
+
+before_install:
+    - source multibuild/common_utils.sh
+    - source multibuild/travis_steps.sh
+    - before_install
 
 install:
-  - docker pull $DOCKER_IMAGE
+    # Maybe get and clean and patch source
+    - clean_code $REPO_DIR $BUILD_COMMIT
+    - travis_wait 120 build_wheel $REPO_DIR $PLAT
+    # - build_wheel $REPO_DIR $PLAT
 
 script:
-  - docker run --rm -v `pwd`:/io -e PYTHON_VERSION=$PYTHON_VERSION $DOCKER_IMAGE $PRE_CMD /io/travis/build-wheels.sh
-  - ls wheelhouse/
+    - install_run $PLAT
+
+after_success:
+    # Upload wheels to Rackspace container
+    - pip install wheelhouse-uploader
+    # This uploads the wheels to a Rackspace container owned by the
+    # scikit-learn team, available at http://wheels.scipy.org.  See above
+    # for information on using this account or choosing another.
+    - python -m wheelhouse_uploader upload --local-folder
+        ${TRAVIS_BUILD_DIR}/wheelhouse/
+        --no-update-index
+        wheels
