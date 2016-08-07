@@ -1,7 +1,7 @@
 install:
 - cmd: >-
 
-    git clone -q --branch=master https://github.com/c-martinez/opencv.git "%APPVEYOR_BUILD_FOLDER%\opencv
+    git submodule update --init --recursive
 
     C:\Python35\python.exe find_version.py
 
