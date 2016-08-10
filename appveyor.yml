@@ -1,3 +1,10 @@
+environment:
+  USER:
+    secure: fXgF9uyy6sT0JoVOR7BoqA==
+
+  PASS:
+    secure: DJMOk9HEW0qeOC0a2klPZpUMlPvq6vp6Rzv1++SpaYo=
+
 install:
 - cmd: >-
 
@@ -99,3 +106,7 @@ test_script:
 artifacts:
 - path: dist\*.whl
   name: wheels
+
+deploy_script:
+    - cmd: IF "%APPVEYOR_REPO_TAG%" == "true" ( twine -u %USER% -p %PASS% -r pypitest dist/*" ) else ( echo "Tag not set, deployment skipped." )
+
