@@ -29,7 +29,7 @@ At the same time it allows anyone to build a custom version of OpenCV for any Py
 The project is structured like a normal Python package with a standard ``setup.py`` file. The build process is as follows (see ``appveyor.yml``):
 
 1. Checkout repository and submodules
-	- OpenCV is included as submodule and the version is updated manually when a new has been made
+	- OpenCV is included as submodule and the version is updated manually when a new OpenCV release has been made
 2. Find OpenCV version from the sources
 2. Upgrade pip and install numpy for each Python version
 3. Build OpenCV
