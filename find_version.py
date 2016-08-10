@@ -23,7 +23,7 @@ with open(version_file_path, 'r') as f:
             break
 
 # used in local dev releases
-git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode()
+git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).splitlines()[0].decode()
 
 if os.name == 'posix':
     version = os.getenv('TRAVIS_TAG', git_hash)
@@ -40,4 +40,4 @@ else:
 print("Version: ", opencv_version)
 
 with open('cv_version.py', 'w') as f:
-    f.write('opencv_version = "%s"' % opencv_version)
+    f.write('opencv_version = "{}"'.format(opencv_version))
