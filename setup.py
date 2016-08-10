@@ -16,7 +16,7 @@ for package in pip.get_installed_distributions():
 
 class BinaryDistribution(Distribution):
     """ Forces BinaryDistribution. """
-    def has_ext_modules(asd):
+    def has_ext_modules(self):
         return True
 
     def is_pure(self):
