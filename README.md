@@ -43,17 +43,13 @@ Currently the ``find_version.py`` file parses OpenCV version information from th
 
 As described earlier, for example the ``.pyd`` file on Windows is normally copied to site-packages. To avoid polluting the root folder the ``__init__.py`` file in cv2 folder handles the import logic correctly by importing the actual ``.pyd`` module and replacing the imported cv2 package in ``sys.modudes`` with the cv2 module to retain backward compatibility.
 
-## Manylinux wheels
+## Licensing
 
-Linux wheels are built using [manylinux](https://github.com/pypa/python-manylinux-demo). These wheels should work out of the box for most of the distros out there since they are built against an old version of glibc.
+Opencv-python package (scripts in this repository) is available under MIT license. The OpenCV itself is available under [3-clause BSD License](https://github.com/opencv/opencv/blob/master/LICENSE) ([LICENSE-3RD-PARTY.txt](https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt)).
 
 ## Versioning
 
 Currently the ``find_version.py`` script searches for the version information from OpenCV sources and appends also a revision number specific to this repository to the version string.
-
-## Licensing
-
-Opencv-python package (scripts in this repository) is available under MIT license. The OpenCV itself is available under [3-clause BSD License](https://github.com/opencv/opencv/blob/master/LICENSE) ([LICENSE-3RD-PARTY.txt](https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt)).
 
 #### Releases
 
@@ -68,6 +64,10 @@ Every commit to the master branch of this repo will be built. Possible build art
 ``cv_major.cv_minor.cv_revision+git_hash_of_this_repo`` e.g. ``3.1.0+14a8d39``
 
 These artifacts can't be and will not be uploaded to PyPI.
+
+## Manylinux wheels
+
+Linux wheels are built using [manylinux](https://github.com/pypa/python-manylinux-demo). These wheels should work out of the box for most of the distros out there since they are built against an old version of glibc.
 
 ## Supported Python versions
 
