@@ -3,7 +3,6 @@ from setuptools.dist import Distribution
 import pip
 import os
 import sys
-import pypandoc
 import io
 
 long_description = ""
