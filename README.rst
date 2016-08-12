@@ -9,48 +9,40 @@
 OpenCV on wheels
 ================
 
-Unofficial OpenCV packages for Python.
-
-Work in progress!
+Unofficial OpenCV packages for Python. Work in progress!
 
 The aim of this repository is to provide means to package each new
-`OpenCV release <https://github.com/Itseez/opencv/releases>`__ for the
+`OpenCV release <https://github.com/opencv/opencv/releases>`__ for the
 most used Python versions and platforms.
 
 At the same time it allows anyone to build a custom version of OpenCV
 for any Python version: just fork this repo and modify the build files
 and scripts to fit your needs.
 
-Why?
-----
+Installation and Usage
+----------------------
 
-1. Installation of OpenCV for Python is pretty hideous:
+To install this package:
 
-   1. Download OpenCV
-   2. Find cv2.pyd from the package
+``pip install opencv-python``
 
-      -  If it exists, copy it to the root of Python site-packages
-      -  If it does not exist for some reason for your setup, you have
-         to setup the build environment and compile it manually
+To import the package:
 
-   3. Try to import cv2 and hope it works
+``import cv2``
 
-2. Everyone should be able to install OpenCV (or any package for that
-   matter) with pip with a single command without building anything
-3. Python `wheels <http://pythonwheels.com/>`__ are nice, we should use
-   them more
+`OpenCV documentation <http://docs.opencv.org/>`__
 
-Documentation
+Build process
 -------------
 
 The project is structured like a normal Python package with a standard
-``setup.py`` file. The build process is as follows (see
-``appveyor.yml``):
+``setup.py`` file. The build process is as follows (see for example
+``appveyor.yml`` file):
 
 1. Checkout repository and submodules
 
    -  OpenCV is included as submodule and the version is updated
-      manually when a new OpenCV release has been made
+      manually by maintainers when a new OpenCV release has been made
 
 2. Find OpenCV version from the sources
 3. Upgrade pip and install numpy for each Python version
@@ -62,18 +54,17 @@ The project is structured like a normal Python package with a standard
    generate wheel
 6. Install the generated wheels for each Python version
 7. Test that the Python versions can import them
-8. TO DO: upload the wheels to PyPi
+8. Use twine to upload all wheels to PyPI
 
 Currently the ``find_version.py`` file parses OpenCV version information
 from the OpenCV sources. OpenCV depends on numpy, so ``setup.py`` checks
 the numpy version also with the help of pip.
 
-As described earlier, for example the ``.pyd`` file on Windows is
-normally copied to site-packages. To avoid polluting the root folder the
-``__init__.py`` file in cv2 folder handles the import logic correctly by
-importing the actual ``.pyd`` module and replacing the imported cv2
-package in ``sys.modudes`` with the cv2 module to retain backward
-compatibility.
+The ``cv2.pyd`` file for example on Windows is normally copied to site-packages. 
+To avoid polluting the root folder the ``__init__.py`` file in cv2 folder 
+handles the import logic correctly by importing the actual ``.pyd`` module 
+and replacing the imported cv2 package in ``sys.modudes`` with the 
+cv2 module to retain backward compatibility.
 
 Licensing
 ---------
@@ -126,7 +117,7 @@ Windows:
 ~~~~~~~~
 
 There's a build time limitation (AppVeyor open source builds may take
-max. 1 hour) which restricts the supported Python versions to two. As
+max 1 hour) which restricts the supported Python versions to two. As
 Python's 2.x releases are slowly approaching legacy state, 2.7.x
 releases will be the only supported Python 2 versions on Windows. On
 Python 3 side, builds will be run only for the latest release.
@@ -144,8 +135,3 @@ OS X
 ~~~~
 
 TODO
-
-.. |buildstatus| image:: https://ci.appveyor.com/api/projects/status/5kjqpmvll5dwj5jd?svg=true
-   :target: https://ci.appveyor.com/project/skvark/opencv-python
-.. |Build Status| image:: https://travis-ci.org/skvark/opencv-python.svg?branch=master
-   :target: https://travis-ci.org/skvark/opencv-python
