@@ -1,5 +1,10 @@
-.. image:: https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=2592000&label=Windows   :target: https://travis-ci.org/skvark/opencv-python
-.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=2592000&label=Linux   :target: https://travis-ci.org/skvark/opencv-python
+.. image:: https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=2592000&label=Windows   
+   :target: https://ci.appveyor.com/project/skvark/opencv-python
+   :alt: AppVeyor CI test status (Windows)
+
+.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=2592000&label=Linux   
+   :target: https://travis-ci.org/skvark/opencv-python
+   :alt: Travis CI test status (Linux)
 
 OpenCV on wheels
 ================
