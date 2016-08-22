@@ -3,6 +3,12 @@ set +e
 echo "===  Loading config.sh  === "
 if [ -n "$IS_OSX" ]; then
   echo "    > OSX environment "
+  function build_wheel {
+      # Custom build_wheel function for OSX
+      # Run using '.' instead of '$REPO_DIR' to build from
+      # opencv-python instead of opencv
+      build_pip_wheel . $@
+  }
 else
   echo "    > Linux environment "
 fi
@@ -31,9 +37,12 @@ function run_tests {
 
     if [ -n "$IS_OSX" ]; then
       echo "Dont know how to test for OSX yet..."
+      cd ../tests/
       source ../travis/test-wheels.sh
     else
       echo "Running for linux"
+      apt-get -y install libglib2.0-0
+      cd /io/tests/
       source /io/travis/test-wheels.sh
     fi
 }
