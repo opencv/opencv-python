@@ -39,7 +39,6 @@ matrix:
       env:
         - MB_PYTHON_VERSION=3.4
 
-
 actual-matrix:
   include:
     - os: linux
@@ -119,10 +118,15 @@ before_install:
 install:
     # Maybe get and clean and patch source
     - clean_code $REPO_DIR $BUILD_COMMIT
+<<<<<<< HEAD
     # Run build_wheel using '.' instead of '$REPO_DIR' to build from
     # opencv-python instead of opencv
     - travis_wait 120 build_wheel . $PLAT
     # - build_wheel . $PLAT
+=======
+    - travis_wait 120 build_wheel $REPO_DIR $PLAT
+    # - build_wheel $REPO_DIR $PLAT
+>>>>>>> master
 
 script:
     - install_run $PLAT

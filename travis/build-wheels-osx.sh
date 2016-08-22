@@ -1,15 +1,19 @@
 #!/bin/bash
+<<<<<<< HEAD
 
 set +e
 echo 'Begin build-wheel OSX ...'
 
 echo 'PIP and brew installs'
 
+=======
+>>>>>>> master
 pip install numpy
 brew install cmake pkg-config
 brew install jpeg libpng libtiff openexr
 brew install eigen tbb
 
+<<<<<<< HEAD
 echo 'Begin our build'
 ls -lh
 
@@ -45,3 +49,8 @@ echo 'Build wheel'
 echo 'Cleanup'
 # rm -fr opencv/build
 # rm cv2/*.so
+=======
+cd opencv
+mkdir build
+cd build
+>>>>>>> master

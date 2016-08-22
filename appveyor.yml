@@ -1,7 +1,14 @@
+environment:
+  USER:
+    secure: fXgF9uyy6sT0JoVOR7BoqA==
+
+  PASS:
+    secure: DJMOk9HEW0qeOC0a2klPZpUMlPvq6vp6Rzv1++SpaYo=
+
 install:
 - cmd: >-
 
-    git clone -q --branch=master https://github.com/c-martinez/opencv.git "%APPVEYOR_BUILD_FOLDER%\opencv
+    git submodule update --init --recursive
 
     C:\Python35\python.exe find_version.py
 
@@ -99,3 +106,6 @@ test_script:
 artifacts:
 - path: dist\*.whl
   name: wheels
+
+deploy_script:
+- if "%APPVEYOR_REPO_TAG%"=="true" (twine -u %USER% -p %PASS% -r pypitest dist/*) else (echo "Tag not set, deployment skipped.")
