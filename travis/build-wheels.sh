@@ -11,7 +11,6 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     echo 'PWD  : '$PWD
     echo 'PYBIN: '$PYBIN
 
-    $PYBIN/python ./find_version.py
     $PYBIN/pip install -r requirements.txt
 
     # Begin build

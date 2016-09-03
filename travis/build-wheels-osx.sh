@@ -24,7 +24,6 @@ fi
 echo 'Begin our build'
 ls -lh
 
-python ./find_version.py
 pip install -r requirements.txt
 
 echo 'Config make'
