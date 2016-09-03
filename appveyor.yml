@@ -108,4 +108,5 @@ artifacts:
   name: wheels
 
 deploy_script:
-- if "%APPVEYOR_REPO_TAG%"=="true" (python -m twine upload -u %USER% -p %PASS% -r pypitest dist/*) else (echo "Tag not set, deployment skipped.")
+- cd %APPVEYOR_BUILD_FOLDER%
+- if "%APPVEYOR_REPO_TAG%"=="true" (python -m twine upload -u %USER% -p %PASS% -r pypitest dist/opencv*) else (echo "Tag not set, deployment skipped.")
