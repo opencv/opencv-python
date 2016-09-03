@@ -96,4 +96,4 @@ script:
 after_success:
     # Upload wheels to pypi
     - pip install twine
-    - if [ -n "TRAVIS_TAG" ]; then twine -u ${USER} -p ${PASS} -r pypitest ${TRAVIS_BUILD_DIR}/wheelhouse/*; else echo "Tag not set, deployment skipped."; fi
+    - if [ -n "$TRAVIS_TAG" ]; then twine upload -u ${USER} -p ${PASS} -r pypitest ${TRAVIS_BUILD_DIR}/wheelhouse/*; else echo "Tag not set, deployment skipped."; fi
