@@ -3,7 +3,7 @@ environment:
     secure: fXgF9uyy6sT0JoVOR7BoqA==
 
   PASS:
-    secure: DJMOk9HEW0qeOC0a2klPZpUMlPvq6vp6Rzv1++SpaYo=
+    secure: HHNjmjxQSvgSY9Zde0qh6A==
 
 install:
 - cmd: >-

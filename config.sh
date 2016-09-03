@@ -36,7 +36,7 @@ function run_tests {
     ls -lh
 
     if [ -n "$IS_OSX" ]; then
-      echo "Dont know how to test for OSX yet..."
+      echo "Running for OS X"
       cd ../tests/
       source ../travis/test-wheels.sh
     else
