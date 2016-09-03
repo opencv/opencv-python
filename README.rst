@@ -1,10 +1,10 @@
-.. image:: https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=2592000&label=Windows   
+.. image:: https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows   
    :target: https://ci.appveyor.com/project/skvark/opencv-python
    :alt: AppVeyor CI test status (Windows)
 
-.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=2592000&label=Linux   
+.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label="Linux and OS X"   
    :target: https://travis-ci.org/skvark/opencv-python
-   :alt: Travis CI test status (Linux)
+   :alt: Travis CI test status (Linux and OS X)
 
 OpenCV on wheels
 ================
@@ -134,4 +134,4 @@ supported by the manylinux containers.
 OS X
 ~~~~
 
-TODO
+Currently built for Python 2.7 and 3.4.
