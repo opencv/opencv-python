@@ -1,12 +1,25 @@
-# Define custom utilities
-# Test for OSX with [ -n "$IS_OSX" ]
+#!/bin/bash
+set +e
+echo "===  Loading config.sh  === "
+if [ -n "$IS_OSX" ]; then
+  echo "    > OSX environment "
+  function build_wheel {
+      # Custom build_wheel function for OSX
+      # Run using '.' instead of '$REPO_DIR' to build from
+      # opencv-python instead of opencv
+      build_pip_wheel . $@
+  }
+else
+  echo "    > Linux environment "
+fi
 
 function pre_build {
   echo "Starting pre-build"
 
+  set +e
   if [ -n "$IS_OSX" ]; then
-    echo "Don't know how to build for OSX yet..."
-    # source travis/build-wheels-osx.sh
+    echo "Running for OSX"
+    source travis/build-wheels-osx.sh
   else
     echo "Running for linux"
     source /io/travis/build-wheels.sh
@@ -17,8 +30,19 @@ function run_tests {
     # Runs tests on installed distribution from an empty directory
     # python --version
     # python -c 'import sys; import yourpackage; sys.exit(yourpackage.test())'
+    set +e
     echo "Run tests..."
     echo $PWD
     ls -lh
-    source /io/travis/test-wheels.sh
+
+    if [ -n "$IS_OSX" ]; then
+      echo "Dont know how to test for OSX yet..."
+      cd ../tests/
+      source ../travis/test-wheels.sh
+    else
+      echo "Running for linux"
+      apt-get -y install libglib2.0-0
+      cd /io/tests/
+      source /io/travis/test-wheels.sh
+    fi
 }

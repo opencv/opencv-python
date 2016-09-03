@@ -109,4 +109,3 @@ artifacts:
 
 deploy_script:
 - if "%APPVEYOR_REPO_TAG%"=="true" (twine -u %USER% -p %PASS% -r pypitest dist/*) else (echo "Tag not set, deployment skipped.")
-

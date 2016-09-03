@@ -30,27 +30,14 @@ services: docker
 
 matrix:
   include:
-    - os: linux
+    - os: osx
+      language: generic
       env:
         - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
-    - os: linux
+    - os: osx
+      language: generic
       env:
-        - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
-        - PLAT=i686
-
-actual-matrix:
-  include:
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=2.6
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=2.6
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
-        - PLAT=i686
+        - MB_PYTHON_VERSION=3.4
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
@@ -98,18 +85,6 @@ actual-matrix:
         - MB_PYTHON_VERSION=3.5
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
-    - os: osx
-      language: generic
-      env:
-        - MB_PYTHON_VERSION=2.7
-    - os: osx
-      language: generic
-      env:
-        - MB_PYTHON_VERSION=3.4
-    - os: osx
-      language: generic
-      env:
-        - MB_PYTHON_VERSION=3.5
 
 before_install:
     - source multibuild/common_utils.sh
@@ -120,7 +95,6 @@ install:
     # Maybe get and clean and patch source
     - clean_code $REPO_DIR $BUILD_COMMIT
     - travis_wait 120 build_wheel $REPO_DIR $PLAT
-    # - build_wheel $REPO_DIR $PLAT
 
 script:
     - install_run $PLAT
