@@ -2,14 +2,14 @@
    :target: https://ci.appveyor.com/project/skvark/opencv-python
    :alt: AppVeyor CI test status (Windows)
 
-.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label="Linux and OS X"   
+.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label="Linux / OS X"   
    :target: https://travis-ci.org/skvark/opencv-python
    :alt: Travis CI test status (Linux and OS X)
 
 OpenCV on wheels
 ================
 
-Unofficial OpenCV packages for Python. Work in progress!
+Unofficial OpenCV packages for Python.
 
 The aim of this repository is to provide means to package each new
 `OpenCV release <https://github.com/opencv/opencv/releases>`__ for the
@@ -107,20 +107,23 @@ Manylinux wheels
 
 Linux wheels are built using
 `manylinux <https://github.com/pypa/python-manylinux-demo>`__. These
-wheels should work out of the box for most of the distros out there
-since they are built against an old version of glibc.
+wheels should work out of the box for most of the distros 
+(which use GNU C standard library) out there since they are built 
+against an old version of glibc.
 
 Supported Python versions
 -------------------------
+
 
 Windows:
 ~~~~~~~~
 
 There's a build time limitation (AppVeyor open source builds may take
-max 1 hour) which restricts the supported Python versions to two. As
-Python's 2.x releases are slowly approaching legacy state, 2.7.x
-releases will be the only supported Python 2 versions on Windows. On
-Python 3 side, builds will be run only for the latest release.
+max 1 hour) which restricts the supported Python versions to two 
+(note: the performance is better nowadays, for example py33 and py34 
+could be added to appveyor.yml). As Python's 2.x releases are slowly 
+approaching legacy state, 2.7.x releases will be the only supported Python 2 
+versions on Windows. On Python 3 side, builds will be run only for the latest release.
 
 However, if you wan't to get some other versions, just fork this repo
 and change the dependencies.
