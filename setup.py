@@ -46,7 +46,7 @@ setup(name='opencv-python',
       package_data=package_data,
       maintainer="Olli-Pekka Heinisuo",
       include_package_data=True,
-      install_requires="numpy==%s" % numpy_version,
+      install_requires="numpy>=%s" % numpy_version,
       classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

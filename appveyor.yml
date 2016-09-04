@@ -53,7 +53,7 @@ build_script:
 
     cd ..\..
 
-    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\cv2.pyd" cv2
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
 
     C:\Python27\python.exe setup.py bdist_wheel
 
