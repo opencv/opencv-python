@@ -58,6 +58,7 @@ build_script:
     C:\Python27\python.exe setup.py bdist_wheel
 
     del cv2\*.pyd
+
     rmdir "%APPVEYOR_BUILD_FOLDER%\build" /s /q
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\RELEASE\*.pyd" cv2
@@ -65,6 +66,7 @@ build_script:
     C:\Python27-x64\python.exe setup.py bdist_wheel
 
     del cv2\*.pyd
+
     rmdir "%APPVEYOR_BUILD_FOLDER%\build" /s /q
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\python3\Release\*.pyd" cv2
@@ -72,6 +74,7 @@ build_script:
     C:\Python35\python.exe setup.py bdist_wheel
 
     del cv2\*.pyd
+
     rmdir "%APPVEYOR_BUILD_FOLDER%\build" /s /q
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\python3\Release\*.pyd" cv2
@@ -79,6 +82,7 @@ build_script:
     C:\Python35-x64\python.exe setup.py bdist_wheel
 
     del cv2\*.pyd
+    
     rmdir "%APPVEYOR_BUILD_FOLDER%\build" /s /q
 
 before_test:
