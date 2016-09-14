@@ -27,7 +27,62 @@ matrix:
     - os: osx
       language: generic
       env:
+        - MB_PYTHON_VERSION=2.7
+    - os: osx
+      language: generic
+      env:
+        - MB_PYTHON_VERSION=3.4
+    - os: osx
+      language: generic
+      env:
         - MB_PYTHON_VERSION=3.5
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - UNICODE_WIDTH=16
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+        - UNICODE_WIDTH=16
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.3
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.3
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
 
 before_install:
     - source multibuild/common_utils.sh
