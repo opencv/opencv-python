@@ -54,7 +54,7 @@ build_script:
     cd ..\..
     cd
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
-    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.dll" cv2
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\bin\Release\*.dll" cv2
 
     C:\Python27\python.exe setup.py bdist_wheel
 
@@ -63,6 +63,7 @@ build_script:
     rmdir "%APPVEYOR_BUILD_FOLDER%\build" /s /q
 
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\lib\RELEASE\*.pyd" cv2
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build64\bin\Release\*.dll" cv2
 
     C:\Python27-x64\python.exe setup.py bdist_wheel
 
