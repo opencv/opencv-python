@@ -52,8 +52,9 @@ build_script:
     cmake --build . --config Release
 
     cd ..\..
-
+    cd
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.pyd" cv2
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\build\lib\RELEASE\*.dll" cv2
 
     C:\Python27\python.exe setup.py bdist_wheel
 
