@@ -33,7 +33,7 @@ package_data = {}
 if os.name == 'posix':
     package_data['cv2'] = ['*.so']
 else:
-    package_data['cv2'] = ['*.pyd']
+    package_data['cv2'] = ['*.pyd', '*.dll']
 
 setup(name='opencv-python',
       version=opencv_version,
