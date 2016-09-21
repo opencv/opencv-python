@@ -29,7 +29,7 @@ install:
     C:\Python35-x64\python.exe -m pip install -r requirements.txt
 
 build_script:
-- cmd: >-
+- cmd: |-
 
     if not exist "%APPVEYOR_BUILD_FOLDER%\opencv\build" mkdir "%APPVEYOR_BUILD_FOLDER%\opencv\build"
 
