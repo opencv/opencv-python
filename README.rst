@@ -70,9 +70,13 @@ Licensing
 ---------
 
 Opencv-python package (scripts in this repository) is available under
-MIT license. The OpenCV itself is available under `3-clause BSD
+MIT license. 
+
+OpenCV itself is available under `3-clause BSD
 License <https://github.com/opencv/opencv/blob/master/LICENSE>`__
 (`LICENSE-3RD-PARTY.txt <https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt>`__).
+
+This software uses code of `FFmpeg <http://ffmpeg.org>`__ licensed under the `LGPLv2.1 <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>`__.
 
 Versioning
 ----------
@@ -137,4 +141,4 @@ supported by the manylinux containers.
 OS X
 ~~~~
 
-Currently built for Python 2.7 and 3.4.
+Currently built for Python 2.7, 3.4 and 3.5.
