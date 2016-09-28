@@ -76,7 +76,7 @@ OpenCV itself is available under `3-clause BSD
 License <https://github.com/opencv/opencv/blob/master/LICENSE>`__
 (`LICENSE-3RD-PARTY.txt <https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt>`__).
 
-This software uses code of `FFmpeg <http://ffmpeg.org>`__ licensed under the `LGPLv2.1 <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>`__.
+Windows wheels ship with `FFmpeg <http://ffmpeg.org>`__ licensed under the `LGPLv2.1 <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>`__.
 
 Versioning
 ----------
