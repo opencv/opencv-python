@@ -9,6 +9,8 @@ echo 'PYTHON_VERSION: '$PYTHON_VERSION
 echo 'PIP and brew installs'
 
 pip install -r requirements.txt
+brew install ffmpeg
+ffmpeg -L
 
 echo 'Config make'
 
