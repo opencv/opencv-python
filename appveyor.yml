@@ -60,9 +60,9 @@ build_script:
 
     cd ..\..
     cd
-    dir "%APPVEYOR_BUILD_FOLDER%\\opencv\\%BUILD_DIR%\\lib\\RELEASE\\*.pyd"
-    xcopy %APPVEYOR_BUILD_FOLDER%\\opencv\\%BUILD_DIR%\\lib\\RELEASE\\*.pyd cv2
-    xcopy %APPVEYOR_BUILD_FOLDER%\\opencv\\%BUILD_DIR%\\bin\\Release\\*.dll cv2
+    dir %APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\lib\RELEASE\
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\lib\RELEASE\*.pyd" cv2
+    xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\bin\Release\*.dll" cv2
 
     "%PYTHON%\\python.exe" setup.py bdist_wheel
 
