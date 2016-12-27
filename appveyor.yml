@@ -38,9 +38,9 @@ install:
 
     C:\Python35\python.exe find_version.py
 
-    "%PYTHON%\\python.exe" -m pip install --upgrade pip
+    "%PYTHON%\python.exe" -m pip install --upgrade pip
 
-    "%PYTHON%\\python.exe" -m pip install -r requirements.txt
+    "%PYTHON%\python.exe" -m pip install -r requirements.txt
 
 build_script:
 - cmd: |-
@@ -60,25 +60,27 @@ build_script:
 
     cd ..\..
     cd
-    dir %APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\lib\RELEASE\
+
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\lib\RELEASE\*.pyd" .\cv2 /I
     xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\bin\Release\*.dll" .\cv2 /I
 
-    "%PYTHON%\\python.exe" setup.py bdist_wheel
+    dir
+
+    "%PYTHON%\python.exe" setup.py bdist_wheel
 
 before_test:
 - cmd: >-
 
     cd ..
 
-    "%PYTHON%\\python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
+    "%PYTHON%\python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
 
 test_script:
 - cmd: >-
 
     cd %APPVEYOR_BUILD_FOLDER%\tests
 
-    "%PYTHON%\\python.exe" -m unittest test
+    "%PYTHON%\python.exe" -m unittest test
 
 artifacts:
 - path: dist\*.whl
