@@ -6,27 +6,27 @@ environment:
     secure: HHNjmjxQSvgSY9Zde0qh6A==
 
   matrix:
-    - PYTHON: "C:\\Python27"
+    - PYTHON: "C:/Python27"
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "2.7"
-    - PYTHON: "C:\\Python27-x64"
+    - PYTHON: "C:/Python27-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "2.7"
-    - PYTHON: "C:\\Python34"
+    - PYTHON: "C:/Python34"
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.4"
-    - PYTHON: "C:\\Python34-x64"
+    - PYTHON: "C:/Python34-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.4"
-    - PYTHON: "C:\\Python35"
+    - PYTHON: "C:/Python35"
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.5"
-    - PYTHON: "C:\\Python35-x64"
+    - PYTHON: "C:/Python35-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.5"
@@ -38,9 +38,9 @@ install:
 
     C:\Python35\python.exe find_version.py
 
-    "%PYTHON%\python.exe" -m pip install --upgrade pip
+    "%PYTHON%/python.exe" -m pip install --upgrade pip
 
-    "%PYTHON%\python.exe" -m pip install -r requirements.txt
+    "%PYTHON%/python.exe" -m pip install -r requirements.txt
 
 build_script:
 - cmd: |-
@@ -65,21 +65,21 @@ build_script:
 
     dir
 
-    "%PYTHON%\python.exe" setup.py bdist_wheel
+    "%PYTHON%/python.exe" setup.py bdist_wheel
 
 before_test:
 - cmd: >-
 
     cd ..
 
-    "%PYTHON%\python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
+    "%PYTHON%/python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
 
 test_script:
 - cmd: >-
 
     cd %APPVEYOR_BUILD_FOLDER%\tests
 
-    "%PYTHON%\python.exe" -m unittest test
+    "%PYTHON%/python.exe" -m unittest test
 
 artifacts:
 - path: dist\*.whl
