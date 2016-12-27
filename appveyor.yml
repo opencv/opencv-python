@@ -56,8 +56,6 @@ build_script:
 
     cmake --build . --config Release
 
-    cd ..
-
     cd ..\..
     cd
 
