@@ -30,6 +30,14 @@ environment:
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.5"
+    - PYTHON: "C:/Python36"
+      BUILD_ENV: "Visual Studio 14"
+      BUILD_DIR: "build"
+      PYTHON_VERSION: "3.6"
+    - PYTHON: "C:/Python36-x64"
+      BUILD_ENV: "Visual Studio 14 Win64"
+      BUILD_DIR: "build64"
+      PYTHON_VERSION: "3.6"
 
 install:
 - cmd: >-
@@ -51,7 +59,7 @@ build_script:
 
     if %PYTHON_VERSION% GEQ 3 cmake -G "%BUILD_ENV%" -H"." -B"%BUILD_DIR%" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE="%PYTHON%/python.exe" -DPYTHON3_LIBRARY="%PYTHON%/libs/python3*.lib" -DPYTHON3_INCLUDE_DIR="%PYTHON%/include" -Wno-dev
     if %PYTHON_VERSION% LSS 3 cmake -G "%BUILD_ENV%" -H"." -B"%BUILD_DIR%" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
-    
+
     cd %BUILD_DIR%
 
     cmake --build . --config Release
