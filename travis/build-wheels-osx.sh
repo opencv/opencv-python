@@ -49,6 +49,18 @@ if [[ $PYTHON_VERSION == 35 ]]; then
     -D BUILD_EXAMPLES=OFF ..
 fi
 
+if [[ $PYTHON_VERSION == 36 ]]; then
+  echo 'Config for Py36'
+  cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF \
+    -D PYTHON3_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+    -D PYTHON3_LIBRARY=/usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/bin \
+    -D PYTHON3_INCLUDE_DIR=/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m \
+    -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D BUILD_EXAMPLES=OFF ..
+fi
+
+
 echo 'Begin build'
 make -j4
 
