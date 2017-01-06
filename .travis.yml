@@ -39,6 +39,10 @@ matrix:
       language: generic
       env:
         - MB_PYTHON_VERSION=3.5
+    - os: osx
+      language: generic
+      env:
+        - MB_PYTHON_VERSION=3.6
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
@@ -84,6 +88,15 @@ matrix:
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.6
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
 
