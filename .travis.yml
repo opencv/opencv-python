@@ -29,18 +29,22 @@ matrix:
   include:
     - os: osx
       language: generic
+      osx_image: xcode8.2
       env:
         - MB_PYTHON_VERSION=2.7
     - os: osx
       language: generic
+      osx_image: xcode8.2
       env:
         - MB_PYTHON_VERSION=3.4
     - os: osx
       language: generic
+      osx_image: xcode8.2
       env:
         - MB_PYTHON_VERSION=3.5
     - os: osx
       language: generic
+      osx_image: xcode8.2
       env:
         - MB_PYTHON_VERSION=3.6
     - os: linux
