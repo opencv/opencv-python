@@ -2,13 +2,13 @@ env:
     global:
         - REPO_DIR=opencv
         # Commit from opencv that you want to build
-        - BUILD_COMMIT=70bbf17b133496bd7d54d034b0f94bd869e0e810
+        - BUILD_COMMIT=92387b1ef8fad15196dd5f7fb4931444a68bc93a
         # pip dependencies to _build_ your project
-        - BUILD_DEPENDS="numpy>=1.11.1"
+        - BUILD_DEPENDS="numpy==1.11.1"
         # pip dependencies to _test_ your project.  Include any dependencies
         # that you need, that are also specified in BUILD_DEPENDS, this will be
         # a separate install.
-        - TEST_DEPENDS="numpy>=1.11.1"
+        - TEST_DEPENDS="numpy==1.11.1"
         - PLAT=x86_64
         - UNICODE_WIDTH=32
         - secure: "mU040XIYWtDjRms27deQy5fNg9HBFF9fiLfSteBaMjopZKXFUBsdMTKYGEVvX8DA879guMdjG8Prw1aCFhTTYlWgJ0Afm4YucRC0vAD4HLNhqLJ2lIpRceR3+2qPX+Oz5ATVVRi3ghBeJ20LLtNgOgf6esQVjdrYNC+YqmguClHKEYAxS7ngW42iQP8HX2anRcz9q9H7exZ9fX/D1PJfMNka/mNaB5KXZu5zdLuk/E0VbWU2tMWVIDUvx4uBlpE1d8HixEV5LHnuVE/QI36BcyucYxstTNKW6pGYgrhkYf+0PX4BphZXwY7EUBwzXsYLmyge6yH8W6NfvTW0ZasFF6xzQc9bsj+gAZN7H+hN2a42VQqIpkoJw9sU0hqzCOQf6ZvWUQgwFdAHJRHqe/zk4456WxnF0kAgbZdKaGOl0/n0WvgHNqD5bgO8Zzb1XyJTKoR+eAtYKXuz3KgpxKvZMMQVr8wMlI1cFEuGjIm+7ZrYB5jPvQrVzV/DgOq4gkPHOjjhu478UFlhGA9/XWwcyidC3b7zuBN2E7xVuTMlKdk7URB3AHXfG5bZgUG80vllQDGXQDpHVnv4Qi8bGCzI4iKTpp4fCibbqxFLxW1jhjmgePseGcie7Avpe+zXznkbmM2BqMCu3QRmtmFL3eCifwMf3rCNlAs0Sd3iLmEvyos="
