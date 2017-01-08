@@ -1,23 +1,15 @@
-.. image:: https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows   
+.. image:: https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows
    :target: https://ci.appveyor.com/project/skvark/opencv-python
    :alt: AppVeyor CI test status (Windows)
 
-.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label="Linux / OS X"   
+.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label="Linux / OS X"
    :target: https://travis-ci.org/skvark/opencv-python
    :alt: Travis CI test status (Linux and OS X)
 
 OpenCV on wheels
 ================
 
-Unofficial OpenCV packages for Python.
-
-The aim of this repository is to provide means to package each new
-`OpenCV release <https://github.com/opencv/opencv/releases>`__ for the
-most used Python versions and platforms.
-
-At the same time it allows anyone to build a custom version of OpenCV
-for any Python version: just fork this repo and modify the build files
-and scripts to fit your needs.
+**Unofficial** OpenCV packages for Python.
 
 Installation and Usage
 ----------------------
@@ -31,6 +23,24 @@ To import the package:
 ``import cv2``
 
 `OpenCV documentation <http://docs.opencv.org/>`__
+
+IMPORTANT NOTE:
+
+MacOS and Linux wheels have some limitations:
+
+- video related functionality is not supported (not compiled with FFmpeg)
+- for example ``cv.imshow()`` will not work (not compiled with GTK+ 2.x or Carbon support)
+
+Documentation for opencv-python
+-------------------------------
+
+The aim of this repository is to provide means to package each new
+`OpenCV release <https://github.com/opencv/opencv/releases>`__ for the
+most used Python versions and platforms.
+
+At the same time it allows anyone to build a custom version of OpenCV
+for any Python version: just fork this repo and modify the build files
+and scripts to fit your needs.
 
 Build process
 -------------
@@ -60,17 +70,17 @@ Currently the ``find_version.py`` file parses OpenCV version information
 from the OpenCV sources. OpenCV depends on numpy, so ``setup.py`` checks
 the numpy version also with the help of pip.
 
-The ``cv2.pyd`` file for example on Windows is normally copied to site-packages. 
-To avoid polluting the root folder the ``__init__.py`` file in cv2 folder 
-handles the import logic correctly by importing the actual ``.pyd`` module 
-and replacing the imported cv2 package in ``sys.modudes`` with the 
+The ``cv2.pyd`` file for example on Windows is normally copied to site-packages.
+To avoid polluting the root folder the ``__init__.py`` file in cv2 folder
+handles the import logic correctly by importing the actual ``.pyd`` module
+and replacing the imported cv2 package in ``sys.modudes`` with the
 cv2 module to retain backward compatibility.
 
 Licensing
 ---------
 
 Opencv-python package (scripts in this repository) is available under
-MIT license. 
+MIT license.
 
 OpenCV itself is available under `3-clause BSD
 License <https://github.com/opencv/opencv/blob/master/LICENSE>`__
@@ -111,34 +121,21 @@ Manylinux wheels
 
 Linux wheels are built using
 `manylinux <https://github.com/pypa/python-manylinux-demo>`__. These
-wheels should work out of the box for most of the distros 
-(which use GNU C standard library) out there since they are built 
+wheels should work out of the box for most of the distros
+(which use GNU C standard library) out there since they are built
 against an old version of glibc.
 
 Supported Python versions
 -------------------------
 
+Python 2.7 is the only supported version in 2.x series.
+Python 3.x releases follow Numpy releases, for example
+Python 3.3 is no longer supported by Numpy so the support
+for it has been dropped in ``opencv-python`` too.
 
-Windows:
-~~~~~~~~
+Currently, builds for following Python versions are provided:
 
-There's a build time limitation (AppVeyor open source builds may take
-max 1 hour) which restricts the supported Python versions to two 
-(note: the performance is better nowadays, for example py33 and py34 
-could be added to appveyor.yml). As Python's 2.x releases are slowly 
-approaching legacy state, 2.7.x releases will be the only supported Python 2 
-versions on Windows. On Python 3 side, builds will be run only for the latest release.
-
-However, if you wan't to get some other versions, just fork this repo
-and change the dependencies.
-
-Linux
-~~~~~
-
-Manylinux wheels are built for all the Python versions which are
-supported by the manylinux containers.
-
-OS X
-~~~~
-
-Currently built for Python 2.7, 3.4 and 3.5.
+- 2.7
+- 3.4
+- 3.5
+- 3.6
