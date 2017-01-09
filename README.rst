@@ -11,25 +11,31 @@ OpenCV on wheels
 
 **Unofficial** OpenCV packages for Python.
 
-Installation and Usage
-----------------------
+This repository generates packages which contain pre-compiled OpenCV binary with Python bindings. This enables super fast (usually < 10 seconds) OpenCV installation for Python. 
 
-To install this package:
+If you need only OpenCV Python bindings, no separate OpenCV installation is required. 
 
-``pip install opencv-python``
-
-To import the package:
-
-``import cv2``
-
-`OpenCV documentation <http://docs.opencv.org/>`__
-
-IMPORTANT NOTE:
+**IMPORTANT NOTE**
 
 MacOS and Linux wheels have some limitations:
 
 - video related functionality is not supported (not compiled with FFmpeg)
 - for example ``cv.imshow()`` will not work (not compiled with GTK+ 2.x or Carbon support)
+
+Installation and Usage
+----------------------
+
+1. If you have previous/other version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
+ - To further avoid conflicts and to make development easier, Python's `virtual environments <https://docs.python.org/3/library/venv.html>`__ are highly recommended for development purposes.
+2. Install this package:
+
+``pip install opencv-python``
+
+3. Import the package:
+
+``import cv2``
+
+4. Read `OpenCV documentation <http://docs.opencv.org/>`__
 
 Documentation for opencv-python
 -------------------------------
