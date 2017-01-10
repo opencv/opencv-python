@@ -26,7 +26,7 @@ if [[ $PYTHON_VERSION == 2* ]]; then
   	-D PYTHON2_LIBRARY=/usr/local/Cellar/python/2.7.10/Frameworks/Python.framework/Versions/2.7/bin \
   	-D PYTHON2_INCLUDE_DIR=/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 \
   	-D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF \
-  	-D BUILD_EXAMPLES=OFF ..
+  	-D BUILD_EXAMPLES=OFF -D WITH_FFMPEG=ON ..
 fi
 
 if [[ $PYTHON_VERSION == 34 ]]; then
