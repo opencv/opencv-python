@@ -20,13 +20,8 @@ cd build
 
 if [[ $PYTHON_VERSION == 2* ]]; then
   echo 'Config for Py2'
-  cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D BUILD_opencv_python3=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
-    -D PYTHON2_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
-  	-D PYTHON2_LIBRARY=/usr/local/Cellar/python/2.7.10/Frameworks/Python.framework/Versions/2.7/bin \
-  	-D PYTHON2_INCLUDE_DIR=/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 \
-  	-D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF \
-  	-D BUILD_EXAMPLES=OFF -D WITH_FFMPEG=ON ..
+  brew tap homebrew/science
+  brew install opencv3 --with-static --with-python
 fi
 
 if [[ $PYTHON_VERSION == 34 ]]; then
@@ -71,7 +66,7 @@ cd ../..
 
 if [[ $PYTHON_VERSION == 2* ]]; then
   echo 'Copying *.so for Py2'
-  cp opencv/build/lib/cv2.so cv2/
+  cp /usr/local/lib/python2.7/site-packages/cv2.so cv2/
 fi
 
 if [[ $PYTHON_VERSION == 3* ]]; then
