@@ -21,7 +21,7 @@ cd build
 if [[ $PYTHON_VERSION == 2* ]]; then
   echo 'Config for Py2'
   brew tap homebrew/science
-  brew install opencv3 --with-static --with-python
+  brew install --force opencv3 --with-static
 fi
 
 if [[ $PYTHON_VERSION == 34 ]]; then
