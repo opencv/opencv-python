@@ -66,7 +66,7 @@ cd ../..
 
 if [[ $PYTHON_VERSION == 2* ]]; then
   echo 'Copying *.so for Py2'
-  cp /usr/local/lib/python2.7/site-packages/cv2.so cv2/
+  cp /usr/local/opt/opencv3/lib/python2.7/site-packages/cv2.so cv2/
 fi
 
 if [[ $PYTHON_VERSION == 3* ]]; then
