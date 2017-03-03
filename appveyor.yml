@@ -10,34 +10,83 @@ environment:
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "2.7"
+      ENABLE_CONTRIB: false
     - PYTHON: "C:/Python27-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "2.7"
+      ENABLE_CONTRIB: false
     - PYTHON: "C:/Python34"
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.4"
+      ENABLE_CONTRIB: false
     - PYTHON: "C:/Python34-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.4"
+      ENABLE_CONTRIB: false
     - PYTHON: "C:/Python35"
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.5"
+      ENABLE_CONTRIB: false
     - PYTHON: "C:/Python35-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.5"
+      ENABLE_CONTRIB: false
     - PYTHON: "C:/Python36"
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.6"
+      ENABLE_CONTRIB: false
     - PYTHON: "C:/Python36-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.6"
+      ENABLE_CONTRIB: false
+
+    - PYTHON: "C:/Python27"
+      BUILD_ENV: "Visual Studio 14"
+      BUILD_DIR: "build"
+      PYTHON_VERSION: "2.7"
+      ENABLE_CONTRIB: true
+    - PYTHON: "C:/Python27-x64"
+      BUILD_ENV: "Visual Studio 14 Win64"
+      BUILD_DIR: "build64"
+      PYTHON_VERSION: "2.7"
+      ENABLE_CONTRIB: true
+    - PYTHON: "C:/Python34"
+      BUILD_ENV: "Visual Studio 14"
+      BUILD_DIR: "build"
+      PYTHON_VERSION: "3.4"
+      ENABLE_CONTRIB: true
+    - PYTHON: "C:/Python34-x64"
+      BUILD_ENV: "Visual Studio 14 Win64"
+      BUILD_DIR: "build64"
+      PYTHON_VERSION: "3.4"
+      ENABLE_CONTRIB: true
+    - PYTHON: "C:/Python35"
+      BUILD_ENV: "Visual Studio 14"
+      BUILD_DIR: "build"
+      PYTHON_VERSION: "3.5"
+      ENABLE_CONTRIB: true
+    - PYTHON: "C:/Python35-x64"
+      BUILD_ENV: "Visual Studio 14 Win64"
+      BUILD_DIR: "build64"
+      PYTHON_VERSION: "3.5"
+      ENABLE_CONTRIB: true
+    - PYTHON: "C:/Python36"
+      BUILD_ENV: "Visual Studio 14"
+      BUILD_DIR: "build"
+      PYTHON_VERSION: "3.6"
+      ENABLE_CONTRIB: true
+    - PYTHON: "C:/Python36-x64"
+      BUILD_ENV: "Visual Studio 14 Win64"
+      BUILD_DIR: "build64"
+      PYTHON_VERSION: "3.6"
+      ENABLE_CONTRIB: true
 
 install:
 - cmd: >-
@@ -57,8 +106,17 @@ build_script:
 
     cd opencv
 
-    if %PYTHON_VERSION% GEQ 3 cmake -G "%BUILD_ENV%" -H"." -B"%BUILD_DIR%" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE="%PYTHON%/python.exe" -DPYTHON3_LIBRARY="%PYTHON%/libs/python3*.lib" -DPYTHON3_INCLUDE_DIR="%PYTHON%/include" -Wno-dev
-    if %PYTHON_VERSION% LSS 3 cmake -G "%BUILD_ENV%" -H"." -B"%BUILD_DIR%" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
+    if %ENABLE_CONTRIB% EQU true (
+
+      if %PYTHON_VERSION% GEQ 3 cmake -G "%BUILD_ENV%" -H"." -B"%BUILD_DIR%" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE="%PYTHON%/python.exe" -DPYTHON3_LIBRARY="%PYTHON%/libs/python3*.lib" -DPYTHON3_INCLUDE_DIR="%PYTHON%/include" -Wno-dev
+      if %PYTHON_VERSION% LSS 3 cmake -G "%BUILD_ENV%" -H"." -B"%BUILD_DIR%" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
+
+    ) else (
+
+      if %PYTHON_VERSION% GEQ 3 cmake -G "%BUILD_ENV%" -H"." -B"%BUILD_DIR%" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DPYTHON3_EXECUTABLE="%PYTHON%/python.exe" -DPYTHON3_LIBRARY="%PYTHON%/libs/python3*.lib" -DPYTHON3_INCLUDE_DIR="%PYTHON%/include" -Wno-dev
+      if %PYTHON_VERSION% LSS 3 cmake -G "%BUILD_ENV%" -H"." -B"%BUILD_DIR%" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -Wno-dev
+
+    )
 
     cd %BUILD_DIR%
 
