@@ -8,8 +8,20 @@ import io
 contrib_build = False
 package_name = "opencv-python"
 
-if int(os.getenv('ENABLE_CONTRIB', 0)) == 1:
-    contrib_build = True
+contrib = os.getenv('ENABLE_CONTRIB', None)
+
+if contrib is not None:
+    if int(contrib) == 1:
+        contrib_build = True
+else:
+    try:
+        print("Trying to read contrib enable flag from file...")
+        with open("contrib.enabled") as f:
+            flag = int(f.read(1))
+            if flag == 1:
+                contrib_build = True
+    except:
+        pass
 
 if contrib_build:
     package_name = "opencv-contrib-python"

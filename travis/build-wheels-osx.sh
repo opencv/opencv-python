@@ -107,7 +107,7 @@ fi
 
 
 echo 'Begin build'
-make -j4
+make -j2
 
 # Moving back to opencv-python
 cd ../..
