@@ -6,6 +6,8 @@ export PYTHON_VERSION=${PYTHON_VERSION/./}
 
 echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
+ENABLE_CONTRIB=$(<contrib.enabled)
+
 for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     echo 'PWD  : '$PWD
     echo 'PYBIN: '$PYBIN
