@@ -199,6 +199,7 @@ matrix:
         - ENABLE_CONTRIB=1
 
 before_install:
+    - echo $ENABLE_CONTRIB > contrib.enabled
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - python find_version.py

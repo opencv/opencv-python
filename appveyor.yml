@@ -107,7 +107,7 @@ before_test:
 
     cd ..
 
-    "%PYTHON%/python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python
+    if %ENABLE_CONTRIB% EQU 0 ("%PYTHON%/python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python) else ("%PYTHON%/python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-contrib-python)
 
 test_script:
 - cmd: >-

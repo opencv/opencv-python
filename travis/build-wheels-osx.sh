@@ -10,6 +10,8 @@ echo 'PIP and brew installs'
 
 pip install -r requirements.txt
 
+ENABLE_CONTRIB=$(<contrib.enabled)
+
 echo 'Config make'
 
 cd opencv
