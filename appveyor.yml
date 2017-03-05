@@ -121,5 +121,4 @@ artifacts:
   name: wheels
 
 deploy_script:
-- cd %APPVEYOR_BUILD_FOLDER%
-- if "%APPVEYOR_REPO_TAG%"=="true" ("%PYTHON%/python.exe" -m twine upload -u %USER% -p %PASS% --skip-existing dist/opencv*) else (echo "Tag not set, deployment skipped.")
+- deploy.cmd

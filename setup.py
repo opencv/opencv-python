@@ -5,6 +5,15 @@ import os
 import sys
 import io
 
+contrib_build = False
+package_name = "opencv-python"
+
+if int(os.getenv('ENABLE_CONTRIB', 0)) == 1:
+    contrib_build = True
+
+if contrib_build:
+    package_name = "opencv-contrib-python"
+
 long_description = ""
 
 with io.open('README.rst', encoding="utf-8") as f:
@@ -20,6 +29,14 @@ for package in pip.get_installed_distributions():
     if package.key == "numpy":
         numpy_version = package.version
 
+package_data = {}
+
+if os.name == 'posix':
+    package_data['cv2'] = ['*.so']
+else:
+    package_data['cv2'] = ['*.pyd', '*.dll']
+
+
 class BinaryDistribution(Distribution):
     """ Forces BinaryDistribution. """
     def has_ext_modules(self):
@@ -28,19 +45,12 @@ class BinaryDistribution(Distribution):
     def is_pure(self):
         return False
 
-package_data = {}
-
-if os.name == 'posix':
-    package_data['cv2'] = ['*.so']
-else:
-    package_data['cv2'] = ['*.pyd', '*.dll']
-
-setup(name='opencv-python',
+setup(name=package_name,
       version=opencv_version,
       url='https://github.com/skvark/opencv-python',
       license='MIT',
       description='Wrapper package for OpenCV python bindings.',
-      long_description = long_description,
+      long_description=long_description,
       distclass=BinaryDistribution,
       packages=['cv2'],
       package_data=package_data,
