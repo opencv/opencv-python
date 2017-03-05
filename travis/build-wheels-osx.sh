@@ -16,7 +16,7 @@ cd opencv
 mkdir build
 cd build
 
-if [[ $PYTHON_VERSION == 2* ]]; then
+if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py2'
   cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \
     -D BUILD_opencv_python3=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
@@ -27,7 +27,7 @@ if [[ $PYTHON_VERSION == 2* ]]; then
   	-D BUILD_EXAMPLES=OFF ..
 fi
 
-if [[ $PYTHON_VERSION == 34 ]]; then
+if [[ $PYTHON_VERSION == 34 ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py34'
   cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \
     -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
@@ -38,7 +38,7 @@ if [[ $PYTHON_VERSION == 34 ]]; then
     -D BUILD_EXAMPLES=OFF ..
 fi
 
-if [[ $PYTHON_VERSION == 35 ]]; then
+if [[ $PYTHON_VERSION == 35 ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py35'
   cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \
     -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
@@ -49,9 +49,54 @@ if [[ $PYTHON_VERSION == 35 ]]; then
     -D BUILD_EXAMPLES=OFF ..
 fi
 
-if [[ $PYTHON_VERSION == 36 ]]; then
+if [[ $PYTHON_VERSION == 36 ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py36'
   cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
+    -D PYTHON3_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+    -D PYTHON3_LIBRARY=/usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/bin \
+    -D PYTHON3_INCLUDE_DIR=/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m \
+    -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D BUILD_EXAMPLES=OFF ..
+fi
+
+
+if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
+  echo 'Config for Py2'
+  cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
+    -D BUILD_opencv_python3=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
+    -D PYTHON2_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+    -D PYTHON2_LIBRARY=/usr/local/Cellar/python/2.7.10/Frameworks/Python.framework/Versions/2.7/bin \
+    -D PYTHON2_INCLUDE_DIR=/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 \
+    -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D BUILD_EXAMPLES=OFF ..
+fi
+
+if [[ $PYTHON_VERSION == 34 ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
+  echo 'Config for Py34'
+  cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
+    -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
+    -D PYTHON3_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+    -D PYTHON3_LIBRARY=/usr/local/Cellar/python3/3.4.2_1/Frameworks/Python.framework/Versions/3.4/bin \
+    -D PYTHON3_INCLUDE_DIR=/Library/Frameworks/Python.framework/Versions/3.4/include/python3.4m \
+    -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D BUILD_EXAMPLES=OFF ..
+fi
+
+if [[ $PYTHON_VERSION == 35 ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
+  echo 'Config for Py35'
+  cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
+    -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
+    -D PYTHON3_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+    -D PYTHON3_LIBRARY=/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/bin \
+    -D PYTHON3_INCLUDE_DIR=/Library/Frameworks/Python.framework/Versions/3.5/include/python3.5m \
+    -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D BUILD_EXAMPLES=OFF ..
+fi
+
+if [[ $PYTHON_VERSION == 36 ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
+  echo 'Config for Py36'
+  cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/loca -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
     -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
     -D PYTHON3_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
     -D PYTHON3_LIBRARY=/usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/bin \

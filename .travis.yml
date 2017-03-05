@@ -27,73 +27,176 @@ matrix:
     # Exclude the default Python 3.5 build
     - python: 3.5
   include:
+
+    # default builds for MacOS
     - os: osx
       language: generic
       osx_image: xcode8.2
       env:
         - MB_PYTHON_VERSION=2.7
+        - ENABLE_CONTRIB=0
     - os: osx
       language: generic
       osx_image: xcode8.2
       env:
         - MB_PYTHON_VERSION=3.4
+        - ENABLE_CONTRIB=0
     - os: osx
       language: generic
       osx_image: xcode8.2
       env:
         - MB_PYTHON_VERSION=3.5
+        - ENABLE_CONTRIB=0
     - os: osx
       language: generic
       osx_image: xcode8.2
       env:
         - MB_PYTHON_VERSION=3.6
+        - ENABLE_CONTRIB=0
+
+    # Contrib builds for MacOS
+    - os: osx
+      language: generic
+      osx_image: xcode8.2
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - ENABLE_CONTRIB=1
+    - os: osx
+      language: generic
+      osx_image: xcode8.2
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - ENABLE_CONTRIB=1
+    - os: osx
+      language: generic
+      osx_image: xcode8.2
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - ENABLE_CONTRIB=1
+    - os: osx
+      language: generic
+      osx_image: xcode8.2
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - ENABLE_CONTRIB=1
+
+    # default builds for Linux
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
         - UNICODE_WIDTH=16
+        - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
+        - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
         - UNICODE_WIDTH=16
+        - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
+        - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
+        - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
+        - ENABLE_CONTRIB=0
+
+    # contrib builds for Linux
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - UNICODE_WIDTH=16
+        - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+        - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+        - UNICODE_WIDTH=16
+        - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+        - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+        - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+        - PLAT=i686
+        - ENABLE_CONTRIB=1
 
 before_install:
     - source multibuild/common_utils.sh
@@ -111,5 +214,4 @@ script:
 
 after_success:
     # Upload wheels to pypi
-    - pip install twine
-    - if [ -n "$TRAVIS_TAG" ]; then twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*; else echo "Tag not set, deployment skipped."; fi
+    - source travis/deploy.sh

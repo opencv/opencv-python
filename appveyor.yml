@@ -121,4 +121,8 @@ artifacts:
   name: wheels
 
 deploy_script:
-- deploy.cmd
+- cd %APPVEYOR_BUILD_FOLDER%
+
+- if %ENABLE_CONTRIB% EQU 0 (echo "This is default build. Deplyoment will be done to to PyPI entry opencv-python.") else (echo "This is contrib build. Deplyoment will be done to to PyPI entry opencv-contrib-python.")
+
+- if "%APPVEYOR_REPO_TAG%"=="true" ("%PYTHON%/python.exe" -m twine upload -u %USER% -p %PASS% --skip-existing dist/opencv*) else (echo "Tag not set, deployment skipped.")
