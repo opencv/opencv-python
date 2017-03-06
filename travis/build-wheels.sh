@@ -8,8 +8,7 @@ echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
 ENABLE_CONTRIB=$(<contrib.enabled)
 
-wget https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip -O ninja.zip; unzip ninja.zip; rm ninja.zip
-export PATH=$PATH:$(pwd)
+source travis/install-ninja.sh
 
 for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     echo 'PWD  : '$PWD
