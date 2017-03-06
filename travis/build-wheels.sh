@@ -8,7 +8,7 @@ echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
 ENABLE_CONTRIB=$(<contrib.enabled)
 
-source travis/install-ninja.sh
+yum install ninja-build
 
 for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     echo 'PWD  : '$PWD
