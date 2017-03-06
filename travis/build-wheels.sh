@@ -8,6 +8,9 @@ echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
 ENABLE_CONTRIB=$(<contrib.enabled)
 
+wget https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip -O ninja.zip; unzip ninja.zip; rm ninja.zip
+export PATH=$PATH:$(pwd)
+
 for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     echo 'PWD  : '$PWD
     echo 'PYBIN: '$PYBIN
@@ -20,8 +23,8 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     mkdir build
     if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
       echo 'Config for Py2'
-      cmake28 -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
-        -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF \
+      cmake28 -H"." -B"build" -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+        -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
         -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
         -DPYTHON2_EXECUTABLE=$PYBIN/python \
         -DPYTHON2_VERSION_STRING=$($PYBIN/python -c "from platform import python_version; print python_version()") \
@@ -33,8 +36,8 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
 
     if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
       echo 'Config for Py3'
-      cmake28 -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
-        -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF \
+      cmake28 -H"." -B"build" -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+        -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
         -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
         -DPYTHON3_EXECUTABLE=$PYBIN/python \
         -DPYTHON3_VERSION_STRING=$($PYBIN/python -c "from platform import python_version; print python_version()") \
@@ -46,8 +49,8 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
 
     if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
       echo 'Config for Py2'
-      cmake28 -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
-        -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF \
+      cmake28 -H"." -B"build" -GNinja -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+        -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
         -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
         -DPYTHON2_EXECUTABLE=$PYBIN/python \
         -DPYTHON2_VERSION_STRING=$($PYBIN/python -c "from platform import python_version; print python_version()") \
@@ -59,8 +62,8 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
 
     if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
       echo 'Config for Py3'
-      cmake28 -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
-        -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF \
+      cmake28 -H"." -B"build" -GNinja -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+        -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
         -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
         -DPYTHON3_EXECUTABLE=$PYBIN/python \
         -DPYTHON3_VERSION_STRING=$($PYBIN/python -c "from platform import python_version; print python_version()") \
@@ -72,12 +75,12 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
 
     if [[ $PYTHON_VERSION == 2* ]]; then
       echo 'Build for Py2'
-      (cd build; make -j2 opencv_python2)
+      (cd build; ninja)
     fi
 
     if [[ $PYTHON_VERSION == 3* ]]; then
       echo 'Build for Py3'
-      (cd build; make -j2 opencv_python3)
+      (cd build; ninja)
     fi
 
 
