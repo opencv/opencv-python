@@ -3,13 +3,14 @@ set +e
 echo 'Begin build-wheel...'
 
 export PYTHON_VERSION=${PYTHON_VERSION/./}
+export MAKE_EXTRA=-j2
 
 echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
 ENABLE_CONTRIB=$(<contrib.enabled)
-ninja_path=$(readlink -f ninja)
 
 source travis/install-ninja.sh
+ninja_path=$(readlink -f ninja)
 
 for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     echo 'PWD  : '$PWD
