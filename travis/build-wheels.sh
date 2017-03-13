@@ -3,14 +3,10 @@ set +e
 echo 'Begin build-wheel...'
 
 export PYTHON_VERSION=${PYTHON_VERSION/./}
-export MAKE_EXTRA=-j2
 
 echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
 ENABLE_CONTRIB=$(<contrib.enabled)
-
-source travis/install-ninja.sh
-ninja_path=$(readlink -f ninja)
 
 for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     echo 'PWD  : '$PWD
@@ -24,7 +20,7 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     mkdir build
     if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
       echo 'Config for Py2'
-      cmake28 -H"." -B"build" -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+      cmake28 -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
         -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
         -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
         -DPYTHON2_EXECUTABLE=$PYBIN/python \
@@ -37,7 +33,7 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
 
     if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
       echo 'Config for Py3'
-      cmake28 -H"." -B"build" -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+      cmake28 -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
         -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
         -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
         -DPYTHON3_EXECUTABLE=$PYBIN/python \
@@ -50,7 +46,7 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
 
     if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
       echo 'Config for Py2'
-      cmake28 -H"." -B"build" -D"CMAKE_MAKE_PROGRAM:PATH=$ninja_path" -GNinja -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+      cmake28 -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
         -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
         -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
         -DPYTHON2_EXECUTABLE=$PYBIN/python \
@@ -63,7 +59,7 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
 
     if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
       echo 'Config for Py3'
-      cmake28 -H"." -B"build" -GNinja -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+      cmake28 -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
         -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
         -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
         -DPYTHON3_EXECUTABLE=$PYBIN/python \
@@ -76,12 +72,12 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
 
     if [[ $PYTHON_VERSION == 2* ]]; then
       echo 'Build for Py2'
-      (cd build; ninja)
+      (cd build; make -j2 opencv_python2)
     fi
 
     if [[ $PYTHON_VERSION == 3* ]]; then
       echo 'Build for Py3'
-      (cd build; ninja)
+      (cd build; make -j2 opencv_python3)
     fi
 
 
