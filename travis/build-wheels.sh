@@ -72,12 +72,12 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
 
     if [[ $PYTHON_VERSION == 2* ]]; then
       echo 'Build for Py2'
-      (cd build; make -j2 opencv_python2)
+      (cd build; make -j8 opencv_python2)
     fi
 
     if [[ $PYTHON_VERSION == 3* ]]; then
       echo 'Build for Py3'
-      (cd build; make -j2 opencv_python3)
+      (cd build; make -j8 opencv_python3)
     fi
 
 

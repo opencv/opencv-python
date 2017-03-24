@@ -55,12 +55,12 @@ matrix:
     #     - ENABLE_CONTRIB=0
 
     # # Contrib builds for MacOS
-    - os: osx
-      language: generic
-      osx_image: xcode8.2
-      env:
-        - MB_PYTHON_VERSION=2.7
-        - ENABLE_CONTRIB=1
+    # - os: osx
+    # language: generic
+    # osx_image: xcode8.2
+    # env:
+    #   - MB_PYTHON_VERSION=2.7
+    #   - ENABLE_CONTRIB=1
     # - os: osx
     #   language: generic
     #   osx_image: xcode8.2
@@ -140,11 +140,11 @@ matrix:
     #     - ENABLE_CONTRIB=0
 
     # contrib builds for Linux
-    # - os: linux
-    #   env:
-    #     - MB_PYTHON_VERSION=2.7
-    #     - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
-    #     - ENABLE_CONTRIB=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - ENABLE_CONTRIB=1
     # - os: linux
     #   env:
     #     - MB_PYTHON_VERSION=2.7
