@@ -123,8 +123,4 @@ if [[ $PYTHON_VERSION == 3* ]]; then
 fi
 
 echo 'Build wheel'
-# pip wheel . -w ./wheelhouse/
 
-echo 'Cleanup'
-# rm -fr opencv/build
-# rm cv2/*.so

@@ -8,7 +8,7 @@ echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
 ENABLE_CONTRIB=$(<contrib.enabled)
 
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
 
 # Begin build
 echo 'Begin build'
@@ -96,9 +96,4 @@ fi
 
 # Build wheel
 echo 'Build wheel'
-python -m pip wheel . -w /io/wheelhouse/
-
-# Cleanup
-echo 'Cleanup'
-rm -fr opencv/build
-rm cv2/*.so
+pip wheel . -w /io/wheelhouse/
