@@ -28,7 +28,7 @@ matrix:
     - python: 3.5
   include:
 
-    # # default builds for MacOS
+    # default builds for MacOS
     - os: osx
       language: generic
       osx_image: xcode8.2
@@ -54,13 +54,13 @@ matrix:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
 
-    # # Contrib builds for MacOS
+    # Contrib builds for MacOS
     - os: osx
-    language: generic
-    osx_image: xcode8.2
-    env:
-      - MB_PYTHON_VERSION=2.7
-      - ENABLE_CONTRIB=1
+      language: generic
+      osx_image: xcode8.2
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - ENABLE_CONTRIB=1
     - os: osx
       language: generic
       osx_image: xcode8.2
@@ -80,7 +80,7 @@ matrix:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
 
-    # # default builds for Linux
+    # default builds for Linux
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
