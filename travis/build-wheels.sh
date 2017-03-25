@@ -2,8 +2,7 @@
 set +e
 echo 'Begin build-wheel...'
 
-export PYTHON_VERSION=${MB_PYTHON_VERSION/./}
-echo 'MB_PYTHON_VERSION: ' $MB_PYTHON_VERSION
+export PYTHON_VERSION=${PYTHON_VERSION/./}
 echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
 ENABLE_CONTRIB=$(<contrib.enabled)
