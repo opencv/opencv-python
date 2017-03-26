@@ -48,23 +48,29 @@ Frequently Asked Questions
 --------------------------
 
 Q: Do I need to install also OpenCV separately?
+
 A: No, the packages are special wheel binary packages and they already contain statically built OpenCV binaries.
 
 Q: Pip does not find package opencv-contrib-python?
+
 A: The wheel package format and manylinux builds are pretty new things. Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip``.
 
 Q: Import fails on Windows to some DLL load error?
+
 A: If the import fails on Windows, make sure you have `Visual C++ redistributable 2015 <https://www.microsoft.com/en-us/download/details.aspx?id=48145>`__ installed. If you are using older Windows version than Windows 10 and latest system updates are not installed, `Universal C Runtime <https://support.microsoft.com/en-us/help/2999226/update-for-universal-c-runtime-in-windows>`__ might be also required.
 
 Q: I have some other import errors?
+
 A: Make sure you have removed old manual installations of OpenCV Python bindings (cv2.so or cv2.pyd in site-packages).
 
 Q: Why I can't open video files on GNU/Linux distribution X or on macOS?
+
 A: OpenCV video I/O depends heavily on FFmpeg. Manylinux and macOS OpenCV binaries are not compiled against it.
 The purpose of these packages is to provide as easy as possible installation experience for OpenCV Python bindings and they should work directly out-of-the-box.
 Adding FFmpeg as an additional dependency without a "universal" FFmpeg build (e.g. LGPL licensed static build like in the Windows wheels) the goal is considerably harder to achieve. This might change in the future.
 
 Q: Why I can't open GUI windows (``cv2.imshow()``) on GNU/Linux distribution X or on macOS?
+
 A: Like above, OpenCV was not compiled against GTK or Carbon. Support for these might be added in the future.
 
 Documentation for opencv-python
