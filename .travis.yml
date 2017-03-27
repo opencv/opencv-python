@@ -89,11 +89,13 @@ matrix:
       env:
         - MB_PYTHON_VERSION=3.6
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+        - BUILD_DEPENDS=numpy==1.11.3
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
+        - BUILD_DEPENDS=numpy==1.11.3
 
 before_install:
     - source multibuild/common_utils.sh
