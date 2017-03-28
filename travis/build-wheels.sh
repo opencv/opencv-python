@@ -11,8 +11,6 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     echo 'PWD  : '$PWD
     echo 'PYBIN: '$PYBIN
 
-    $PYBIN/pip install -r requirements.txt
-
     # Begin build
     echo 'Begin build'
     cd opencv
