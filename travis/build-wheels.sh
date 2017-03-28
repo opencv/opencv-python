@@ -11,6 +11,8 @@ for PYBIN in /opt/python/cp$PYTHON_VERSION*/bin; do
     echo 'PWD  : '$PWD
     echo 'PYBIN: '$PYBIN
 
+    $PYBIN/pip install numpy==$BUILD_DEPENDS
+
     # Begin build
     echo 'Begin build'
     cd opencv
