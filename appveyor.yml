@@ -10,34 +10,42 @@ environment:
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "2.7"
+      NP_VERSION: "1.11.3"
     - PYTHON: "C:/Python27-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "2.7"
+      NP_VERSION: "1.11.3"
     - PYTHON: "C:/Python34"
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.4"
+      NP_VERSION: "1.11.3"
     - PYTHON: "C:/Python34-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.4"
+      NP_VERSION: "1.11.3"
     - PYTHON: "C:/Python35"
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.5"
+      NP_VERSION: "1.11.3"
     - PYTHON: "C:/Python35-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.5"
+      NP_VERSION: "1.11.3"
     - PYTHON: "C:/Python36"
       BUILD_ENV: "Visual Studio 14"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.6"
+      NP_VERSION: "1.11.3"
     - PYTHON: "C:/Python36-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.6"
+      NP_VERSION: "1.11.3"
 
 install:
 - cmd: >-
@@ -49,6 +57,7 @@ install:
     "%PYTHON%/python.exe" -m pip install --upgrade pip
 
     "%PYTHON%/python.exe" -m pip install -r requirements.txt
+    "%PYTHON%/python.exe" -m pip install numpy==%NP_VERSION%
 
 build_script:
 - cmd: |-
