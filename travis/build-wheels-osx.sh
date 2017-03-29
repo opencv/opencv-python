@@ -6,6 +6,10 @@ export PYTHON_VERSION=${MB_PYTHON_VERSION/./}
 echo 'MB_PYTHON_VERSION: ' $MB_PYTHON_VERSION
 echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
+echo 'PIP and brew installs'
+
+pip install -r $BUILD_DEPENDS
+
 echo 'Config make'
 
 cd opencv
