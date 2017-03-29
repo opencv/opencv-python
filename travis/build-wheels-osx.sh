@@ -8,7 +8,7 @@ echo 'PYTHON_VERSION: '$PYTHON_VERSION
 
 echo 'PIP and brew installs'
 
-pip install -r $BUILD_DEPENDS
+pip install $BUILD_DEPENDS
 
 echo 'Config make'
 
