@@ -41,7 +41,8 @@ function run_tests {
       source ../travis/test-wheels.sh
     else
       echo "Running for linux"
-      apt-get -y install libglib2.0-0
+      apt-get update
+      apt-get -y install --fix-missing libglib2.0-0
       cd /io/tests/
       source /io/travis/test-wheels.sh
     fi
