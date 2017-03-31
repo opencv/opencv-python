@@ -111,7 +111,6 @@ environment:
       NP_VERSION: "1.11.3"
       ENABLE_CONTRIB: 1
 
-      NP_VERSION: "1.11.3"
     - PYTHON: "C:/Python36-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
       BUILD_DIR: "build64"
