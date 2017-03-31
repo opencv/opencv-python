@@ -21,7 +21,7 @@ if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF \
     -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
     -DPYTHON2_EXECUTABLE=python \
-    -DPYTHON2_VERSION_STRING=$(python -c "from platform import python_version; print python_version()") \
+    -DPYTHON2_VERSION_STRING=$(python -c "from platform import python_version; print(python_version())") \
     -DPYTHON2_INCLUDE_PATH=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
     -DPYTHON2_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
     -DPYTHON2_NUMPY_INCLUDE_DIRS=$(python -c "import os; os.environ['DISTUTILS_USE_SDK']='1'; import numpy.distutils; print(os.pathsep.join(numpy.distutils.misc_util.get_numpy_include_dirs()))") \
@@ -35,7 +35,7 @@ if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF \
     -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
     -DPYTHON3_EXECUTABLE=python \
-    -DPYTHON3_VERSION_STRING=$(python -c "from platform import python_version; print python_version()") \
+    -DPYTHON3_VERSION_STRING=$(python -c "from platform import python_version; print(python_version())") \
     -DPYTHON3_INCLUDE_PATH=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
     -DPYTHON3_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
     -DPYTHON3_NUMPY_INCLUDE_DIRS=$(python -c "import os; os.environ['DISTUTILS_USE_SDK']='1'; import numpy.distutils; print(os.pathsep.join(numpy.distutils.misc_util.get_numpy_include_dirs()))") \
@@ -49,7 +49,7 @@ if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF \
     -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
     -DPYTHON2_EXECUTABLE=python \
-    -DPYTHON2_VERSION_STRING=$(python -c "from platform import python_version; print python_version()") \
+    -DPYTHON2_VERSION_STRING=$(python -c "from platform import python_version; print(python_version())") \
     -DPYTHON2_INCLUDE_PATH=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
     -DPYTHON2_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
     -DPYTHON2_NUMPY_INCLUDE_DIRS=$(python -c "import os; os.environ['DISTUTILS_USE_SDK']='1'; import numpy.distutils; print(os.pathsep.join(numpy.distutils.misc_util.get_numpy_include_dirs()))") \
@@ -63,7 +63,7 @@ if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF \
     -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
     -DPYTHON3_EXECUTABLE=python \
-    -DPYTHON3_VERSION_STRING=$(python -c "from platform import python_version; print python_version()") \
+    -DPYTHON3_VERSION_STRING=$(python -c "from platform import python_version; print(python_version())") \
     -DPYTHON3_INCLUDE_PATH=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
     -DPYTHON3_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
     -DPYTHON3_NUMPY_INCLUDE_DIRS=$(python -c "import os; os.environ['DISTUTILS_USE_SDK']='1'; import numpy.distutils; print(os.pathsep.join(numpy.distutils.misc_util.get_numpy_include_dirs()))") \
