@@ -9,10 +9,11 @@
 OpenCV on Wheels
 ================
 
-**Unofficial** OpenCV packages for Python.
+**Unofficial** OpenCV packages for Python with contrib modules.
 
-This package contains only the OpenCV core modules without the optional contrib modules.
-If you are looking for a version which includes OpenCV contrib modules, please install `opencv-contrib-python <https://pypi.python.org/pypi/opencv-contrib-python>`__ instead.
+**Note: the usage of opencv-contrib-python might be restricted in some countries since the contrib package contains some patented algorithms/non-free modules.**
+
+If you are looking for a version without the contrib modules, please install `opencv-python <https://pypi.python.org/pypi/opencv-python>`__ instead.
 
 The packages contain pre-compiled OpenCV binary with Python bindings.
 This enables super fast (usually < 10 seconds) OpenCV installation for Python.
@@ -31,12 +32,10 @@ Installation and Usage
 
 1. If you have previous/other version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
  - To further avoid conflicts and to make development easier, Python's `virtual environments <https://docs.python.org/3/library/venv.html>`__ are highly recommended for development purposes.
-
-2. If you have an existing ``opencv-contrib-python`` installation, run ``pip uninstall opencv-contrib-python``
-
+2. If you have an existing ``opencv-python`` installation, run ``pip uninstall opencv-python``
 3. Install this package:
 
-``pip install opencv-python``
+``pip install opencv-contrib-python``
 
 4. Import the package:
 
@@ -53,13 +52,9 @@ Frequently Asked Questions
 
 A: No, the packages are special wheel binary packages and they already contain statically built OpenCV binaries.
 
-**Q: Pip does not find package ``opencv-python``?**
+**Q: Pip does not find package opencv-contrib-python?**
 
 A: The wheel package format and manylinux builds are pretty new things. Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip``.
-
-**Q: I need contrib modules?**
-
-A: Please install `opencv-contrib-python <https://pypi.python.org/pypi/opencv-contrib-python>`__ instead. However, note that commercial usage might be restricted in some countries since the contrib modules contain some non-free/patented algorithms.
 
 **Q: Import fails on Windows to some DLL load error?**
 
@@ -71,7 +66,7 @@ A: Make sure you have removed old manual installations of OpenCV Python bindings
 
 **Q: Why I can't open video files on GNU/Linux distribution X or on macOS?**
 
-A: OpenCV video I/O depends heavily on FFmpeg. Manylinux and macOS OpenCV binaries are not compiled against it.
+A: OpenCV video I/O depends heavily on FFmpeg. Manylinux and macOS OpenCV binaries provided withing these packages are not compiled against it.
 The purpose of these packages is to provide as easy as possible installation experience for OpenCV Python bindings and they should work directly out-of-the-box.
 Adding FFmpeg as an additional dependency without a "universal" FFmpeg build (e.g. LGPL licensed static build like in the Windows wheels) the goal is considerably harder to achieve. This might change in the future.
 
@@ -117,7 +112,7 @@ The project is structured like a normal Python package with a standard
    - Linux and macOS wheels are checked with auditwheel and delocate
 
 6. Install the generated wheel
-7. Test that Python can import the library and run some sanity checks
+7. Test that python can import the library and run some sanity checks
 8. Use twine to upload the generated wheel to PyPI (only in release builds)
 
 Currently the ``find_version.py`` file parses OpenCV version information
@@ -130,9 +125,9 @@ handles the import logic correctly by importing the actual ``.pyd`` module
 and replacing the imported cv2 package in ``sys.modudes`` with the
 cv2 module to retain backward compatibility.
 
-Since both ``opencv-python`` and ``opencv-contrib-python`` use the same namespace explained above,
+Since both ``opencv-python`` and ``opencv-python-contrib`` use the same namespace explained above,
 it is highly recommended to uninstall the other package before switching from example from
-``opencv-python`` to ``opencv-contrib-python`` package.
+``opencv-python`` to ``opencv-python-contrib`` package.
 
 Licensing
 ---------
