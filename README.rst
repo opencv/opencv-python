@@ -55,7 +55,7 @@ A: No, the packages are special wheel binary packages and they already contain s
 
 **Q: Pip does not find package ``opencv-python``?**
 
-A: The wheel package format and manylinux builds are pretty new things. Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip``.
+A: The wheel package format and manylinux builds are pretty new things. Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip`` and ``pip install wheel``.
 
 **Q: I need contrib modules?**
 
@@ -73,7 +73,7 @@ A: Make sure you have removed old manual installations of OpenCV Python bindings
 
 A: OpenCV video I/O depends heavily on FFmpeg. Manylinux and macOS OpenCV binaries are not compiled against it.
 The purpose of these packages is to provide as easy as possible installation experience for OpenCV Python bindings and they should work directly out-of-the-box.
-Adding FFmpeg as an additional dependency without a "universal" FFmpeg build (e.g. LGPL licensed static build like in the Windows wheels) the goal is considerably harder to achieve. This might change in the future.
+Adding FFmpeg as an additional dependency without a "universal" FFmpeg build (e.g. LGPL licensed build like in the Windows wheels) the goal is considerably harder to achieve. This might change in the future.
 
 **Q: Why I can't open GUI windows (``cv2.imshow()``) on GNU/Linux distribution X or on macOS?**
 

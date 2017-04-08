@@ -54,7 +54,7 @@ A: No, the packages are special wheel binary packages and they already contain s
 
 **Q: Pip does not find package opencv-contrib-python?**
 
-A: The wheel package format and manylinux builds are pretty new things. Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip``.
+A: The wheel package format and manylinux builds are pretty new things. Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip`` and ``pip install wheel``.
 
 **Q: Import fails on Windows to some DLL load error?**
 
@@ -68,7 +68,7 @@ A: Make sure you have removed old manual installations of OpenCV Python bindings
 
 A: OpenCV video I/O depends heavily on FFmpeg. Manylinux and macOS OpenCV binaries provided withing these packages are not compiled against it.
 The purpose of these packages is to provide as easy as possible installation experience for OpenCV Python bindings and they should work directly out-of-the-box.
-Adding FFmpeg as an additional dependency without a "universal" FFmpeg build (e.g. LGPL licensed static build like in the Windows wheels) the goal is considerably harder to achieve. This might change in the future.
+Adding FFmpeg as an additional dependency without a "universal" FFmpeg build (e.g. LGPL licensed build like in the Windows wheels) the goal is considerably harder to achieve. This might change in the future.
 
 **Q: Why I can't open GUI windows (``cv2.imshow()``) on GNU/Linux distribution X or on macOS?**
 
@@ -119,9 +119,9 @@ Currently the ``find_version.py`` file parses OpenCV version information
 from the OpenCV sources. OpenCV depends on numpy, so ``setup.py`` checks
 the minimum required numpy version also with the help of pip.
 
-The ``cv2.pyd`` file is normally copied to site-packages.
+The ``cv2.pyd/so`` file is normally copied to site-packages.
 To avoid polluting the root folder the ``__init__.py`` file in cv2 folder
-handles the import logic correctly by importing the actual ``.pyd`` module
+handles the import logic correctly by importing the actual ``.pyd./.so`` module
 and replacing the imported cv2 package in ``sys.modudes`` with the
 cv2 module to retain backward compatibility.
 
