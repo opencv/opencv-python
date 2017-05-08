@@ -60,6 +60,8 @@ A: The wheel package format and manylinux builds are pretty new things. Most lik
 
 A: If the import fails on Windows, make sure you have `Visual C++ redistributable 2015 <https://www.microsoft.com/en-us/download/details.aspx?id=48145>`__ installed. If you are using older Windows version than Windows 10 and latest system updates are not installed, `Universal C Runtime <https://support.microsoft.com/en-us/help/2999226/update-for-universal-c-runtime-in-windows>`__ might be also required.
 
+`this issue <https://github.com/skvark/opencv-python/issues/36>`__
+
 **Q: I have some other import errors?**
 
 A: Make sure you have removed old manual installations of OpenCV Python bindings (cv2.so or cv2.pyd in site-packages).
