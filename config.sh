@@ -1,6 +1,9 @@
 #!/bin/bash
 set +e
 echo "===  Loading config.sh  === "
+
+cp travis/setup.cfg .
+
 if [ -n "$IS_OSX" ]; then
   echo "    > OSX environment "
   function build_wheel {

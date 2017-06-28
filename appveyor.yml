@@ -132,7 +132,7 @@ install:
     "%PYTHON%/python.exe" -m pip install "numpy==%NP_VERSION%"
 
 build_script:
-- build.cmd
+- appveyor\build.cmd
 
 before_test:
 - cmd: >-
