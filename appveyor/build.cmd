@@ -25,6 +25,8 @@ if %PYTHON_VERSION% GEQ 3 xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\lib\
 if %PYTHON_VERSION% LSS 3 xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\lib\RELEASE\*.pyd" .\cv2 /I
 xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\bin\Release\*.dll" .\cv2 /I
 
+xcopy "%APPVEYOR_BUILD_FOLDER%\appveyor\setup.cfg" .\ /I
+
 dir
 
 "%PYTHON%/python.exe" setup.py bdist_wheel
