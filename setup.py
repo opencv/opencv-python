@@ -48,6 +48,7 @@ if os.name == 'posix':
 else:
     package_data['cv2'] = ['*.pyd', '*.dll']
 
+package_data['cv2'] += ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]
 
 class BinaryDistribution(Distribution):
     """ Forces BinaryDistribution. """
@@ -68,7 +69,6 @@ setup(name=package_name,
       package_data=package_data,
       maintainer="Olli-Pekka Heinisuo",
       include_package_data=True,
-      data_files=[("", ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"])],
       install_requires="numpy>=%s" % numpy_version,
       classifiers=[
         'Development Status :: 5 - Production/Stable',
