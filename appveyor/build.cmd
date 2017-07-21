@@ -24,7 +24,7 @@ cd
 if %PYTHON_VERSION% GEQ 3 xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\lib\python3\Release\*.pyd" .\cv2 /I
 if %PYTHON_VERSION% LSS 3 xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\lib\RELEASE\*.pyd" .\cv2 /I
 xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\bin\Release\*.dll" .\cv2 /I
-
+xcopy "LICENSE*.txt" .\cv2 /I
 xcopy "%APPVEYOR_BUILD_FOLDER%\appveyor\setup.cfg" .\ /I
 
 dir
