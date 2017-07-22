@@ -30,6 +30,7 @@ Installation and Usage
 ----------------------
 
 1. If you have previous/other version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
+
  - To further avoid conflicts and to make development easier, Python's `virtual environments <https://docs.python.org/3/library/venv.html>`__ are highly recommended for development purposes.
 
 2. If you have an existing ``opencv-contrib-python`` installation, run ``pip uninstall opencv-contrib-python``
