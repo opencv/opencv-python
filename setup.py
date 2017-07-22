@@ -50,13 +50,27 @@ else:
 
 package_data['cv2'] += ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]
 
+This is my old hack to force binary distribution.
+
+However, it doesn't work properly because the binaries
+are placed into purelib instead of platlib.
+
 class BinaryDistribution(Distribution):
-    """ Forces BinaryDistribution. """
     def has_ext_modules(self):
         return True
 
     def is_pure(self):
         return False
+"""
+
+# This creates a list which is empty but returns a length of 1.
+# Should make the wheel a binary distribution and platlib compliant.
+
+
+class EmptyListWithLength(list):
+    def __len__(self):
+        return 1
+
 
 setup(name=package_name,
       version=opencv_version,
@@ -64,11 +78,11 @@ setup(name=package_name,
       license='MIT',
       description='Wrapper package for OpenCV python bindings.',
       long_description=long_description,
-      distclass=BinaryDistribution,
       packages=['cv2'],
       package_data=package_data,
       maintainer="Olli-Pekka Heinisuo",
       include_package_data=True,
+      ext_modules=EmptyListWithLength(),
       install_requires="numpy>=%s" % numpy_version,
       classifiers=[
         'Development Status :: 5 - Production/Stable',
