@@ -50,6 +50,8 @@ else:
 
 package_data['cv2'] += ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]
 
+"""
+
 This is my old hack to force binary distribution.
 
 However, it doesn't work properly because the binaries
