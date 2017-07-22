@@ -212,6 +212,7 @@ before_install:
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - python find_version.py
+    - cp LICENSE*.txt cv2/
     - before_install
 
 install:
