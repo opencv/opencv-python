@@ -2,7 +2,7 @@ env:
     global:
         - REPO_DIR=opencv
         # Commit from opencv that you want to build
-        - BUILD_COMMIT=70bbf17b133496bd7d54d034b0f94bd869e0e810
+        - BUILD_COMMIT=4af3ca4e4d7be246a49d751a79c6392e848ac2aa
         # pip dependencies to _build_ your project
         - BUILD_DEPENDS="numpy==1.11.1"
         # pip dependencies to _test_ your project.  Include any dependencies
