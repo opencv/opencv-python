@@ -9,6 +9,15 @@ ENABLE_CONTRIB=$(<contrib.enabled)
 
 pip install $BUILD_DEPENDS
 
+echo 'Install cmake 2.8.12.2'
+
+wget --no-check-certificate https://cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz
+tar -zxvf cmake-2.8.12.2.tar.gz
+cd cmake-2.8.12.2
+./bootstrap
+make && make install
+cd ..
+
 # Begin build
 echo 'Begin build'
 cd opencv
@@ -16,7 +25,7 @@ mkdir build
 
 if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py2'
-  cmake28 -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+  cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
     -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF \
     -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
@@ -30,7 +39,7 @@ fi
 
 if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py3'
-  cmake28 -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+  cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
     -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF \
     -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
@@ -44,7 +53,7 @@ fi
 
 if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
   echo 'Config for Py2'
-  cmake28 -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+  cmake -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
     -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF \
     -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
@@ -58,7 +67,7 @@ fi
 
 if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
   echo 'Config for Py3'
-  cmake28 -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
+  cmake -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
     -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF \
     -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
