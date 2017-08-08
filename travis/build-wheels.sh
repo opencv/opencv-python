@@ -14,7 +14,8 @@ echo 'Install cmake 3.9.0'
 wget --no-check-certificate https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz
 tar -zxvf cmake-3.9.0.tar.gz
 cd cmake-3.9.0
-./bootstrap
+yum -y install curl-devel zlib-devel # need to build against system curl to get https support
+./bootstrap --system-curl
 make && make install
 cd ..
 
