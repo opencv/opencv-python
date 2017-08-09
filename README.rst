@@ -1,11 +1,3 @@
-.. image:: https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows
-   :target: https://ci.appveyor.com/project/skvark/opencv-python
-   :alt: AppVeyor CI test status (Windows)
-
-.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label="Linux / OS X"
-   :target: https://travis-ci.org/skvark/opencv-python
-   :alt: Travis CI test status (Linux and OS X)
-
 OpenCV on Wheels
 ================
 
@@ -84,6 +76,14 @@ A: Like above, OpenCV was not compiled against GTK or Carbon. Support for these 
 
 Documentation for opencv-python
 -------------------------------
+
+.. image:: https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows
+   :target: https://ci.appveyor.com/project/skvark/opencv-python
+   :alt: AppVeyor CI test status (Windows)
+
+.. image:: https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label="Linux / OS X"
+   :target: https://travis-ci.org/skvark/opencv-python
+   :alt: Travis CI test status (Linux and OS X)
 
 The aim of this repository is to provide means to package each new
 `OpenCV release <https://github.com/opencv/opencv/releases>`__ for the

@@ -35,24 +35,28 @@ matrix:
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
+        - MATRIX_EVAL="brew install gcc && CC=gcc-6 && CXX=g++-6"
     - os: osx
       language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
+        - MATRIX_EVAL="brew install gcc && CC=gcc-6 && CXX=g++-6"
     - os: osx
       language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
+        - MATRIX_EVAL="brew install gcc && CC=gcc-6 && CXX=g++-6"
     - os: osx
       language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
+        - MATRIX_EVAL="brew install gcc && CC=gcc-6 && CXX=g++-6"
 
     # Contrib builds for MacOS
     - os: osx
@@ -61,24 +65,28 @@ matrix:
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
+        - MATRIX_EVAL="brew install gcc && CC=gcc-6 && CXX=g++-6"
     - os: osx
       language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
+        - MATRIX_EVAL="brew install gcc && CC=gcc-6 && CXX=g++-6"
     - os: osx
       language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
+        - MATRIX_EVAL="brew install gcc && CC=gcc-6 && CXX=g++-6"
     - os: osx
       language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
+        - MATRIX_EVAL="brew install gcc && CC=gcc-6 && CXX=g++-6"
 
     # default builds for Linux
     - os: linux
@@ -208,6 +216,7 @@ matrix:
         - ENABLE_CONTRIB=1
 
 before_install:
+    - eval "${MATRIX_EVAL}"
     - echo $ENABLE_CONTRIB > contrib.enabled
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
