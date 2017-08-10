@@ -14,7 +14,7 @@ cd opencv
 
 echo "Apply patch"
 
-git apply ../travis/disable_i386.patch
+git apply --ignore-space-change --ignore-whitespace ../travis/disable_i386.patch
 
 echo 'Config make'
 
