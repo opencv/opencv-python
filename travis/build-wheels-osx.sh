@@ -10,9 +10,14 @@ echo 'PIP and brew installs'
 
 pip install $BUILD_DEPENDS
 
+cd opencv
+
+echo "Apply patch"
+
+git apply ../travis/disable_i386.patch
+
 echo 'Config make'
 
-cd opencv
 mkdir build
 cd build
 
