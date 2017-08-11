@@ -3,11 +3,11 @@ set +e
 echo 'Begin build-wheel...'
 
 export PYTHON_VERSION=${PYTHON_VERSION/./}
-echo 'PYTHON_VERSION: ' $PYTHON_VERSION
+echo 'PYTHON_VERSION: ' "$PYTHON_VERSION"
 
 ENABLE_CONTRIB=$(<contrib.enabled)
 
-pip install $BUILD_DEPENDS
+pip install "$BUILD_DEPENDS"
 
 echo 'Install cmake 3.9.0'
 
@@ -21,11 +21,11 @@ cd ..
 
 echo "Detect Python paths for OpenCV"
 
-PYTHON_VERSION_STRING = $(python -c "from platform import python_version; print(python_version())")
-PYTHON_INCLUDE_PATH = $(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
-PYTHON_PACKAGES_PATH = $(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-PYTHON_NUMPY_INCLUDE_DIRS = $(python -c "import os; os.environ['DISTUTILS_USE_SDK']='1'; import numpy.distutils; print(os.pathsep.join(numpy.distutils.misc_util.get_numpy_include_dirs()))")
-PYTHON_NUMPY_VERSION = $(python -c "import numpy; print(numpy.version.version)")
+PYTHON_VERSION_STRING=$(python -c "from platform import python_version; print(python_version())")
+PYTHON_INCLUDE_PATH=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
+PYTHON_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+PYTHON_NUMPY_INCLUDE_DIRS=$(python -c "import os; os.environ['DISTUTILS_USE_SDK']='1'; import numpy.distutils; print(os.pathsep.join(numpy.distutils.misc_util.get_numpy_include_dirs()))")
+PYTHON_NUMPY_VERSION=$(python -c "import numpy; print(numpy.version.version)")
 
 echo "PYthon version string: $PYTHON_VERSION_STRING"
 echo "Python include path: $PYTHON_INCLUDE_PATH"
@@ -46,11 +46,12 @@ if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
     -D BUILD_EXAMPLES=OFF \
     -D PYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
     -D PYTHON2_EXECUTABLE=python \
-    -D PYTHON2_VERSION_STRING=$PYTHON_VERSION_STRING \
-    -D PYTHON2_INCLUDE_PATH=$PYTHON_INCLUDE_PATH \
-    -D PYTHON2_PACKAGES_PATH=$PYTHON_PACKAGES_PATH \
-    -D PYTHON2_NUMPY_INCLUDE_DIRS=$PYTHON_NUMPY_INCLUDE_DIRS \
-    -D PYTHON2_NUMPY_VERSION=$PYTHON_NUMPY_VERSION \
+    -D PYTHON2_VERSION_STRING="$PYTHON_VERSION_STRING" \
+    -D PYTHON2_INCLUDE_PATH="$PYTHON_INCLUDE_PATH" \
+    -D PYTHON2_PACKAGES_PATH="$PYTHON_PACKAGES_PATH" \
+    -D PYTHON2_NUMPY_INCLUDE_DIRS="$PYTHON_NUMPY_INCLUDE_DIRS" \
+    -D PYTHON2_NUMPY_VERSION="$PYTHON_NUMPY_VERSION" \
+
 fi
 
 if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
@@ -61,11 +62,12 @@ if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
     -D BUILD_EXAMPLES=OFF \
     -D PYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
     -D PYTHON3_EXECUTABLE=python \
-    -D PYTHON3_VERSION_STRING=$PYTHON_VERSION_STRING \
-    -D PYTHON3_INCLUDE_PATH=$PYTHON_INCLUDE_PATH \
-    -D PYTHON3_PACKAGES_PATH=$PYTHON_PACKAGES_PATH \
-    -D PYTHON3_NUMPY_INCLUDE_DIRS=$PYTHON_NUMPY_INCLUDE_DIRS \
-    -D PYTHON3_NUMPY_VERSION=$PYTHON_NUMPY_VERSION \
+    -D PYTHON3_VERSION_STRING="$PYTHON_VERSION_STRING" \
+    -D PYTHON3_INCLUDE_PATH="$PYTHON_INCLUDE_PATH" \
+    -D PYTHON3_PACKAGES_PATH="$PYTHON_PACKAGES_PATH" \
+    -D PYTHON3_NUMPY_INCLUDE_DIRS="$PYTHON_NUMPY_INCLUDE_DIRS" \
+    -D PYTHON3_NUMPY_VERSION="$PYTHON_NUMPY_VERSION" \
+
 fi
 
 if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
@@ -76,11 +78,12 @@ if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
     -D BUILD_EXAMPLES=OFF \
     -D PYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
     -D PYTHON2_EXECUTABLE=python \
-    -D PYTHON2_VERSION_STRING=$PYTHON_VERSION_STRING \
-    -D PYTHON2_INCLUDE_PATH=$PYTHON_INCLUDE_PATH \
-    -D PYTHON2_PACKAGES_PATH=$PYTHON_PACKAGES_PATH \
-    -D PYTHON2_NUMPY_INCLUDE_DIRS=$PYTHON_NUMPY_INCLUDE_DIRS \
-    -D PYTHON2_NUMPY_VERSION=$PYTHON_NUMPY_VERSION \
+    -D PYTHON2_VERSION_STRING="$PYTHON_VERSION_STRING" \
+    -D PYTHON2_INCLUDE_PATH="$PYTHON_INCLUDE_PATH" \
+    -D PYTHON2_PACKAGES_PATH="$PYTHON_PACKAGES_PATH" \
+    -D PYTHON2_NUMPY_INCLUDE_DIRS="$PYTHON_NUMPY_INCLUDE_DIRS" \
+    -D PYTHON2_NUMPY_VERSION="$PYTHON_NUMPY_VERSION" \
+
 fi
 
 if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
@@ -91,21 +94,24 @@ if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
     -D BUILD_EXAMPLES=OFF \
     -D PYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
     -D PYTHON3_EXECUTABLE=python \
-    -D PYTHON3_VERSION_STRING=$PYTHON_VERSION_STRING \
-    -D PYTHON3_INCLUDE_PATH=$PYTHON_INCLUDE_PATH \
-    -D PYTHON3_PACKAGES_PATH=$PYTHON_PACKAGES_PATH \
-    -D PYTHON3_NUMPY_INCLUDE_DIRS=$PYTHON_NUMPY_INCLUDE_DIRS \
-    -D PYTHON3_NUMPY_VERSION=$PYTHON_NUMPY_VERSION \
+    -D PYTHON3_VERSION_STRING="$PYTHON_VERSION_STRING" \
+    -D PYTHON3_INCLUDE_PATH="$PYTHON_INCLUDE_PATH" \
+    -D PYTHON3_PACKAGES_PATH="$PYTHON_PACKAGES_PATH" \
+    -D PYTHON3_NUMPY_INCLUDE_DIRS="$PYTHON_NUMPY_INCLUDE_DIRS" \
+    -D PYTHON3_NUMPY_VERSION="$PYTHON_NUMPY_VERSION" \
+
 fi
 
 if [[ $PYTHON_VERSION == 2* ]]; then
   echo 'Build for Py2'
   (cd build; make -j8 opencv_python2)
+
 fi
 
 if [[ $PYTHON_VERSION == 3* ]]; then
   echo 'Build for Py3'
   (cd build; make -j8 opencv_python3)
+
 fi
 
 # Moving back to opencv-python
@@ -114,11 +120,13 @@ cd ..
 if [[ $PYTHON_VERSION == 2* ]]; then
   echo 'Copying *.so for Py2'
   cp opencv/build/lib/cv2.so cv2/
+
 fi
 
 if [[ $PYTHON_VERSION == 3* ]]; then
   echo 'Copying *.so for Py3'
   cp opencv/build/lib/python3/*.so cv2/
+
 fi
 
 # Build wheel
