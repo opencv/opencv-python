@@ -13,10 +13,7 @@ If you need only OpenCV Python bindings, no separate OpenCV installation is requ
 
 **IMPORTANT NOTE**
 
-MacOS and Linux wheels have currently some limitations:
-
-- video related functionality is not supported (not compiled with FFmpeg)
-- for example ``cv2.imshow()`` will not work (not compiled with GTK+ 2.x or Carbon support)
+MacOS and Linux packages do not support video related functionality (not compiled with FFmpeg).
 
 Installation and Usage
 ----------------------
@@ -69,10 +66,6 @@ A: Make sure you have removed old manual installations of OpenCV Python bindings
 A: OpenCV video I/O depends heavily on FFmpeg. Manylinux and macOS OpenCV binaries are not compiled against it.
 The purpose of these packages is to provide as easy as possible installation experience for OpenCV Python bindings and they should work directly out-of-the-box.
 Adding FFmpeg as an additional dependency without a "universal" FFmpeg build (e.g. LGPL licensed build like in the Windows wheels) the goal is considerably harder to achieve. This might change in the future.
-
-**Q: Why I can't open GUI windows (``cv2.imshow()``) on GNU/Linux distribution X or on macOS?**
-
-A: Like above, OpenCV was not compiled against GTK or Carbon. Support for these might be added in the future.
 
 Documentation for opencv-python
 -------------------------------
@@ -127,11 +120,10 @@ Currently the ``find_version.py`` file parses OpenCV version information
 from the OpenCV sources. OpenCV depends on numpy, so ``setup.py`` checks
 the minimum required numpy version also with the help of pip.
 
-The ``cv2.pyd`` file is normally copied to site-packages.
-To avoid polluting the root folder the ``__init__.py`` file in cv2 folder
-handles the import logic correctly by importing the actual ``.pyd`` module
-and replacing the imported cv2 package in ``sys.modudes`` with the
-cv2 module to retain backward compatibility.
+The ``cv2.pyd/.so`` file is normally copied to site-packages.
+To avoid polluting the root folder this package wraps
+the statically built binary into cv2 package and ``__init__.py``
+file in the package handles the import logic correctly.
 
 Since both ``opencv-python`` and ``opencv-contrib-python`` use the same namespace explained above,
 it is highly recommended to uninstall the other package before switching from example from
@@ -148,6 +140,8 @@ License <https://github.com/opencv/opencv/blob/master/LICENSE>`__
 (`LICENSE-3RD-PARTY.txt <https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt>`__).
 
 Windows wheels ship with `FFmpeg <http://ffmpeg.org>`__ licensed under the `LGPLv2.1 <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>`__.
+
+Linux and MacOS wheels ship with `Qt 4.8.7 <http://doc.qt.io/qt-4.8/lgpl.html>`__ licensed under the `LGPLv2.1 <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>`__.
 
 Versioning
 ----------

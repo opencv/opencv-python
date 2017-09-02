@@ -43,7 +43,7 @@ function run_tests {
     else
       echo "Running for linux"
       apt-get update
-      apt-get -y install --fix-missing libglib2.0-0
+      apt-get -y install --fix-missing libglib2.0-0 libsm6
       cd /io/tests/
       source /io/travis/test-wheels.sh
     fi

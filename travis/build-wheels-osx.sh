@@ -10,6 +10,12 @@ echo 'PIP and brew installs'
 
 pip install "$BUILD_DEPENDS"
 
+brew tap cartr/qt4
+brew tap-pin cartr/qt4
+brew install qt@4
+
+qmake -query
+
 cd opencv
 
 echo "Apply patch"
@@ -38,7 +44,7 @@ cd build
 if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py2'
   cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D CMAKE_TOOLCHAIN_FILE=../../travis/toolchain_macos.cmake \
-    -D BUILD_opencv_python3=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
+    -D BUILD_opencv_python3=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF -D WITH_QT=4 \
     -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF \
     -D BUILD_EXAMPLES=OFF \
     -D PYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
@@ -55,7 +61,7 @@ fi
 if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py3'
   cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D CMAKE_TOOLCHAIN_FILE=../../travis/toolchain_macos.cmake \
-    -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
+    -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF -D WITH_QT=4 \
     -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF \
     -D BUILD_EXAMPLES=OFF \
     -D PYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
@@ -72,7 +78,7 @@ fi
 if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
   echo 'Config for Py2'
   cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D CMAKE_TOOLCHAIN_FILE=../../travis/toolchain_macos.cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
-    -D BUILD_opencv_python3=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
+    -D BUILD_opencv_python3=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF -D WITH_QT=4 \
     -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF \
     -D BUILD_EXAMPLES=OFF \
     -D PYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
@@ -89,7 +95,7 @@ fi
 if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
   echo 'Config for Py3'
   cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D CMAKE_TOOLCHAIN_FILE=../../travis/toolchain_macos.cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
-    -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF \
+    -D BUILD_opencv_python2=OFF -D BUILD_opencv_java=OFF -D BUILD_SHARED_LIBS=OFF -D WITH_LAPACK=OFF -D WITH_QT=4 \
     -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF \
     -D BUILD_EXAMPLES=OFF \
     -D PYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \

@@ -9,16 +9,6 @@ ENABLE_CONTRIB=$(<contrib.enabled)
 
 pip install "$BUILD_DEPENDS"
 
-echo 'Install cmake 3.9.0'
-
-wget --no-check-certificate https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz
-tar -zxf cmake-3.9.0.tar.gz
-cd cmake-3.9.0
-yum -y install curl-devel zlib-devel # need to build against system curl to get https support
-./bootstrap --system-curl
-make && make install
-cd ..
-
 echo "Detect Python paths for OpenCV"
 
 PYTHON_VERSION_STRING=$(python -c "from platform import python_version; print(python_version())")
@@ -38,10 +28,15 @@ echo 'Begin build'
 cd opencv
 mkdir build
 
+export QTDIR=/opt/Qt4.8.7
+export PATH=$QTDIR/bin:$PATH
+
+qmake -query
+
 if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py2'
   cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
-    -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
+    -DWITH_IPP=OFF -DBUILD_DOCS=OFF -DWITH_QT=4 \
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
     -DBUILD_EXAMPLES=OFF \
     -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
@@ -57,7 +52,7 @@ fi
 if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
   echo 'Config for Py3'
   cmake -H"." -B"build" -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
-    -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
+    -DWITH_IPP=OFF -DBUILD_DOCS=OFF -DWITH_QT=4 \
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
     -DBUILD_EXAMPLES=OFF \
     -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \
@@ -73,7 +68,7 @@ fi
 if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
   echo 'Config for Py2'
   cmake -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python3=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
-    -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
+    -DWITH_IPP=OFF -DBUILD_DOCS=OFF -DWITH_QT=4 \
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
     -DBUILD_EXAMPLES=OFF \
     -DPYTHON2INTERP_FOUND=ON -DPYTHON2LIBS_FOUND=ON \
@@ -89,7 +84,7 @@ fi
 if [[ $PYTHON_VERSION == 3* ]] && [[ $ENABLE_CONTRIB == 1 ]]; then
   echo 'Config for Py3'
   cmake -H"." -B"build" -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_opencv_java=OFF -DBUILD_SHARED_LIBS=OFF \
-    -DWITH_IPP=OFF -DBUILD_DOCS=OFF \
+    -DWITH_IPP=OFF -DBUILD_DOCS=OFF -DWITH_QT=4 \
     -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
     -DBUILD_EXAMPLES=OFF \
     -DPYTHON3INTERP_FOUND=ON -DPYTHON3LIBS_FOUND=ON \

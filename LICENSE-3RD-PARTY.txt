@@ -44,8 +44,9 @@ or tort (including negligence or otherwise) arising in any way out of
 the use of this software, even if advised of the possibility of such damage.
 
 ------------------------------------------------------------------------------
-FFmpeg is redistributed within opencv-python package.
-This license applies to FFmpeg binary in the directory cv2/.
+FFmpeg is redistributed within opencv-python Windows packages.
+Qt 4.8.7 is redistributed within opencv-python Linux and macOS packages
+This license applies to FFmpeg and Qt binaries in the directory cv2/.
 
                   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 2.1, February 1999

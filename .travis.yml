@@ -84,60 +84,50 @@ matrix:
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
         - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
         - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
         - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
         - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
         - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
         - ENABLE_CONTRIB=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
         - ENABLE_CONTRIB=0
         - BUILD_DEPENDS=numpy==1.11.3
         - TEST_DEPENDS=numpy==1.11.3
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - BUILD_DEPENDS=numpy==1.11.3
@@ -147,53 +137,53 @@ matrix:
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+
         - PLAT=i686
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+
         - PLAT=i686
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+
         - PLAT=i686
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+
         - PLAT=i686
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+
         - BUILD_DEPENDS=numpy==1.11.3
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
@@ -201,7 +191,7 @@ matrix:
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
-        - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+
         - PLAT=i686
         - BUILD_DEPENDS=numpy==1.11.3
         - TEST_DEPENDS=numpy==1.11.3
