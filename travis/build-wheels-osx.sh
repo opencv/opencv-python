@@ -13,6 +13,7 @@ pip install "$BUILD_DEPENDS"
 brew tap cartr/qt4
 brew tap-pin cartr/qt4
 brew install qt@4
+brew install ffmpeg --without-gpl
 
 qmake -query
 
