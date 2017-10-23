@@ -10,10 +10,13 @@ echo 'PIP and brew installs'
 
 pip install "$BUILD_DEPENDS"
 
+echo 'Installing QT4'
 brew tap cartr/qt4
 brew tap-pin cartr/qt4
 brew install qt@4
+echo 'Installing FFmpeg'
 brew install ffmpeg --without-x264 --without-xvid --without-gpl
+brew info ffmpeg
 
 qmake -query
 
