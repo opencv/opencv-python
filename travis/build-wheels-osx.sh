@@ -14,9 +14,11 @@ echo 'Installing QT4'
 brew tap cartr/qt4
 brew tap-pin cartr/qt4
 brew install qt@4
+echo '-----------------'
 echo 'Installing FFmpeg'
 brew install ffmpeg --without-x264 --without-xvid --without-gpl
 brew info ffmpeg
+echo '-----------------'
 
 qmake -query
 
