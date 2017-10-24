@@ -119,13 +119,13 @@ echo 'Begin build'
 
 if [[ $PYTHON_VERSION == 2* ]]; then
   echo 'Build for Py2'
-  make -j8 opencv_python2
+  make -j2 opencv_python2
 
 fi
 
 if [[ $PYTHON_VERSION == 3* ]]; then
   echo 'Build for Py3'
-  make -j8 opencv_python3
+  make -j2 opencv_python3
 
 fi
 
