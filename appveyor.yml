@@ -7,21 +7,24 @@ environment:
 
   matrix:
     - PYTHON: "C:/Python27"
-      BUILD_ENV: "Visual Studio 14"
+      BUILD_ENV: "Visual Studio 11"
+      BUILD_TOOLSET: "v110_xp"
       BUILD_DIR: "build"
       PYTHON_VERSION: "2.7"
       NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python27-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
+      BUILD_ENV: "Visual Studio 11 Win64"
+      BUILD_TOOLSET: "v110_xp"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "2.7"
       NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python34"
-      BUILD_ENV: "Visual Studio 14"
+      BUILD_ENV: "Visual Studio 11"
+      BUILD_TOOLSET: "v110_xp"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.4"
       NP_VERSION: "1.11.1"
@@ -29,6 +32,7 @@ environment:
 
     - PYTHON: "C:/Python34-x64"
       BUILD_ENV: "Visual Studio 14 Win64"
+      BUILD_TOOLSET: "v110_xp"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.4"
       NP_VERSION: "1.11.1"
@@ -63,28 +67,32 @@ environment:
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python27"
-      BUILD_ENV: "Visual Studio 14"
+      BUILD_ENV: "Visual Studio 11"
+      BUILD_TOOLSET: "v110_xp"
       BUILD_DIR: "build"
       PYTHON_VERSION: "2.7"
       NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python27-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
+      BUILD_ENV: "Visual Studio 11 Win64"
+      BUILD_TOOLSET: "v110_xp"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "2.7"
       NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python34"
-      BUILD_ENV: "Visual Studio 14"
+      BUILD_ENV: "Visual Studio 11"
+      BUILD_TOOLSET: "v110_xp"
       BUILD_DIR: "build"
       PYTHON_VERSION: "3.4"
       NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python34-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
+      BUILD_ENV: "Visual Studio 11 Win64"
+      BUILD_TOOLSET: "v110_xp"
       BUILD_DIR: "build64"
       PYTHON_VERSION: "3.4"
       NP_VERSION: "1.11.1"
