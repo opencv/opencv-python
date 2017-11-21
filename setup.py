@@ -19,6 +19,12 @@ def main():
 
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+    if sys.version_info[:2] < (3, 2):
+        import warnings
+        # ABI config variables are introduced in PEP 425
+        warnings.filterwarnings('ignore', r"Config variable '[^']+' is unset, Python ABI tag may be incorrect",
+                                category=RuntimeWarning)
+
     setup(name=package_name,
           version=package_version,
           url='https://github.com/skvark/opencv-python',
