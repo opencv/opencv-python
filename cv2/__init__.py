@@ -3,7 +3,8 @@ import os
 import importlib
 
 # FFmpeg dll is not found on Windows without this
-os.environ["PATH"] += os.pathsep + os.path.dirname(os.path.realpath(__file__))
+if os.name == 'nt':
+    os.environ["PATH"] += os.pathsep + os.path.dirname(os.path.realpath(__file__))
 
 # make IDE's (PyCharm) autocompletion happy
 from .cv2 import *
