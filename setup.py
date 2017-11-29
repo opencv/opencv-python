@@ -1,4 +1,4 @@
-import io, os, os.path, sys, runpy, subprocess, re, contextlib, sysconfig
+import io, os, os.path, sys, runpy, subprocess, re, sysconfig
 
 import pip, pip.vcs.git
 
@@ -106,10 +106,6 @@ def main():
         ],
         cmake_args=cmake_args,
         cmake_source_dir=cmake_source_dir,
-        # Relative to _skbuild/cmake-install. Needed because of a demented check
-        # in skbuild.setuptools_wrap._classify_files
-        # that makes it look for output files in the source folder if it's not set
-        # cmake_install_dir='inst'
           )
 
 class RearrangeCMakeOutput(object):
@@ -153,14 +149,12 @@ class RearrangeCMakeOutput(object):
             data_files,
             cmake_source_dir, cmake_install_reldir):
         """From all CMake output, we're only interested in a few files
-        (cls.package_paths_re) and must place them into CMake install dir according
+        and must place them into CMake install dir according
         to Python conventions for SKBuild to find them:
             package\
                 file
                 subpackage\
                     etc.
-
-        cls.package_paths_re: { 'package_name': [ 'path regexes relative to CMake install dir w/forward slashes'] }
         """
         cls = self.__class__
         # 'relpath'/'reldir' = relative to CMAKE_INSTALL_DIR/cmake_install_dir
@@ -225,64 +219,6 @@ class RearrangeCMakeOutput(object):
             )
 
 
-
-    def __init__(self, package_paths_re):
-        cls = self.__class__
-        assert not cls.wraps._classify_files, "Singleton object"
-        import skbuild.setuptools_wrap
-
-        cls._setuptools_wrap = skbuild.setuptools_wrap
-        cls.wraps._classify_files = cls._setuptools_wrap._classify_files
-        cls._setuptools_wrap._classify_files = self._classify_files_override
-
-        cls.package_paths_re = package_paths_re
-    def __del__(self):
-        cls = self.__class__
-        cls._setuptools_wrap._classify_files = cls.wraps._classify_files
-        cls.wraps._classify_files = None
-        cls._setuptools_wrap = None
-
-    def _classify_files_override(self, install_paths, *args, **kwargs):
-        """From all CMake output, we're only interested in a few files
-        (cls.package_paths_re) and must place them into CMake install dir according
-        to Python conventions for SKBuild to find them:
-            package\
-                file
-                subpackage\
-                    etc.
-
-        cls.package_paths_re: { 'package_name': [ 'path regexes relative to CMake install dir w/forward slashes'] }
-        """
-        cls = self.__class__
-        CMAKE_INSTALL_DIR = cls._setuptools_wrap.CMAKE_INSTALL_DIR
-        # 'relpath' = relative to CMAKE_INSTALL_DIR
-        # 'path' = relative to sourcetree root
-        install_relpaths = [os.path.relpath(p, CMAKE_INSTALL_DIR) for p in install_paths]
-        fslash_install_relpaths = [p.replace(os.path.sep, '/') for p in install_relpaths]
-        relpaths_zip = zip(fslash_install_relpaths, install_relpaths)
-        final_install_relpaths = []
-
-        with pushd(CMAKE_INSTALL_DIR):
-            for package_name, paths_re in cls.package_paths_re.items():
-                package_dest_reldir = package_name.replace('.', os.path.sep)
-                for path_re in paths_re:
-                    r = re.compile(path_re+'$')
-                    for fslash_relpath, relpath in relpaths_zip:
-                        m = r.match(fslash_relpath)
-                        if not m: continue
-                        new_install_path = os.path.join(
-                            package_dest_reldir,
-                            os.path.basename(relpath))
-                        cls._setuptools_wrap._copy_file(
-                            relpath, new_install_path, hide_listing=False )
-                        final_install_relpaths.append(new_install_path)
-
-        final_install_paths = [os.path.join(CMAKE_INSTALL_DIR,p) for p in final_install_relpaths]
-
-        return (cls.wraps._classify_files)(final_install_paths, *args, **kwargs)
-
-
-
 def install_packages(*requirements):
     # No more convenient way until PEP 518 is implemented; setuptools only handles eggs
     subprocess.check_call([sys.executable,
@@ -319,7 +255,7 @@ def get_or_install(name, version = None):
         [package] = (package for package in pip.get_installed_distributions()
                      if package.key == name)
     except ValueError:
-        install_packages("%s==%s" % (name, version) if version else name)
+        install_packages("%s==%s"%(name, version) if version else name)
         return version
     else:
         return package.version
@@ -330,14 +266,6 @@ def get_or_install(name, version = None):
 class EmptyListWithLength(list):
     def __len__(self):
         return 1
-
-@contextlib.contextmanager
-def pushd(path):
-    cwd = os.getcwd()
-    os.chdir(path)
-    yield
-    os.chdir(cwd)
-
 
 
 if __name__ == '__main__':
