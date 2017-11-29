@@ -7,147 +7,66 @@ environment:
 
   matrix:
     - PYTHON: "C:/Python27"
-      BUILD_ENV: "Visual Studio 14"
-      BUILD_TOOLSET: "v140_xp"
-      BUILD_DIR: "build"
-      PYTHON_VERSION: "2.7"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python27-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
-      BUILD_TOOLSET: "v140_xp"
-      BUILD_DIR: "build64"
-      PYTHON_VERSION: "2.7"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python34"
-      BUILD_ENV: "Visual Studio 14"
-      BUILD_TOOLSET: "v140_xp"
-      BUILD_DIR: "build"
-      PYTHON_VERSION: "3.4"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python34-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
-      BUILD_TOOLSET: "v140_xp"
-      BUILD_DIR: "build64"
-      PYTHON_VERSION: "3.4"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python35"
-      BUILD_ENV: "Visual Studio 14"
-      BUILD_DIR: "build"
-      PYTHON_VERSION: "3.5"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python35-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
-      BUILD_DIR: "build64"
-      PYTHON_VERSION: "3.5"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python36"
-      BUILD_ENV: "Visual Studio 14"
-      BUILD_DIR: "build"
-      PYTHON_VERSION: "3.6"
-      NP_VERSION: "1.11.3"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python36-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
-      BUILD_DIR: "build64"
-      PYTHON_VERSION: "3.6"
-      NP_VERSION: "1.11.3"
       ENABLE_CONTRIB: 0
 
     - PYTHON: "C:/Python27"
-      BUILD_ENV: "Visual Studio 14"
-      BUILD_TOOLSET: "v140_xp"
-      BUILD_DIR: "build"
-      PYTHON_VERSION: "2.7"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python27-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
-      BUILD_TOOLSET: "v140_xp"
-      BUILD_DIR: "build64"
-      PYTHON_VERSION: "2.7"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python34"
-      BUILD_ENV: "Visual Studio 14"
-      BUILD_TOOLSET: "v140_xp"
-      BUILD_DIR: "build"
-      PYTHON_VERSION: "3.4"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python34-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
-      BUILD_TOOLSET: "v140_xp"
-      BUILD_DIR: "build64"
-      PYTHON_VERSION: "3.4"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python35"
-      BUILD_ENV: "Visual Studio 14"
-      BUILD_DIR: "build"
-      PYTHON_VERSION: "3.5"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python35-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
-      BUILD_DIR: "build64"
-      PYTHON_VERSION: "3.5"
-      NP_VERSION: "1.11.1"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python36"
-      BUILD_ENV: "Visual Studio 14"
-      BUILD_DIR: "build"
-      PYTHON_VERSION: "3.6"
-      NP_VERSION: "1.11.3"
       ENABLE_CONTRIB: 1
 
     - PYTHON: "C:/Python36-x64"
-      BUILD_ENV: "Visual Studio 14 Win64"
-      BUILD_DIR: "build64"
-      PYTHON_VERSION: "3.6"
-      NP_VERSION: "1.11.3"
       ENABLE_CONTRIB: 1
 
-install:
+build_script:
 - cmd: >-
 
-    git submodule update --init --recursive
-
-    C:\Python35\python.exe find_version.py
-
-    "%PYTHON%/python.exe" -m pip install --upgrade pip
-
-    "%PYTHON%/python.exe" -m pip install -r requirements.txt
-
-    "%PYTHON%/python.exe" -m pip install "numpy==%NP_VERSION%"
-
-build_script:
-- appveyor\build.cmd
+    "%PYTHON%/python.exe" setup.py bdist_wheel
 
 before_test:
 - cmd: >-
 
-    cd ..
+    cd %APPVEYOR_BUILD_FOLDER%
+    
+    if %ENABLE_CONTRIB% EQU 1 (set PACKAGE_NAME=opencv-contrib-python) else (set PACKAGE_NAME=opencv-python)
 
-    if %ENABLE_CONTRIB% EQU 0 ("%PYTHON%/python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-python) else ("%PYTHON%/python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ opencv-contrib-python)
+    "%PYTHON%/python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ %PACKAGE_NAME%
 
 test_script:
 - cmd: >-
@@ -160,9 +79,14 @@ artifacts:
 - path: dist\*.whl
   name: wheels
 
+before_deploy:
+- cmd: >-
+
+    "%PYTHON%/python.exe" -m pip install twine
+  
 deploy_script:
 - cd %APPVEYOR_BUILD_FOLDER%
 
-- if %ENABLE_CONTRIB% EQU 0 (echo "This is default build. Deplyoment will be done to to PyPI entry opencv-python.") else (echo "This is contrib build. Deplyoment will be done to to PyPI entry opencv-contrib-python.")
+- if %ENABLE_CONTRIB% EQU 0 (echo "This is a default build. Deployment will be done to PyPI entry opencv-python.") else (echo "This is a contrib build. Deployment will be done to PyPI entry opencv-contrib-python.")
 
 - if "%APPVEYOR_REPO_TAG%"=="true" ("%PYTHON%/python.exe" -m twine upload -u %USER% -p %PASS% --skip-existing dist/opencv*) else (echo "Tag not set, deployment skipped.")
