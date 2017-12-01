@@ -1,20 +1,31 @@
+# No 3rd-party modules here, see "3rd-party" note below
 import io, os, os.path, sys, runpy, subprocess, re, sysconfig
-
-import pip, pip.vcs.git
 
 
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    build_contrib = get_build_contrib()
+    # Only import 3rd-party modules after having installed all the build dependencies:
+    # any of them, or their dependencies, can be updated during that process,
+    # leading to version conflicts
+    numpy_version = get_or_install("numpy", "1.11.3" if sys.version_info[:2] >= (3, 6) else "1.11.1")
+    get_or_install("scikit-build")
+    import skbuild
+    if os.path.isdir('.git'):
+        import pip.vcs.git
+        pip.vcs.git.Git().update_submodules('.')
+        del pip
 
-    # in case of sdist
-    if os.path.isdir('./.git'): pip.vcs.git.Git().update_submodules('.')
+
+    # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
+    x64 = sys.maxsize>2**32
+
+    build_contrib = get_build_contrib()
 
     package_name = "opencv-contrib-python" if build_contrib else "opencv-python"
     long_description = io.open('README_CONTRIB.rst' if build_contrib else 'README.rst', encoding="utf-8").read()
     package_version = get_opencv_version()
-    numpy_version = get_or_install("numpy", "1.11.3" if sys.version_info[:2] >= (3, 6) else "1.11.1")
+
     package_data = \
         {'cv2':
             ['*%s' % sysconfig.get_config_var('SO')] + (['*.dll'] if os.name == 'nt' else []) +
@@ -25,26 +36,33 @@ def main():
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = \
         {'cv2':
-                [r'bin/opencv_ffmpeg\d{3}%s\.dll' %
-                    # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
-                    ('_64' if sys.maxsize>2**32 else ''),
-                 'python/[^/]+/[^/]+/cv2%s' % sysconfig.get_config_var('SO')]
-
+            sum([
+                ([r'bin/opencv_ffmpeg\d{3}%s\.dll' %
+                    ('_64' if x64 else '')] if os.name == 'nt' else []
+                ),
+                # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/. What gives?
+                ['python/([^/]+)/{1,2}cv2%(arch)s%(ext)s' % {
+                    'arch':  (('\\.cp%d%d-[^.]+' % sys.version_info[:2])
+                               if sys.version_info[:2] >= (3, 5) else ''),	
+                    'ext':   re.escape(sysconfig.get_config_var('SO'))
+                    }
+                ]
+            ],[])
          }
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = \
         {'cv2':
-             ['LICENSE.txt', 'LICENSE-3RD-PARTY.txt']
-        }
+            ['LICENSE.txt', 'LICENSE-3RD-PARTY.txt']
+         }
 
-    cmake_source_dir="opencv"
+    cmake_source_dir = "opencv"
     cmake_args = ([
-        "-G", "Visual Studio 14" + (" Win64" if sys.maxsize>2**32 else ''),
-        "-T", "v140_xp" if sys.version_info[:2] <= (3, 4) else "v140"
+        "-G", "Visual Studio 14" + (" Win64" if x64 else '')
     ] if os.name == 'nt' else []) + \
     [
         # No need to specify Python paths, skbuild takes care of that
+        "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
         #  and skbuild bails out on seeing that
@@ -56,16 +74,18 @@ def main():
         "-DBUILD_PERF_TESTS=OFF",
         "-DBUILD_DOCS=OFF"
     ] + \
-    ([ "-DOPENCV_EXTRA_MODULES_PATH=" + "opencv_contrib/modules" ] if build_contrib else [])
+    ([ "-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules") ]
+       if build_contrib else [])
+    
 
+    # ABI config variables are introduced in PEP 425
     if sys.version_info[:2] < (3, 2):
         import warnings
-        # ABI config variables are introduced in PEP 425
-        warnings.filterwarnings('ignore', r"Config variable '[^']+' is unset, Python ABI tag may be incorrect",
+        warnings.filterwarnings('ignore', r"Config variable '[^']+' is unset, "
+                                          r"Python ABI tag may be incorrect",
                                 category=RuntimeWarning)
+        del warnings
 
-    get_or_install("scikit-build")
-    import skbuild
 
     # works via side effect
     RearrangeCMakeOutput(rearrange_cmake_output_data,
@@ -108,6 +128,7 @@ def main():
         cmake_source_dir=cmake_source_dir,
           )
 
+
 class RearrangeCMakeOutput(object):
     """Patch SKBuild logic to only take files related to the Python package
     and construct a file hierarchy that SKBuild expects (see below)"""
@@ -117,7 +138,7 @@ class RearrangeCMakeOutput(object):
     # into an instance method on attr assignment
     import argparse
     wraps = argparse.Namespace(
-        _classify_files = None)
+        _classify_files=None)
     del argparse
 
     package_paths_re = None
@@ -163,17 +184,21 @@ class RearrangeCMakeOutput(object):
                                          cmake_install_reldir)
         install_relpaths = [os.path.relpath(p, cmake_install_dir) for p in install_paths]
         fslash_install_relpaths = [p.replace(os.path.sep, '/') for p in install_relpaths]
-        relpaths_zip = zip(fslash_install_relpaths, install_relpaths)
+        relpaths_zip = list(zip(fslash_install_relpaths, install_relpaths))
+        del install_relpaths, fslash_install_relpaths
+
         final_install_relpaths = []
 
         print("Copying files from CMake output")
         for package_name, relpaths_re in cls.package_paths_re.items():
             package_dest_reldir = package_name.replace('.', os.path.sep)
             for relpath_re in relpaths_re:
+                found = False
                 r = re.compile(relpath_re+'$')
                 for fslash_relpath, relpath in relpaths_zip:
                     m = r.match(fslash_relpath)
                     if not m: continue
+                    found = True
                     new_install_relpath = os.path.join(
                         package_dest_reldir,
                         os.path.basename(relpath))
@@ -183,9 +208,11 @@ class RearrangeCMakeOutput(object):
                         hide_listing=False)
                     final_install_relpaths.append(new_install_relpath)
                     del m, fslash_relpath, new_install_relpath
-                del r
+                else:
+                    if not found: raise Exception("Not found: '%s'" % relpath_re)
+                del r, found
 
-        del fslash_install_relpaths, install_relpaths, relpaths_zip
+        del relpaths_zip
 
         print("Copying files from non-default sourcetree locations")
         for package_name, paths in cls.files_outside_package.items():
@@ -251,15 +278,21 @@ def get_build_contrib():
 
 
 def get_or_install(name, version = None):
-    """If numpy is already installed, build against it. If not, install"""
+    """If a package is already installed, build against it. If not, install"""
+    # Do not import 3rd-party modules into the current process
+    import json
+    js_packages = json.loads(
+        subprocess.check_output(
+        [sys.executable, "-m", "pip", "list", "--format=json"])
+        .decode('ascii'))  #valid names & versions are ASCII as per PEP 440
     try:
-        [package] = (package for package in pip.get_installed_distributions()
-                     if package.key == name)
+        [package] = (package for package in js_packages
+                     if package['name'] == name)
     except ValueError:
         install_packages("%s==%s"%(name, version) if version else name)
         return version
     else:
-        return package.version
+        return package['version']
 
 
 # This creates a list which is empty but returns a length of 1.

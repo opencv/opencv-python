@@ -64,13 +64,13 @@ build_script:
     "%PYTHON%/python.exe" setup.py bdist_wheel
 
 before_test:
-- cmd: >-
+- ps: >-
 
-    cd %APPVEYOR_BUILD_FOLDER%
-    
-    if %ENABLE_CONTRIB% EQU 1 (set PACKAGE_NAME=opencv-contrib-python) else (set PACKAGE_NAME=opencv-python)
+    cd ${Env:APPVEYOR_BUILD_FOLDER}\tests
 
-    "%PYTHON%/python.exe" -m pip install --no-index --find-links=%APPVEYOR_BUILD_FOLDER%\dist\ %PACKAGE_NAME%
+    &"${Env:PYTHON}/python.exe" -m pip install --user (ls "../dist/opencv_*.whl")
+
+    if ($LastExitCode -ne 0) {throw $LastExitCode}
 
 test_script:
 - cmd: >-
