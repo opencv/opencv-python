@@ -54,6 +54,10 @@ environment:
     - PYTHON: "C:/Python36-x64"
       ENABLE_CONTRIB: 1
 
+matrix:
+    fast_finish: true
+
+      
 build_script:
 - cmd: >-
 
