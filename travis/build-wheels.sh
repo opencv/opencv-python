@@ -26,6 +26,11 @@ echo "Python numpy version: $PYTHON_NUMPY_VERSION"
 # Begin build
 echo 'Begin build'
 cd opencv
+
+# FFmpeg version is too new.
+# This is a temporary fix from upstream until we have a new OpenCV release.
+git cherry-pick b1d208891b9f
+
 mkdir build
 
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/root/ffmpeg_build/lib/pkgconfig
