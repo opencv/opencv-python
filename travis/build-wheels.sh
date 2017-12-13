@@ -28,6 +28,8 @@ echo 'Begin build'
 cd opencv
 mkdir build
 
+ffmpeg -L
+
 export QTDIR=/opt/Qt4.8.7
 export PATH=$QTDIR/bin:$PATH
 
