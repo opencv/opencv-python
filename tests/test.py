@@ -1,5 +1,6 @@
 import unittest
-import os
+import sys
+
 
 class OpenCVTest(unittest.TestCase):
     """ Simple functionality tests. """
@@ -10,8 +11,8 @@ class OpenCVTest(unittest.TestCase):
 
     def test_video_capture(self):
 
-        if os.name != 'posix':
-            import cv2
+        if sys.platform != 'darwin':
 
+            import cv2
             cap = cv2.VideoCapture("SampleVideo_1280x720_1mb.mp4")
             self.assertTrue(cap.isOpened())
