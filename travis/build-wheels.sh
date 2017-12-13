@@ -28,6 +28,7 @@ echo 'Begin build'
 cd opencv
 mkdir build
 
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/root/ffmpeg_build/lib/pkgconfig
 export PATH=~/bin:$PATH
 
 ffmpeg -L
