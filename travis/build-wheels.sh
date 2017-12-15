@@ -33,6 +33,7 @@ git cherry-pick b1d208891b9f
 
 mkdir build
 
+export LDFLAGS=-L/root/ffmpeg_build/lib
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/root/ffmpeg_build/lib/pkgconfig
 export PATH=~/bin:$PATH
 
