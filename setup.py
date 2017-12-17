@@ -41,7 +41,7 @@ def main():
                     ('_64' if x64 else '')] if os.name == 'nt' else []
                 ),
                 # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/. What gives?
-                ['python/([^/]+)/{1,2}cv2%(arch)s%(ext)s' % {
+                ['python/([^/]+/){1,2}cv2%(arch)s%(ext)s' % {
                     'arch':  (('\\.cp%d%d-[^.]+' % sys.version_info[:2])
                                if sys.version_info[:2] >= (3, 5) else ''),	
                     'ext':   re.escape(sysconfig.get_config_var('SO'))

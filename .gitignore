@@ -63,3 +63,5 @@ target/
 
 #PyCharm
 /.idea
+/contrib.enabled
+/cv_version.py
