@@ -212,21 +212,17 @@ before_install:
     - echo $ENABLE_CONTRIB > contrib.enabled
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
-    - python find_version.py
-    - cp LICENSE*.txt cv2/
-    - cp opencv/data/haarcascades/*.xml cv2/data/
+    - set -x
     - before_install
 
 install:
     # Maybe get and clean and patch source
-    - clean_code $REPO_DIR $BUILD_COMMIT
-    - travis_wait 120 build_wheel $REPO_DIR $PLAT
+    #- clean_code $REPO_DIR $BUILD_COMMIT
+    - build_wheel $REPO_DIR $PLAT
 
 script:
     - install_run $PLAT
 
 after_success:
     # Upload wheels to pypi
-    - pip install twine
-    - if [ -n "$TRAVIS_TAG" ]; then twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*; else echo "Tag not set, deployment skipped."; fi
     - source travis/deploy.sh
