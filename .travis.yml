@@ -29,6 +29,12 @@ services: docker
 # https://docs.travis-ci.com/user/reference/trusty/
 dist: trusty
 
+# Save time, setup.py updates submodules anyway
+# https://docs.travis-ci.com/user/customizing-the-build/#Git-Clone-Depth
+git:
+    depth: 10
+    submodules: false
+
 matrix:
   fast_finish: true
   exclude:
@@ -210,6 +216,7 @@ matrix:
 
 before_install:
     - echo $ENABLE_CONTRIB > contrib.enabled
+    - git submodule update --init multibuild
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - set -x
