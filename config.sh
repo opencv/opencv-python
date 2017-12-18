@@ -1,6 +1,7 @@
 #!/bin/bash
 #Sourced by multibuild scripts. See multibuild/README.rst
 echo "===  Loading config.sh  === "
+set -x
 
 if [ -n "$IS_OSX" ]; then
   echo "    > OSX environment "
