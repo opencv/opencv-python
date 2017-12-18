@@ -29,11 +29,10 @@ services: docker
 # https://docs.travis-ci.com/user/reference/trusty/
 dist: trusty
 
-# Save time, setup.py updates submodules anyway
+# Save some time, setup.py updates submodules as needed anyway
 # https://docs.travis-ci.com/user/customizing-the-build/#Git-Clone-Depth
-git:
-    depth: 10
-    submodules: false
+#git:
+#    submodules: false
 
 matrix:
   fast_finish: true
