@@ -11,8 +11,6 @@ class OpenCVTest(unittest.TestCase):
 
     def test_video_capture(self):
 
-        if sys.platform != 'darwin':
-
-            import cv2
-            cap = cv2.VideoCapture("SampleVideo_1280x720_1mb.mp4")
-            self.assertTrue(cap.isOpened())
+        import cv2
+        cap = cv2.VideoCapture("SampleVideo_1280x720_1mb.mp4")
+        self.assertTrue(cap.isOpened())
