@@ -216,16 +216,17 @@ matrix:
         - ENABLE_CONTRIB=1
 
 before_install:
-    - echo $ENABLE_CONTRIB > contrib.enabled
     - git submodule update --init multibuild
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - source multibuild_customize.sh
+    # deletes everything from source dir
+    #- clean_code $REPO_DIR $BUILD_COMMIT
+    - echo $ENABLE_CONTRIB > contrib.enabled
     - before_install
 
 install:
     # Maybe get and clean and patch source
-    #- clean_code $REPO_DIR $BUILD_COMMIT
     - build_wheel $REPO_DIR $PLAT
 
 script:
