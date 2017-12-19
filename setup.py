@@ -5,18 +5,29 @@ import io, os, os.path, sys, runpy, subprocess, re, sysconfig
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+    # These are neede for source fetching
+    cmake_source_dir = "opencv"
+    build_contrib = get_build_contrib()
+    
+    
     # Only import 3rd-party modules after having installed all the build dependencies:
     # any of them, or their dependencies, can be updated during that process,
     # leading to version conflicts
     numpy_version = get_or_install("numpy", "1.11.3" if sys.version_info[:2] >= (3, 6) else "1.11.1")
     get_or_install("scikit-build")
     import skbuild
+    if os.path.isdir('.git'):
+        import pip.vcs.git
+        g = pip.vcs.git.Git()
+        g.run_command(["submodule", "update", "--init", "--recursive", cmake_source_dir])
+        if build_contrib:
+            g.run_command(["submodule", "update", "--init", "--recursive", "opencv_contrib"])
+        del g, pip
 
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     x64 = sys.maxsize>2**32
 
-    build_contrib = get_build_contrib()
 
     package_name = "opencv-contrib-python" if build_contrib else "opencv-python"
     long_description = io.open('README_CONTRIB.rst' if build_contrib else 'README.rst', encoding="utf-8").read()
@@ -52,7 +63,6 @@ def main():
             ['LICENSE.txt', 'LICENSE-3RD-PARTY.txt']
          }
 
-    cmake_source_dir = "opencv"
     cmake_args = ([
         "-G", "Visual Studio 14" + (" Win64" if x64 else '')
     ] if os.name == 'nt' else [ "-G", "Unix Makefiles" ]) + \
@@ -83,14 +93,6 @@ def main():
                                           r"Python ABI tag may be incorrect",
                                 category=RuntimeWarning)
         del warnings
-
-    if os.path.isdir('.git'):
-        import pip.vcs.git
-        g = pip.vcs.git.Git()
-        g.run_command("submodule", "update", "--init", "--recursive", cmake_source_dir)
-        if build_contrib:
-            g.run_command("submodule", "update", "--init", "--recursive", "opencv_contrib")
-        del g, pip
 
 
     # works via side effect
