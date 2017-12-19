@@ -59,9 +59,9 @@ def main():
     cmake_source_dir = "opencv"
     cmake_args = ([
         "-G", "Visual Studio 14" + (" Win64" if x64 else '')
-    ] if os.name == 'nt' else []) + \
+    ] if os.name == 'nt' else [ "-G", "Unix Makefiles" ]) + \
     [
-        # No need to specify Python paths, skbuild takes care of that
+        # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts for Py3
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
@@ -75,7 +75,9 @@ def main():
         "-DBUILD_DOCS=OFF"
     ] + \
     ([ "-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules") ]
-       if build_contrib else [])
+       if build_contrib else []) + \
+    ([  #Some OSX LAPACK fns are incompatible, see https://github.com/skvark/opencv-python/issues/21
+        "-DWITH_LAPACK=OFF" ] if sys.platform == 'darwin' else [])
     
 
     # ABI config variables are introduced in PEP 425
