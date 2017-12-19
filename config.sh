@@ -1,6 +1,13 @@
 #!/bin/bash
 #Sourced by multibuild scripts. See multibuild/README.rst
 echo "===  Loading config.sh  === "
+
+# To see build progress
+function build_wheel {
+    build_bdist_wheel $@
+}
+
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 set -x
 
 if [ -n "$IS_OSX" ]; then
