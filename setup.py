@@ -11,10 +11,6 @@ def main():
     numpy_version = get_or_install("numpy", "1.11.3" if sys.version_info[:2] >= (3, 6) else "1.11.1")
     get_or_install("scikit-build")
     import skbuild
-    if os.path.isdir('.git'):
-        import pip.vcs.git
-        pip.vcs.git.Git().update_submodules('.')
-        del pip
 
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
@@ -87,6 +83,14 @@ def main():
                                           r"Python ABI tag may be incorrect",
                                 category=RuntimeWarning)
         del warnings
+
+    if os.path.isdir('.git'):
+        import pip.vcs.git
+        g = pip.vcs.git.Git()
+        g.run_command("submodule", "update", "--init", "--recursive", cmake_source_dir)
+        if build_contrib:
+            g.run_command("submodule", "update", "--init", "--recursive", "opencv_contrib")
+        del g, pip
 
 
     # works via side effect
