@@ -18,13 +18,23 @@ fi
 
 function pre_build {
   echo "Starting pre-build"
+  set -e
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
     source travis/build-wheels-osx.sh
   else
     echo "Running for linux"
-    source /io/travis/build-wheels.sh
+    #skbuild tries just "cmake"
+    #wget --no-check-certificate https://cmake.org/files/v3.10/cmake-3.10.1-Linux-x86_64.tar.gz
+    #tar -xf cmake-3.10.1-Linux-x86_64.tar.gz -C /opt
+    #export PATH="/opt/cmake-3.10.1-Linux-x86_64/bin:$PATH"
+    #ls -l /usr/local/bin
+    #test -f /usr/local/bin/cmake || {
+    #    mkdir -p /usr/local/bin
+    #    cp -s "$(which cmake28)" /usr/local/bin/cmake; }
+    #source /io/travis/build-wheels.sh
+    #yum -y install cmake
   fi
 }
 
