@@ -8,8 +8,8 @@ def main():
     # These are neede for source fetching
     cmake_source_dir = "opencv"
     build_contrib = get_build_contrib()
-    
-    
+
+
     # Only import 3rd-party modules after having installed all the build dependencies:
     # any of them, or their dependencies, can be updated during that process,
     # leading to version conflicts
@@ -43,18 +43,16 @@ def main():
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = \
         {'cv2':
-            sum([
-                ([r'bin/opencv_ffmpeg\d{3}%s\.dll' %
-                    ('_64' if x64 else '')] if os.name == 'nt' else []
-                ),
-                # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
-                # Naming conventions vary so widely between versions and OSes
-                # had to give up on checking them.
-                ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {
-                    'ext':   re.escape(sysconfig.get_config_var('SO'))
-                    }
-                ]
-            ],[])
+            ([r'bin/opencv_ffmpeg\d{3}%s\.dll' %
+                ('_64' if x64 else '')] if os.name == 'nt' else []
+            ) + \
+            # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
+            # Naming conventions vary so widely between versions and OSes
+            # had to give up on checking them.
+            ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {
+                'ext':   re.escape(sysconfig.get_config_var('SO'))
+                }
+            ]
          }
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
@@ -65,13 +63,15 @@ def main():
 
     cmake_args = ([
         "-G", "Visual Studio 14" + (" Win64" if x64 else '')
-    ] if os.name == 'nt' else [ "-G", "Unix Makefiles" ]) + \
+    ] if os.name == 'nt' else [
+        "-G", "Unix Makefiles"  #don't make CMake try (and fail) Ninja first
+    ]) + \
     [
-        # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts for Py3
+        # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
-        #  and skbuild bails out on seeing that
+        # and skbuild bails out on seeing that
         "-DINSTALL_CREATE_DISTRIB=ON",
         # See opencv/CMakeLists.txt for options and defaults
         "-DBUILD_opencv_apps=OFF",
@@ -82,9 +82,14 @@ def main():
     ] + \
     ([ "-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules") ]
        if build_contrib else []) + \
-    ([  #Some OSX LAPACK fns are incompatible, see https://github.com/skvark/opencv-python/issues/21
-        "-DWITH_LAPACK=OFF" ] if sys.platform == 'darwin' else [])
-    
+    \
+    ([  "-DWITH_LAPACK=OFF" # Some OSX LAPACK fns are incompatible, see
+                            # https://github.com/skvark/opencv-python/issues/21
+     ] if sys.platform == 'darwin' else []) + \
+    ([  "-DWITH_QT=4",
+        "-DWITH_GTK=OFF"    #otherwise, it links against gthread-2.0 which is absent from manylinux1 test image
+     ] if sys.platform in ('darwin', 'linux2') else [])
+
 
     # ABI config variables are introduced in PEP 425
     if sys.version_info[:2] < (3, 2):
@@ -273,7 +278,6 @@ def get_opencv_version():
     from cv_version import opencv_version
     return opencv_version
 
-package_data[''] = ['*.xml']
 
 def get_build_contrib():
     build_contrib = False

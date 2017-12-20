@@ -1,5 +1,7 @@
 #!/bin/bash
-#Sourced by multibuild scripts. See multibuild/README.rst
+#Customize multibuild logic that is run after entering docker.
+#Sourced by docker_build_wrap.sh . Runs in Docker, so only the vars passed to `docker run' exist.
+#See multibuild/README.rst
 echo "===  Loading config.sh  === "
 
 # To see build progress
@@ -22,20 +24,15 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
-    source travis/build-wheels-osx.sh
+    #source travis/build-wheels-osx.sh
+    brew tap cartr/qt4
+    brew tap-pin cartr/qt4
+    brew install qt@4
   else
     echo "Running for linux"
-    #skbuild tries just "cmake"
-    #wget --no-check-certificate https://cmake.org/files/v3.10/cmake-3.10.1-Linux-x86_64.tar.gz
-    #tar -xf cmake-3.10.1-Linux-x86_64.tar.gz -C /opt
-    #export PATH="/opt/cmake-3.10.1-Linux-x86_64/bin:$PATH"
-    #ls -l /usr/local/bin
-    #test -f /usr/local/bin/cmake || {
-    #    mkdir -p /usr/local/bin
-    #    cp -s "$(which cmake28)" /usr/local/bin/cmake; }
     #source /io/travis/build-wheels.sh
-    #yum -y install cmake
   fi
+  qmake -query  
 }
 
 function run_tests {
