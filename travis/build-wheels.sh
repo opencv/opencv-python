@@ -33,23 +33,7 @@ git cherry-pick b1d208891b9f
 
 mkdir build
 
-export JPEG_INCLUDE_DIR="/opt/libjpeg-turbo/include"
-export JPEG_LIBRARY="/opt/libjpeg-turbo/lib32/libjpeg.a"
-
-MACHINE_TYPE=$(uname -m)
-if [[ ${MACHINE_TYPE} == 'x86_64' ]]; then
-  JPEG_LIBRARY="/opt/libjpeg-turbo/lib64/libjpeg.a"
-fi
-
-export LDFLAGS=-L/root/ffmpeg_build/lib
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/root/ffmpeg_build/lib/pkgconfig
-export PATH=~/bin:$PATH
-
 ffmpeg -L
-
-export QTDIR=/opt/Qt4.8.7
-export PATH=$QTDIR/bin:$PATH
-
 qmake -query
 
 if [[ $PYTHON_VERSION == 2* ]] && [[ $ENABLE_CONTRIB == 0 ]]; then
