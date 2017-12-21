@@ -203,6 +203,7 @@ before_install:
     - source multibuild/travis_steps.sh
     - python find_version.py
     - cp LICENSE*.txt cv2/
+    - cp opencv/data/haarcascades/*.xml cv2/data/
     - before_install
 
 install:

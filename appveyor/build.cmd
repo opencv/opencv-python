@@ -26,6 +26,7 @@ if %PYTHON_VERSION% LSS 3 xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\lib\
 
 xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\%BUILD_DIR%\bin\Release\*.dll" .\cv2 /I
 xcopy "%APPVEYOR_BUILD_FOLDER%\LICENSE*.txt" .\cv2 /I
+xcopy "%APPVEYOR_BUILD_FOLDER%\opencv\data\haarcascades\*.xml" .\cv2\data /I
 
 dir
 

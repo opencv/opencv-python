@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.dist import Distribution
 import pip
 import os
@@ -49,6 +49,7 @@ else:
     package_data['cv2'] = ['*.pyd', '*.dll']
 
 package_data['cv2'] += ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]
+package_data[''] = ['*.xml']
 
 """
 
@@ -80,7 +81,7 @@ setup(name=package_name,
       license='MIT',
       description='Wrapper package for OpenCV python bindings.',
       long_description=long_description,
-      packages=['cv2'],
+      packages=find_packages(),
       package_data=package_data,
       maintainer="Olli-Pekka Heinisuo",
       include_package_data=True,
