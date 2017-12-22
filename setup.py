@@ -19,10 +19,15 @@ def main():
     if os.path.isdir('.git'):
         import pip.vcs.git
         g = pip.vcs.git.Git()
-        g.run_command(["submodule", "update", "--init", "--recursive", cmake_source_dir])
+        use_depth = g.get_git_version() >= pip._vendor.packaging.version.Version("1.8.4")
+        g.run_command(["submodule", "update", "--init", "--recursive"] + \
+            (["--depth=1"] if use_depth else []) + \
+            [cmake_source_dir])
         if build_contrib:
-            g.run_command(["submodule", "update", "--init", "--recursive", "opencv_contrib"])
-        del g, pip
+            g.run_command(["submodule", "update", "--init", "--recursive"] + \
+            (["--depth=1"] if use_depth else []) + \
+            ["opencv_contrib"])
+        del g, pip, use_depth
 
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
