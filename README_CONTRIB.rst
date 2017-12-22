@@ -28,6 +28,10 @@ Installation and Usage
 
 ``import cv2``
 
+The package contains haarcascade files. ``cv2.data.haarcascades`` can be used as a shortcut to the data folder. For example:
+
+``cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")``
+
 5. Read `OpenCV documentation <http://docs.opencv.org/>`__
 
 6. Before opening a new issue, read the FAQ below and have a look at the other issues which are already open.
