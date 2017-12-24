@@ -16,6 +16,7 @@ def main():
     numpy_version = get_or_install("numpy", "1.11.3" if sys.version_info[:2] >= (3, 6) else "1.11.1")
     get_or_install("scikit-build")
     import skbuild
+    
     if os.path.isdir('.git'):
         import pip.vcs.git
         g = pip.vcs.git.Git()
@@ -27,7 +28,33 @@ def main():
             g.run_command(["submodule", "update", "--init", "--recursive"] + \
             (["--depth=1"] if use_depth else []) + \
             ["opencv_contrib"])
-        del g, pip, use_depth
+        del use_depth
+        
+        if sys.platform == 'linux2':
+            # Apply https://github.com/opencv/opencv/pull/10011
+            # until it's available in the release
+            ffmpeg_fix_sha = "b1d208891b9f6ae3968730b120a5d0dcbba679d0"
+            # https://stackoverflow.com/questions/3005392/how-can-i-tell-if-one-commit-is-a-descendant-of-another-commit
+            if g.run_command(["merge-base", ffmpeg_fix_sha, "HEAD"],
+                    cwd="opencv", show_stdout=False) != ffmpeg_fix_sha:
+                # Git bails out on commit if neither user.email nor local hostname
+                # is set 'cuz "user@localhost." is invalid as e-mail for it.
+                # USER and HOSTNAME are set by /etc/profile which isn't run for Docker build
+                # so can't use them.
+                if not subprocess.check_output(["hostname", "-d"]):
+                    USER = subprocess.check_output(["id", "-un"]).rstrip()
+                    HOSTNAME = subprocess.check_output(["hostname"]).rstrip()
+                    k,v = "user.email", "%s@%s.localdomain" % (USER, HOSTNAME)
+                    # we don't care if it's not set or set and empty
+                    if not g.run_command(["config", k], show_stdout=False, on_returncode='ignore'):
+                        g.run_command(["config", k, v], cwd="opencv")
+                    del USER,HOSTNAME,k,v
+                g.run_command(["cherry-pick", "b1d208891b9f6ae3968730b120a5d0dcbba679d0"], cwd="opencv")
+            else:
+                raise AssertionError("FFmpeg fix was incorporated into the selected release, remove the patching")
+            del ffmpeg_fix_sha
+            
+            del g, pip
 
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
