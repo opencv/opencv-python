@@ -94,6 +94,17 @@ def main():
     ([  "-DWITH_QT=4",
         "-DWITH_GTK=OFF"    #otherwise, it links against gthread-2.0 which is absent from manylinux1 test image
      ] if sys.platform in ('darwin', 'linux2') else [])
+    
+    if sys.platform == 'linux2':
+        cmake_args.append( "-DWITH_V4L=ON" )
+        cmake_args.append( "-DWITH_IPP=OFF" )   # https://github.com/opencv/opencv/issues/10411
+
+        if all(v in os.environ for v in ('JPEG_INCLUDE_DIR', 'JPEG_LIBRARY')):
+            cmake_args += [
+            "-DBUILD_JPEG=OFF",
+            "-DJPEG_INCLUDE_DIR=%s" % os.environ['JPEG_INCLUDE_DIR'],
+            "-DJPEG_LIBRARY=%s" % os.environ['JPEG_LIBRARY']
+            ]
 
 
     # ABI config variables are introduced in PEP 425
