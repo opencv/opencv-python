@@ -49,6 +49,7 @@ def main():
                     if not g.run_command(["config", k], show_stdout=False, on_returncode='ignore'):
                         g.run_command(["config", k, v], cwd="opencv")
                     del USER,HOSTNAME,k,v
+                # May break with shallow clone; don't care till that's an issue.
                 g.run_command(["cherry-pick", "b1d208891b9f6ae3968730b120a5d0dcbba679d0"], cwd="opencv")
             else:
                 raise AssertionError("FFmpeg fix was incorporated into the selected release, remove the patching")
@@ -65,10 +66,13 @@ def main():
     long_description = io.open('README_CONTRIB.rst' if build_contrib else 'README.rst', encoding="utf-8").read()
     package_version = get_opencv_version()
 
+    packages = ['cv2', 'cv2.data']
     package_data = \
         {'cv2':
             ['*%s' % sysconfig.get_config_var('SO')] + (['*.dll'] if os.name == 'nt' else []) +
-            ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]
+            ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"],
+         'cv2.data':
+            ["*.xml"]
          }
 
     # Files from CMake output to copy to package.
@@ -84,7 +88,9 @@ def main():
             ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {
                 'ext':   re.escape(sysconfig.get_config_var('SO'))
                 }
-            ]
+            ],
+         'cv2.data':
+            [r'share/OpenCV/haarcascades/.*\.xml']
          }
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
@@ -155,7 +161,7 @@ def main():
         license='MIT',
         description='Wrapper package for OpenCV python bindings.',
         long_description=long_description,
-        packages=['cv2'],
+        packages=packages,
         package_data=package_data,
         maintainer="Olli-Pekka Heinisuo",
         include_package_data=True,
@@ -330,7 +336,6 @@ def get_build_contrib():
         pass
 
     if not build_contrib:
-        print("Trying to read contrib enable flag from file...")
         try:
             build_contrib = bool(int(open("contrib.enabled").read(1)))
         except Exception:
