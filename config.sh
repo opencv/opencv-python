@@ -49,8 +49,10 @@ function run_tests {
       source ../travis/test-wheels.sh
     else
       echo "Running for linux"
-      #apt-get update
-      #apt-get -y install --fix-missing libglib2.0-0 libsm6
+      # https://github.com/matthew-brett/multibuild/issues/106
+      apt-get update
+      apt-get -y install --fix-missing libglib2.0-0 libsm6
+      
       cd /io/tests/
       source /io/travis/test-wheels.sh
     fi
