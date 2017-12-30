@@ -3,9 +3,10 @@
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 set -x
 REPO_DIR=$(dirname "${BASH_SOURCE[0]}")
-BUILD_COMMIT=$(git rev-parse HEAD)
 DOCKER_IMAGE='quay.io/skvark/manylinux_$plat'
 
+# https://github.com/matthew-brett/multibuild/pull/103
+# until it's available in release
 function build_multilinux {
     # Runs passed build commands in manylinux container
     #

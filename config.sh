@@ -9,9 +9,6 @@ function build_wheel {
     build_bdist_wheel $@
 }
 
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-set -x
-
 if [ -n "$IS_OSX" ]; then
   echo "    > OSX environment "
 else
@@ -57,3 +54,6 @@ function run_tests {
       source /io/travis/test-wheels.sh
     fi
 }
+
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x
