@@ -63,5 +63,7 @@ target/
 
 #PyCharm
 /.idea
+
+# Build temporary files
 /contrib.enabled
 /cv_version.py

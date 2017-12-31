@@ -1,6 +1,7 @@
 #!/bin/bash
 #Customize multibuild logic that is run after entering docker.
-#Sourced by docker_build_wrap.sh . Runs in Docker, so only the vars passed to `docker run' exist.
+#Sourced by docker_build_wrap.sh and docker_test_wrap.sh .
+#Runs in Docker, so only the vars passed to `docker run' exist.
 #See multibuild/README.rst
 echo "===  Loading config.sh  === "
 
@@ -21,29 +22,30 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
-    #source travis/build-wheels-osx.sh
+
+    echo 'Installing QT4'
     brew tap cartr/qt4
     brew tap-pin cartr/qt4
     brew install qt@4
+    echo '-----------------'
+    echo 'Installing FFmpeg'
+    brew install ffmpeg --without-x264 --without-xvid --without-gpl
+    brew info ffmpeg
+    echo '-----------------'
   else
     echo "Running for linux"
-    #source /io/travis/build-wheels.sh
   fi
   qmake -query  
 }
 
 function run_tests {
     # Runs tests on installed distribution from an empty directory
-    # python --version
-    # python -c 'import sys; import yourpackage; sys.exit(yourpackage.test())'
     echo "Run tests..."
     echo $PWD
-    ls -lh
 
     if [ -n "$IS_OSX" ]; then
       echo "Running for OS X"
       cd ../tests/
-      source ../travis/test-wheels.sh
     else
       echo "Running for linux"
       # https://github.com/matthew-brett/multibuild/issues/106
@@ -51,8 +53,18 @@ function run_tests {
       apt-get -y install --fix-missing libglib2.0-0 libsm6
       
       cd /io/tests/
-      source /io/travis/test-wheels.sh
     fi
+    
+    test_wheels
+}
+
+function test_wheels {
+    PYTHON=python$PYTHON_VERSION
+
+    echo "Starting tests..."
+
+    #Test package
+    $PYTHON -m unittest test
 }
 
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
