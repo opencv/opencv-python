@@ -48,10 +48,6 @@ function run_tests {
       cd ../tests/
     else
       echo "Running for linux"
-      # https://github.com/matthew-brett/multibuild/issues/106
-      apt-get update
-      apt-get -y install --fix-missing libglib2.0-0 libsm6
-      
       cd /io/tests/
     fi
     
