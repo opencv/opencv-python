@@ -23,13 +23,17 @@ function pre_build {
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
 
+    # For some reason, gt@4 and ffmpeg can be preinstalled in Travis Mac env
     echo 'Installing QT4'
-    brew tap cartr/qt4
-    brew tap-pin cartr/qt4
-    brew install qt@4
+    brew tap | grep -qxF cartr/qt4 || brew tap -v cartr/qt4
+    brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin -v cartr/qt4
+    brew list --versions qt@4 || brew install -v qt@4
     echo '-----------------'
     echo 'Installing FFmpeg'
-    brew install ffmpeg --without-x264 --without-xvid --without-gpl
+    # brew install does produce output regularly on a regular MacOS,
+    # but Travis doesn't see it for some reason
+    brew list --versions ffmpeg || \
+    travis_wait brew install -v ffmpeg --without-x264 --without-xvid --without-gpl
     brew info ffmpeg
     echo '-----------------'
   else
