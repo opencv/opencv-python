@@ -95,9 +95,9 @@ def main():
        if build_contrib else [])
        
     # OS-specific components
-    if sys.platform in ('darwin', 'linux2'):
+    if sys.platform == 'darwin' or sys.platform.startswith('linux'):
         cmake_args.append( "-DWITH_QT=4" )
-    if sys.platform == 'linux2':
+    if sys.platform.startswith('linux'):
         cmake_args.append( "-DWITH_V4L=ON" )
         if all(v in os.environ for v in ('JPEG_INCLUDE_DIR', 'JPEG_LIBRARY')):
             cmake_args += [
@@ -110,7 +110,7 @@ def main():
     if sys.platform == 'darwin':
         cmake_args.append("-DWITH_LAPACK=OFF")  # Some OSX LAPACK fns are incompatible, see
                                                 # https://github.com/skvark/opencv-python/issues/21
-    if sys.platform == 'linux2':
+    if sys.platform.startswith('linux'):
         cmake_args.append( "-DWITH_IPP=OFF" )   # https://github.com/opencv/opencv/issues/10411
 
 
