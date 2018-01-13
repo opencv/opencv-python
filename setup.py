@@ -63,7 +63,9 @@ def main():
                 }
             ],
          'cv2.data':
-            [r'share/OpenCV/haarcascades/.*\.xml']
+            [ # OPENCV_OTHER_INSTALL_PATH
+            ('etc' if os.name =='nt' else 'share/OpenCV')
+            + r'/haarcascades/.*\.xml']
          }
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
