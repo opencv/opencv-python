@@ -20,7 +20,7 @@ def main():
     if os.path.exists('.git'):
         import pip.vcs.git
         g = pip.vcs.git.Git()
-        use_depth = g.get_git_version() >= pip._vendor.packaging.version.Version("1.8.4")
+        use_depth = g.get_git_version() >= type(g.get_git_version())("1.8.4")
         g.run_command(["submodule", "update", "--init", "--recursive"] + \
             (["--depth=1"] if use_depth else []) + \
             [cmake_source_dir])
