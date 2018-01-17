@@ -192,6 +192,7 @@ matrix:
 # The first line is printed in the folding header in Travis output
 before_install: |
     # Check out and prepare the source
+    set -e
     git submodule update --init --depth=1 multibuild
     source multibuild/common_utils.sh
     # https://github.com/matthew-brett/multibuild/issues/116
