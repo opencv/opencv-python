@@ -193,7 +193,7 @@ matrix:
 before_install: |
     # Check out and prepare the source
     set -e
-    git submodule update --init --depth=1 multibuild
+    git submodule update --init multibuild
     source multibuild/common_utils.sh
     # https://github.com/matthew-brett/multibuild/issues/116
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
