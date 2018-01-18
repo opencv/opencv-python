@@ -209,7 +209,11 @@ before_install:
 install:
     # Maybe get and clean and patch source
     - clean_code $REPO_DIR $BUILD_COMMIT
-    - travis_wait 120 build_wheel $REPO_DIR $PLAT
+    # Output something every 5 minutes or Travis kills the job after 10 minutes
+    - while sleep 300; do echo "=====[ $SECONDS seconds still running ]====="; done &
+    - build_wheel $REPO_DIR $PLAT
+    # Killing background sleep loop
+    - kill %1
 
 script:
     - install_run $PLAT
