@@ -11,10 +11,6 @@ This enables super fast (usually < 10 seconds) OpenCV installation for Python.
 
 If you need only OpenCV Python bindings, no separate OpenCV installation is required.
 
-**IMPORTANT NOTE**
-
-MacOS and Linux packages do not support video related functionality (not compiled with FFmpeg).
-
 Installation and Usage
 ----------------------
 
@@ -31,6 +27,10 @@ Installation and Usage
 4. Import the package:
 
 ``import cv2``
+
+The package contains haarcascade files. ``cv2.data.haarcascades`` can be used as a shortcut to the data folder. For example:
+
+``cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")``
 
 5. Read `OpenCV documentation <http://docs.opencv.org/>`__
 
@@ -49,7 +49,7 @@ A: The wheel package format and manylinux builds are pretty new things. Most lik
 
 **Q: I need contrib modules?**
 
-A: Please install `opencv-contrib-python <https://pypi.python.org/pypi/opencv-contrib-python>`__ instead. However, note that commercial usage might be restricted in some countries since the contrib modules contain some non-free/patented algorithms.
+A: Please install `opencv-contrib-python <https://pypi.python.org/pypi/opencv-contrib-python>`__ instead. However, note that commercial usage might be restricted in some countries since the contrib modules might contain some non-free/patented algorithms.
 
 **Q: Import fails on Windows to some DLL load error?**
 
@@ -60,12 +60,6 @@ See also `this issue <https://github.com/skvark/opencv-python/issues/36>`__ if y
 **Q: I have some other import errors?**
 
 A: Make sure you have removed old manual installations of OpenCV Python bindings (cv2.so or cv2.pyd in site-packages).
-
-**Q: Why I can't open video files on GNU/Linux distribution X or on macOS?**
-
-A: OpenCV video I/O depends heavily on FFmpeg. Manylinux and macOS OpenCV binaries are not compiled against it.
-The purpose of these packages is to provide as easy as possible installation experience for OpenCV Python bindings and they should work directly out-of-the-box.
-Adding FFmpeg as an additional dependency without a "universal" FFmpeg build (e.g. LGPL licensed build like in the Windows wheels) the goal is considerably harder to achieve. This might change in the future.
 
 Documentation for opencv-python
 -------------------------------
@@ -139,7 +133,7 @@ OpenCV itself is available under `3-clause BSD
 License <https://github.com/opencv/opencv/blob/master/LICENSE>`__
 (`LICENSE-3RD-PARTY.txt <https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt>`__).
 
-Windows wheels ship with `FFmpeg <http://ffmpeg.org>`__ licensed under the `LGPLv2.1 <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>`__.
+All wheels ship with `FFmpeg <http://ffmpeg.org>`__ licensed under the `LGPLv2.1 <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>`__.
 
 Linux and MacOS wheels ship with `Qt 4.8.7 <http://doc.qt.io/qt-4.8/lgpl.html>`__ licensed under the `LGPLv2.1 <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>`__.
 

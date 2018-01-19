@@ -2,7 +2,7 @@ env:
     global:
         - REPO_DIR=opencv
         # Commit from opencv that you want to build
-        - BUILD_COMMIT=4af3ca4e4d7be246a49d751a79c6392e848ac2aa
+        - BUILD_COMMIT=6d4f66472e14b29b8e1623859cfebfdc67f677c3
         # pip dependencies to _build_ your project
         - BUILD_DEPENDS="numpy==1.11.1"
         # pip dependencies to _test_ your project.  Include any dependencies
@@ -203,6 +203,7 @@ before_install:
     - source multibuild/travis_steps.sh
     - python find_version.py
     - cp LICENSE*.txt cv2/
+    - cp opencv/data/haarcascades/*.xml cv2/data/
     - before_install
 
 install:

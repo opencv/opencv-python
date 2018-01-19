@@ -10,9 +10,15 @@ echo 'PIP and brew installs'
 
 pip install "$BUILD_DEPENDS"
 
+echo 'Installing QT4'
 brew tap cartr/qt4
 brew tap-pin cartr/qt4
 brew install qt@4
+echo '-----------------'
+echo 'Installing FFmpeg'
+brew install ffmpeg --without-x264 --without-xvid --without-gpl
+brew info ffmpeg
+echo '-----------------'
 
 qmake -query
 
@@ -113,13 +119,13 @@ echo 'Begin build'
 
 if [[ $PYTHON_VERSION == 2* ]]; then
   echo 'Build for Py2'
-  make -j8 opencv_python2
+  make -j2 opencv_python2
 
 fi
 
 if [[ $PYTHON_VERSION == 3* ]]; then
   echo 'Build for Py3'
-  make -j8 opencv_python3
+  make -j2 opencv_python3
 
 fi
 
