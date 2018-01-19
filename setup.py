@@ -5,49 +5,67 @@ import io, os, os.path, sys, runpy, subprocess, re, sysconfig
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+    # These are neede for source fetching
+    cmake_source_dir = "opencv"
+    build_contrib = get_build_contrib()
+
+
     # Only import 3rd-party modules after having installed all the build dependencies:
     # any of them, or their dependencies, can be updated during that process,
     # leading to version conflicts
     numpy_version = get_or_install("numpy", "1.11.3" if sys.version_info[:2] >= (3, 6) else "1.11.1")
     get_or_install("scikit-build")
     import skbuild
-    if os.path.isdir('.git'):
+    
+    if os.path.exists('.git'):
         import pip.vcs.git
-        pip.vcs.git.Git().update_submodules('.')
-        del pip
+        g = pip.vcs.git.Git()
+        use_depth = g.get_git_version() >= type(g.get_git_version())("1.8.4")
+        g.run_command(["submodule", "update", "--init", "--recursive"] + \
+            (["--depth=1"] if use_depth else []) + \
+            [cmake_source_dir])
+        if build_contrib:
+            g.run_command(["submodule", "update", "--init", "--recursive"] + \
+            (["--depth=1"] if use_depth else []) + \
+            ["opencv_contrib"])
+        del use_depth, g, pip
 
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     x64 = sys.maxsize>2**32
 
-    build_contrib = get_build_contrib()
 
     package_name = "opencv-contrib-python" if build_contrib else "opencv-python"
     long_description = io.open('README_CONTRIB.rst' if build_contrib else 'README.rst', encoding="utf-8").read()
     package_version = get_opencv_version()
 
+    packages = ['cv2', 'cv2.data']
     package_data = \
         {'cv2':
             ['*%s' % sysconfig.get_config_var('SO')] + (['*.dll'] if os.name == 'nt' else []) +
-            ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]
+            ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"],
+         'cv2.data':
+            ["*.xml"]
          }
 
     # Files from CMake output to copy to package.
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = \
         {'cv2':
-            sum([
-                ([r'bin/opencv_ffmpeg\d{3}%s\.dll' %
-                    ('_64' if x64 else '')] if os.name == 'nt' else []
-                ),
-                # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
-                # Naming conventions vary so widely between versions and OSes
-                # had to give up on checking them.
-                ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {
-                    'ext':   re.escape(sysconfig.get_config_var('SO'))
-                    }
-                ]
-            ],[])
+            ([r'bin/opencv_ffmpeg\d{3}%s\.dll' %
+                ('_64' if x64 else '')] if os.name == 'nt' else []
+            ) + \
+            # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
+            # Naming conventions vary so widely between versions and OSes
+            # had to give up on checking them.
+            ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {
+                'ext':   re.escape(sysconfig.get_config_var('SO'))
+                }
+            ],
+         'cv2.data':
+            [ # OPENCV_OTHER_INSTALL_PATH
+            ('etc' if os.name =='nt' else 'share/OpenCV')
+            + r'/haarcascades/.*\.xml']
          }
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
@@ -56,16 +74,17 @@ def main():
             ['LICENSE.txt', 'LICENSE-3RD-PARTY.txt']
          }
 
-    cmake_source_dir = "opencv"
     cmake_args = ([
         "-G", "Visual Studio 14" + (" Win64" if x64 else '')
-    ] if os.name == 'nt' else []) + \
+    ] if os.name == 'nt' else [
+        "-G", "Unix Makefiles"  #don't make CMake try (and fail) Ninja first
+    ]) + \
     [
-        # No need to specify Python paths, skbuild takes care of that
+        # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
-        #  and skbuild bails out on seeing that
+        # and skbuild bails out on seeing that
         "-DINSTALL_CREATE_DISTRIB=ON",
         # See opencv/CMakeLists.txt for options and defaults
         "-DBUILD_opencv_apps=OFF",
@@ -76,7 +95,27 @@ def main():
     ] + \
     ([ "-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules") ]
        if build_contrib else [])
-    
+       
+    # OS-specific components
+    if sys.platform == 'darwin' or sys.platform.startswith('linux'):
+        cmake_args.append( "-DWITH_QT=4" )
+    if sys.platform.startswith('linux'):
+        cmake_args.append( "-DWITH_V4L=ON" )
+        if all(v in os.environ for v in ('JPEG_INCLUDE_DIR', 'JPEG_LIBRARY')):
+            cmake_args += [
+            "-DBUILD_JPEG=OFF",
+            "-DJPEG_INCLUDE_DIR=%s" % os.environ['JPEG_INCLUDE_DIR'],
+            "-DJPEG_LIBRARY=%s" % os.environ['JPEG_LIBRARY']
+            ]
+            
+    # Turn off broken components
+    if sys.platform == 'darwin':
+        cmake_args.append("-DWITH_LAPACK=OFF")  # Some OSX LAPACK fns are incompatible, see
+                                                # https://github.com/skvark/opencv-python/issues/21
+    if sys.platform.startswith('linux'):
+        cmake_args.append( "-DWITH_IPP=OFF" )   # https://github.com/opencv/opencv/issues/10411
+
+
 
     # ABI config variables are introduced in PEP 425
     if sys.version_info[:2] < (3, 2):
@@ -99,7 +138,7 @@ def main():
         license='MIT',
         description='Wrapper package for OpenCV python bindings.',
         long_description=long_description,
-        packages=['cv2'],
+        packages=packages,
         package_data=package_data,
         maintainer="Olli-Pekka Heinisuo",
         include_package_data=True,

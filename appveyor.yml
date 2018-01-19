@@ -59,24 +59,26 @@ matrix:
 
       
 build_script:
-- cmd: >-
+
+      
+build_script:
+- cmd: |
 
     "%PYTHON%/python.exe" setup.py bdist_wheel
 
 before_test:
 - ps: >-
-
     cd ${Env:APPVEYOR_BUILD_FOLDER}\tests
-
     &"${Env:PYTHON}/python.exe" -m pip install --user (ls "../dist/opencv_*.whl")
-
+- ps: |
+    cd ${Env:APPVEYOR_BUILD_FOLDER}\tests
+    &"${Env:PYTHON}/python.exe" -m pip install --user (ls "../dist/opencv_*.whl")
     if ($LastExitCode -ne 0) {throw $LastExitCode}
 
 test_script:
-- cmd: >-
+- cmd: |
 
     cd %APPVEYOR_BUILD_FOLDER%\tests
-
     "%PYTHON%/python.exe" -m unittest test
 
 artifacts:
@@ -89,8 +91,16 @@ before_deploy:
     "%PYTHON%/python.exe" -m pip install twine
   
 deploy_script:
-- cd %APPVEYOR_BUILD_FOLDER%
+- ps: |
 
-- if %ENABLE_CONTRIB% EQU 0 (echo "This is a default build. Deployment will be done to PyPI entry opencv-python.") else (echo "This is a contrib build. Deployment will be done to PyPI entry opencv-contrib-python.")
+    if (${Env:APPVEYOR_REPO_TAG} -eq "true") {
+        cd ${Env:APPVEYOR_BUILD_FOLDER}
+        if (${Env:ENABLE_CONTRIB} -eq 0) `
+            {echo "This is a default build. Deployment will be done to PyPI entry opencv-python."} `
+        else `
+            {echo "This is a contrib build. Deployment will be done to PyPI entry opencv-contrib-python."}
 
-- if "%APPVEYOR_REPO_TAG%"=="true" ("%PYTHON%/python.exe" -m twine upload -u %USER% -p %PASS% --skip-existing dist/opencv*) else (echo "Tag not set, deployment skipped.")
+        &"${Env:PYTHON}/python.exe" -m pip install twine
+        &"${Env:PYTHON}/python.exe" -m twine upload -u ${Env:USER} -p ${Env:PASS} --skip-existing dist/opencv* } `
+    else
+        {echo "Tag not set, deployment skipped."}

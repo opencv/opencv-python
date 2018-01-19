@@ -1,54 +1,50 @@
 env:
     global:
-        - REPO_DIR=opencv
-        # Commit from opencv that you want to build
-        - BUILD_COMMIT=6d4f66472e14b29b8e1623859cfebfdc67f677c3
-        # pip dependencies to _build_ your project
-        - BUILD_DEPENDS="numpy==1.11.1"
-        # pip dependencies to _test_ your project.  Include any dependencies
-        # that you need, that are also specified in BUILD_DEPENDS, this will be
-        # a separate install.
+        - "PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'"
+        # pip dependencies to _test_ your project
         - TEST_DEPENDS="numpy==1.11.1"
+
         - PLAT=x86_64
         - UNICODE_WIDTH=32
         - secure: "mU040XIYWtDjRms27deQy5fNg9HBFF9fiLfSteBaMjopZKXFUBsdMTKYGEVvX8DA879guMdjG8Prw1aCFhTTYlWgJ0Afm4YucRC0vAD4HLNhqLJ2lIpRceR3+2qPX+Oz5ATVVRi3ghBeJ20LLtNgOgf6esQVjdrYNC+YqmguClHKEYAxS7ngW42iQP8HX2anRcz9q9H7exZ9fX/D1PJfMNka/mNaB5KXZu5zdLuk/E0VbWU2tMWVIDUvx4uBlpE1d8HixEV5LHnuVE/QI36BcyucYxstTNKW6pGYgrhkYf+0PX4BphZXwY7EUBwzXsYLmyge6yH8W6NfvTW0ZasFF6xzQc9bsj+gAZN7H+hN2a42VQqIpkoJw9sU0hqzCOQf6ZvWUQgwFdAHJRHqe/zk4456WxnF0kAgbZdKaGOl0/n0WvgHNqD5bgO8Zzb1XyJTKoR+eAtYKXuz3KgpxKvZMMQVr8wMlI1cFEuGjIm+7ZrYB5jPvQrVzV/DgOq4gkPHOjjhu478UFlhGA9/XWwcyidC3b7zuBN2E7xVuTMlKdk7URB3AHXfG5bZgUG80vllQDGXQDpHVnv4Qi8bGCzI4iKTpp4fCibbqxFLxW1jhjmgePseGcie7Avpe+zXznkbmM2BqMCu3QRmtmFL3eCifwMf3rCNlAs0Sd3iLmEvyos="
         - secure: "omn6B+H6s0g1p9rhLGhFtFN1bSB80HCsNUUD9ROEpUirk7Sj7Wxms4CDi1f7aACANsZPXD7YZ72oNpWDJ6hSfTBf2yN1/d1iPILs7F5jt0yeratkDEOXkys1QpfMNO7r3DZ17X3IwvUGy9Mm+Sv15k+DaBdQ/65qwQ4ORIbHZRv3/lwkQ7Z88utjx6DLa9Jwc8fnEjjzIry51lO3OGJoWrjOZlOi2HV9MZ69PuuBdEEuicwfeLnV64QWRle++B51TQZC/3HF5+BBvYXm0LdvV4nSQVa9nTXaOWYcBROPNZizktJI91G6vG6gghWmI1cDR53n9LgCbA3YkPTJm/5Gjn9D+gfU5F16WQ4PFOHfzPZD8nTVmlUDUiuQ30W9QZ+O2ct7wi/xF4/Ff7V+0RIqGSnjhX6SGWk7UziQyGgCjBvYiRIQzfUyGu+86vrqNVXCyBlKOz6rWStTyq/Z0KEIXZFqop+ddeYdsEem5ZxCQ51uTpRMynVgEdKj++1Hn5411Rhntw0Am7RWdDEbFJ65OUyIpNtvlcHVM7ur03oz0hGcZIIkxWHJrCdr80Nw9r/s6KXYvidCNsu4SPx0XYo8KiTA6E2lkIAa5Ct6dZR6m5gjG2vmvlKzRmoD/7byJZN66usNxBh2LuKlgNFuHfG6iR+I6f3XCNmSUOJfm7KZYVI="
 
-language: python
-# The travis Python version is unrelated to the version we build and test
-# with.  This is set with the MB_PYTHON_VERSION variable.
-python: 3.5
+
+# Host Python is never used
+language: generic
+# Required to invoke docker ourselves as per https://docs.travis-ci.com/user/docker/
 sudo: required
-dist: trusty
 services: docker
+# https://docs.travis-ci.com/user/reference/trusty/
+dist: trusty
+
+# Save some time, we and setup check them out on demand instead
+# https://docs.travis-ci.com/user/customizing-the-build/#Git-Clone-Depth
+git:
+    submodules: false
+
 
 matrix:
-  exclude:
-    # Exclude the default Python 3.5 build
-    - python: 3.5
+  fast_finish: true
   include:
 
     # default builds for MacOS
     - os: osx
-      language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
     - os: osx
-      language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
     - os: osx
-      language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
     - os: osx
-      language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.6
@@ -56,25 +52,21 @@ matrix:
 
     # Contrib builds for MacOS
     - os: osx
-      language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
     - os: osx
-      language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
     - os: osx
-      language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
     - os: osx
-      language: generic
       osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.6
@@ -123,14 +115,14 @@ matrix:
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
-        - BUILD_DEPENDS=numpy==1.11.3
+
         - TEST_DEPENDS=numpy==1.11.3
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - PLAT=i686
         - ENABLE_CONTRIB=0
-        - BUILD_DEPENDS=numpy==1.11.3
+
         - TEST_DEPENDS=numpy==1.11.3
 
     # contrib builds for Linux
@@ -184,7 +176,7 @@ matrix:
       env:
         - MB_PYTHON_VERSION=3.6
 
-        - BUILD_DEPENDS=numpy==1.11.3
+
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
 
@@ -193,29 +185,52 @@ matrix:
         - MB_PYTHON_VERSION=3.6
 
         - PLAT=i686
-        - BUILD_DEPENDS=numpy==1.11.3
+
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
 
-before_install:
-    - echo $ENABLE_CONTRIB > contrib.enabled
-    - source multibuild/common_utils.sh
-    - source multibuild/travis_steps.sh
-    - python find_version.py
-    - cp LICENSE*.txt cv2/
-    - cp opencv/data/haarcascades/*.xml cv2/data/
-    - before_install
+# The first line is printed in the folding header in Travis output
+before_install: |
+    # Check out and prepare the source
+    set -e
+    git submodule update --init multibuild
+    source multibuild/common_utils.sh
+    # https://github.com/matthew-brett/multibuild/issues/116
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
+    source multibuild/travis_steps.sh
+    # This sets -x
+    source multibuild_customize.sh
+    echo $ENABLE_CONTRIB > contrib.enabled
+    before_install
+    # Not interested in travis internal scripts' output
+    set +x
 
-install:
-    # Maybe get and clean and patch source
-    - clean_code $REPO_DIR $BUILD_COMMIT
-    - travis_wait 120 build_wheel $REPO_DIR $PLAT
+install: |
+    # Build and package
+    set -x
+    build_wheel $REPO_DIR $PLAT
+    set +x
 
-script:
-    - install_run $PLAT
+script: |
+    # Install and run tests
+    set -x
+    install_run $PLAT
+    set +x
 
-after_success:
-    # Upload wheels to pypi
-    - pip install twine
-    - if [ -n "$TRAVIS_TAG" ]; then twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*; else echo "Tag not set, deployment skipped."; fi
-    - source travis/deploy.sh
+after_success: |
+    # Upload wheels to pypi if requested
+    if [ -n "$TRAVIS_TAG" ]; then
+        set -x
+        pip install twine
+
+        if [[ $ENABLE_CONTRIB == 0 ]]; then
+            echo "This is default build. Deployment will be done to to PyPI entry opencv-python."
+        else
+            echo "This is contrib build. Deployment will be done to to PyPI entry opencv-contrib-python."
+        fi
+
+        twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
+        set +x
+    else
+        echo "Tag not set, deployment skipped."
+    fi
