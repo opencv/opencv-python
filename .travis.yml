@@ -193,6 +193,8 @@ matrix:
 before_install: |
     # Check out and prepare the source
     set -e
+    #Multibuild doesn't have releases, so --depth would break eventually (see
+    #https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
     git submodule update --init multibuild
     source multibuild/common_utils.sh
     # https://github.com/matthew-brett/multibuild/issues/116
