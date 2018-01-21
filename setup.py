@@ -313,7 +313,6 @@ def get_build_contrib():
         pass
 
     if not build_contrib:
-        print("Trying to read contrib enable flag from file...")
         try:
             build_contrib = bool(int(open("contrib.enabled").read(1)))
         except Exception:
