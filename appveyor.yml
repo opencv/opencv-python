@@ -59,18 +59,13 @@ matrix:
 
       
 build_script:
-
-      
-build_script:
 - cmd: |
 
     "%PYTHON%/python.exe" setup.py bdist_wheel
 
 before_test:
-- ps: >-
-    cd ${Env:APPVEYOR_BUILD_FOLDER}\tests
-    &"${Env:PYTHON}/python.exe" -m pip install --user (ls "../dist/opencv_*.whl")
 - ps: |
+
     cd ${Env:APPVEYOR_BUILD_FOLDER}\tests
     &"${Env:PYTHON}/python.exe" -m pip install --user (ls "../dist/opencv_*.whl")
     if ($LastExitCode -ne 0) {throw $LastExitCode}
