@@ -80,11 +80,6 @@ artifacts:
 - path: dist\*.whl
   name: wheels
 
-before_deploy:
-- cmd: >-
-
-    "%PYTHON%/python.exe" -m pip install twine
-  
 deploy_script:
 - ps: |
 
