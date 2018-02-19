@@ -60,3 +60,10 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#PyCharm
+/.idea
+
+# Build temporary files
+/contrib.enabled
+/cv_version.py
