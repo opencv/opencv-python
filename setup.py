@@ -1,5 +1,12 @@
 # No 3rd-party modules here, see "3rd-party" note below
-import io, os, os.path, sys, runpy, subprocess, re, sysconfig
+import io
+import os
+import os.path
+import sys
+import runpy
+import subprocess
+import re
+import sysconfig
 
 
 def main():
@@ -9,76 +16,72 @@ def main():
     cmake_source_dir = "opencv"
     build_contrib = get_build_contrib()
 
-
     # Only import 3rd-party modules after having installed all the build dependencies:
     # any of them, or their dependencies, can be updated during that process,
     # leading to version conflicts
     numpy_version = get_or_install("numpy", "1.11.3" if sys.version_info[:2] >= (3, 6) else "1.11.1")
     get_or_install("scikit-build")
     import skbuild
-    
+
     if os.path.exists('.git'):
+
         import pip.vcs.git
         g = pip.vcs.git.Git()
         use_depth = g.get_git_version() >= type(g.get_git_version())("1.8.4")
-        g.run_command(["submodule", "update", "--init", "--recursive"] + \
-            (["--depth=1"] if use_depth else []) + \
-            [cmake_source_dir])
+
+        g.run_command(["submodule", "update", "--init", "--recursive"] +
+                      (["--depth=1"] if use_depth else []) +
+                      [cmake_source_dir])
+
         if build_contrib:
-            g.run_command(["submodule", "update", "--init", "--recursive"] + \
-            (["--depth=1"] if use_depth else []) + \
-            ["opencv_contrib"])
+            g.run_command(["submodule", "update", "--init", "--recursive"] +
+                          (["--depth=1"] if use_depth else []) +
+                          ["opencv_contrib"])
+
         del use_depth, g, pip
 
-
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
-    x64 = sys.maxsize>2**32
-
+    x64 = sys.maxsize > 2**32
 
     package_name = "opencv-contrib-python" if build_contrib else "opencv-python"
     long_description = io.open('README_CONTRIB.rst' if build_contrib else 'README.rst', encoding="utf-8").read()
     package_version = get_opencv_version()
 
     packages = ['cv2', 'cv2.data']
-    package_data = \
-        {'cv2':
-            ['*%s' % sysconfig.get_config_var('SO')] + (['*.dll'] if os.name == 'nt' else []) +
+    package_data = {
+        'cv2':
+            ['*%s' % sysconfig.get_config_var('SO')] +
+            ['*.dll'] if os.name == 'nt' else [] +
             ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"],
-         'cv2.data':
+        'cv2.data':
             ["*.xml"]
-         }
+    }
 
     # Files from CMake output to copy to package.
     # Path regexes with forward slashes relative to CMake install dir.
-    rearrange_cmake_output_data = \
-        {'cv2':
-            ([r'bin/opencv_ffmpeg\d{3}%s\.dll' %
-                ('_64' if x64 else '')] if os.name == 'nt' else []
-            ) + \
+    rearrange_cmake_output_data = {
+        'cv2': [r'bin/opencv_ffmpeg\d{3}%s\.dll' % ('_64' if x64 else '')] if os.name == 'nt' else [] +
             # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
             # Naming conventions vary so widely between versions and OSes
             # had to give up on checking them.
-            ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {
-                'ext':   re.escape(sysconfig.get_config_var('SO'))
-                }
-            ],
-         'cv2.data':
-            [ # OPENCV_OTHER_INSTALL_PATH
-            ('etc' if os.name =='nt' else 'share/OpenCV')
-            + r'/haarcascades/.*\.xml']
-         }
+            ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {'ext': re.escape(sysconfig.get_config_var('SO'))}],
+        'cv2.data': [  # OPENCV_OTHER_INSTALL_PATH
+            ('etc' if os.name == 'nt' else 'share/OpenCV') +
+            r'/haarcascades/.*\.xml'
+        ]
+    }
+
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
-    files_outside_package_dir = \
-        {'cv2':
-            ['LICENSE.txt', 'LICENSE-3RD-PARTY.txt']
-         }
+    files_outside_package_dir = {
+        'cv2': ['LICENSE.txt', 'LICENSE-3RD-PARTY.txt']
+    }
 
     cmake_args = ([
         "-G", "Visual Studio 14" + (" Win64" if x64 else '')
     ] if os.name == 'nt' else [
-        "-G", "Unix Makefiles"  #don't make CMake try (and fail) Ninja first
-    ]) + \
+        "-G", "Unix Makefiles"  # don't make CMake try (and fail) Ninja first
+    ]) +
     [
         # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
@@ -92,30 +95,29 @@ def main():
         "-DBUILD_TESTS=OFF",
         "-DBUILD_PERF_TESTS=OFF",
         "-DBUILD_DOCS=OFF"
-    ] + \
-    ([ "-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules") ]
-       if build_contrib else [])
-       
+    ] +
+    (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
+
     # OS-specific components
     if sys.platform == 'darwin' or sys.platform.startswith('linux'):
-        cmake_args.append( "-DWITH_QT=4" )
+        cmake_args.append("-DWITH_QT=4")
+
     if sys.platform.startswith('linux'):
-        cmake_args.append( "-DWITH_V4L=ON" )
+        cmake_args.append("-DWITH_V4L=ON")
+
         if all(v in os.environ for v in ('JPEG_INCLUDE_DIR', 'JPEG_LIBRARY')):
             cmake_args += [
-            "-DBUILD_JPEG=OFF",
-            "-DJPEG_INCLUDE_DIR=%s" % os.environ['JPEG_INCLUDE_DIR'],
-            "-DJPEG_LIBRARY=%s" % os.environ['JPEG_LIBRARY']
+                "-DBUILD_JPEG=OFF",
+                "-DJPEG_INCLUDE_DIR=%s" % os.environ['JPEG_INCLUDE_DIR'],
+                "-DJPEG_LIBRARY=%s" % os.environ['JPEG_LIBRARY']
             ]
-            
+
     # Turn off broken components
     if sys.platform == 'darwin':
         cmake_args.append("-DWITH_LAPACK=OFF")  # Some OSX LAPACK fns are incompatible, see
                                                 # https://github.com/skvark/opencv-python/issues/21
     if sys.platform.startswith('linux'):
-        cmake_args.append( "-DWITH_IPP=OFF" )   # https://github.com/opencv/opencv/issues/10411
-
-
+        cmake_args.append("-DWITH_IPP=OFF")   # https://github.com/opencv/opencv/issues/10411
 
     # ABI config variables are introduced in PEP 425
     if sys.version_info[:2] < (3, 2):
@@ -124,7 +126,6 @@ def main():
                                           r"Python ABI tag may be incorrect",
                                 category=RuntimeWarning)
         del warnings
-
 
     # works via side effect
     RearrangeCMakeOutput(rearrange_cmake_output_data,
@@ -175,8 +176,10 @@ def main():
 
 
 class RearrangeCMakeOutput(object):
-    """Patch SKBuild logic to only take files related to the Python package
-    and construct a file hierarchy that SKBuild expects (see below)"""
+    """
+        Patch SKBuild logic to only take files related to the Python package
+        and construct a file hierarchy that SKBuild expects (see below)
+    """
     _setuptools_wrap = None
 
     # Have to wrap a function reference, or it's converted
@@ -202,6 +205,7 @@ class RearrangeCMakeOutput(object):
         cls.package_paths_re = package_paths_re
         cls.files_outside_package = files_outside_package
         cls.packages = packages
+
     def __del__(self):
         cls = self.__class__
         cls._setuptools_wrap._classify_files = cls.wraps._classify_files
@@ -214,15 +218,18 @@ class RearrangeCMakeOutput(object):
             scripts, new_scripts,
             data_files,
             cmake_source_dir, cmake_install_reldir):
-        """From all CMake output, we're only interested in a few files
-        and must place them into CMake install dir according
-        to Python conventions for SKBuild to find them:
-            package\
-                file
-                subpackage\
-                    etc.
         """
+            From all CMake output, we're only interested in a few files
+            and must place them into CMake install dir according
+            to Python conventions for SKBuild to find them:
+                package\
+                    file
+                    subpackage\
+                        etc.
+        """
+
         cls = self.__class__
+
         # 'relpath'/'reldir' = relative to CMAKE_INSTALL_DIR/cmake_install_dir
         # 'path'/'dir' = relative to sourcetree root
         cmake_install_dir = os.path.join(cls._setuptools_wrap.CMAKE_INSTALL_DIR,
@@ -283,19 +290,15 @@ class RearrangeCMakeOutput(object):
             py_modules, new_py_modules,
             scripts, new_scripts,
             data_files,
-            # To get around a demented check
-            # that prepends source dir to paths and breaks package detection code.
-            # Can't imagine what the authors were thinking that should be doing.
-            cmake_source_dir = '',
-            cmake_install_dir = cmake_install_reldir
-            )
+            # To get around a check that prepends source dir to paths and breaks package detection code.
+            cmake_source_dir='',
+            cmake_install_dir=cmake_install_reldir
+        )
 
 
 def install_packages(*requirements):
     # No more convenient way until PEP 518 is implemented; setuptools only handles eggs
-    subprocess.check_call([sys.executable,
-                           "-m", "pip", "install"]
-                          + list(requirements))
+    subprocess.check_call([sys.executable, "-m", "pip", "install"] + list(requirements))
 
 
 def get_opencv_version():
@@ -320,19 +323,18 @@ def get_build_contrib():
     return build_contrib
 
 
-def get_or_install(name, version = None):
+def get_or_install(name, version=None):
     """If a package is already installed, build against it. If not, install"""
     # Do not import 3rd-party modules into the current process
     import json
     js_packages = json.loads(
-        subprocess.check_output(
-        [sys.executable, "-m", "pip", "list", "--format=json"])
-        .decode('ascii'))  #valid names & versions are ASCII as per PEP 440
+        subprocess.check_output([sys.executable, "-m", "pip", "list", "--format=json"])
+        .decode('ascii'))  # valid names & versions are ASCII as per PEP 440
     try:
         [package] = (package for package in js_packages
                      if package['name'] == name)
     except ValueError:
-        install_packages("%s==%s"%(name, version) if version else name)
+        install_packages("%s==%s" % (name, version) if version else name)
         return version
     else:
         return package['version']
