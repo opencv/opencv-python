@@ -23,7 +23,6 @@ dist: trusty
 git:
     submodules: false
 
-
 matrix:
   fast_finish: true
   include:
@@ -115,77 +114,62 @@ matrix:
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
-
         - TEST_DEPENDS=numpy==1.11.3
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - PLAT=i686
         - ENABLE_CONTRIB=0
-
         - TEST_DEPENDS=numpy==1.11.3
 
     # contrib builds for Linux
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-
         - PLAT=i686
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-
         - PLAT=i686
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
-
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
-
         - PLAT=i686
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
-
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
-
         - PLAT=i686
         - ENABLE_CONTRIB=1
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
-
-
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
-
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
-
         - PLAT=i686
-
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
 
@@ -193,8 +177,8 @@ matrix:
 before_install: |
     # Check out and prepare the source
     set -e
-    #Multibuild doesn't have releases, so --depth would break eventually (see
-    #https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
+    # Multibuild doesn't have releases, so --depth would break eventually (see
+    # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
     git submodule update --init multibuild
     source multibuild/common_utils.sh
     # https://github.com/matthew-brett/multibuild/issues/116
