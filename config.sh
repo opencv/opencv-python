@@ -23,11 +23,10 @@ function pre_build {
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
 
-    # For some reason, gt@4 and ffmpeg can be preinstalled in Travis Mac env
     echo 'Installing QT4'
-    brew tap | grep -qxF cartr/qt4 || brew tap -v cartr/qt4
-    brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin -v cartr/qt4
-    brew list --versions qt@4 || brew install -v qt@4
+    brew tap cartr/qt4
+    brew tap-pin cartr/qt4
+    brew install qt@4
     echo '-----------------'
     echo 'Installing FFmpeg'
     # brew install does produce output regularly on a regular MacOS,
@@ -39,7 +38,7 @@ function pre_build {
   else
     echo "Running for linux"
   fi
-  qmake -query  
+  qmake -query
 }
 
 function run_tests {
@@ -54,7 +53,7 @@ function run_tests {
       echo "Running for linux"
       cd /io/tests/
     fi
-    
+
     test_wheels
 }
 
