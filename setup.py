@@ -31,12 +31,12 @@ def main():
         use_depth = g.get_git_version() >= type(g.get_git_version())("1.8.4")
 
         g.run_command(["submodule", "update", "--init", "--recursive"] +
-                      ["--depth=1"] if use_depth else [] +
+                      (["--depth=1"] if use_depth else []) +
                       [cmake_source_dir])
 
         if build_contrib:
             g.run_command(["submodule", "update", "--init", "--recursive"] +
-                          ["--depth=1"] if use_depth else [] +
+                          (["--depth=1"] if use_depth else []) +
                           ["opencv_contrib"])
 
         del use_depth, g, pip
@@ -52,7 +52,7 @@ def main():
     package_data = {
         'cv2':
             ['*%s' % sysconfig.get_config_var('SO')] +
-            ['*.dll'] if os.name == 'nt' else [] +
+            (['*.dll'] if os.name == 'nt' else []) +
             ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"],
         'cv2.data':
             ["*.xml"]
@@ -61,7 +61,7 @@ def main():
     # Files from CMake output to copy to package.
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = {
-        'cv2': [r'bin/opencv_ffmpeg\d{3}%s\.dll' % ('_64' if x64 else '')] if os.name == 'nt' else [] +
+        'cv2': ([r'bin/opencv_ffmpeg\d{3}%s\.dll' % ('_64' if x64 else '')] if os.name == 'nt' else []) +
             # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
             # Naming conventions vary so widely between versions and OSes
             # had to give up on checking them.
@@ -78,11 +78,11 @@ def main():
         'cv2': ['LICENSE.txt', 'LICENSE-3RD-PARTY.txt']
     }
 
-    cmake_args = [
+    cmake_args = ([
         "-G", "Visual Studio 14" + (" Win64" if x64 else '')
     ] if os.name == 'nt' else [
         "-G", "Unix Makefiles"  # don't make CMake try (and fail) Ninja first
-    ] + [
+    ]) + [
         # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
@@ -95,7 +95,7 @@ def main():
         "-DBUILD_TESTS=OFF",
         "-DBUILD_PERF_TESTS=OFF",
         "-DBUILD_DOCS=OFF"
-    ] + ["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else []
+    ] + (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
 
     # OS-specific components
     if sys.platform == 'darwin' or sys.platform.startswith('linux'):
@@ -280,7 +280,6 @@ class RearrangeCMakeOutput(object):
                 )
                 final_install_relpaths.append(new_install_relpath)
 
-
         final_install_paths = [os.path.join(cmake_install_dir, p) for p in final_install_relpaths]
 
         return (cls.wraps._classify_files)(
@@ -329,8 +328,7 @@ def get_or_install(name, version=None):
     js_packages = json.loads(
         subprocess.check_output([sys.executable, "-m", "pip", "list", "--format", "json"]).decode('ascii'))  # valid names & versions are ASCII as per PEP 440
     try:
-        [package] = (package for package in js_packages
-                     if package['name'] == name)
+        [package] = (package for package in js_packages if package['name'] == name)
     except ValueError:
         install_packages("%s==%s" % (name, version) if version else name)
         return version
