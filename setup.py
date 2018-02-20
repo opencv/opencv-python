@@ -34,7 +34,7 @@ def main():
         if build_contrib:
             g.run_command(["submodule", "update", "--init", "--recursive", "opencv_contrib"])
 
-        del use_depth, g, pip
+        del g, pip
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     x64 = sys.maxsize > 2**32
