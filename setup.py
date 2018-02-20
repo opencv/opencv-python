@@ -27,17 +27,12 @@ def main():
 
         import pip.vcs.git
         g = pip.vcs.git.Git()
-        g.run_command(["submodule", "sync"])
-        use_depth = g.get_git_version() >= type(g.get_git_version())("1.8.4")
 
-        g.run_command(["submodule", "update", "--init", "--recursive"] +
-                      (["--depth=1"] if use_depth else []) +
-                      [cmake_source_dir])
+        g.run_command(["submodule", "sync"])
+        g.run_command(["submodule", "update", "--init", "--recursive", cmake_source_dir])
 
         if build_contrib:
-            g.run_command(["submodule", "update", "--init", "--recursive"] +
-                          (["--depth=1"] if use_depth else []) +
-                          ["opencv_contrib"])
+            g.run_command(["submodule", "update", "--init", "--recursive", "opencv_contrib"])
 
         del use_depth, g, pip
 
