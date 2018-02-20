@@ -77,12 +77,11 @@ def main():
         'cv2': ['LICENSE.txt', 'LICENSE-3RD-PARTY.txt']
     }
 
-    cmake_args = ([
+    cmake_args = [
         "-G", "Visual Studio 14" + (" Win64" if x64 else '')
     ] if os.name == 'nt' else [
         "-G", "Unix Makefiles"  # don't make CMake try (and fail) Ninja first
-    ]) +
-    [
+    ] + [
         # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
@@ -95,8 +94,7 @@ def main():
         "-DBUILD_TESTS=OFF",
         "-DBUILD_PERF_TESTS=OFF",
         "-DBUILD_DOCS=OFF"
-    ] +
-    (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
+    ] + ["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else []
 
     # OS-specific components
     if sys.platform == 'darwin' or sys.platform.startswith('linux'):
@@ -328,8 +326,7 @@ def get_or_install(name, version=None):
     # Do not import 3rd-party modules into the current process
     import json
     js_packages = json.loads(
-        subprocess.check_output([sys.executable, "-m", "pip", "list", "--format=json"])
-        .decode('ascii'))  # valid names & versions are ASCII as per PEP 440
+        subprocess.check_output([sys.executable, "-m", "pip", "list", "--format", "json"]).decode('ascii'))  # valid names & versions are ASCII as per PEP 440
     try:
         [package] = (package for package in js_packages
                      if package['name'] == name)
