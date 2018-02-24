@@ -29,21 +29,25 @@ matrix:
 
     # default builds for MacOS
     - os: osx
+      language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
     - os: osx
+      language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
     - os: osx
+      language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
     - os: osx
+      language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.6
@@ -51,21 +55,25 @@ matrix:
 
     # Contrib builds for MacOS
     - os: osx
+      language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
     - os: osx
+      language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
     - os: osx
+      language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
     - os: osx
+      language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.6

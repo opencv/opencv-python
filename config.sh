@@ -24,6 +24,7 @@ function pre_build {
     echo "Running for OSX"
 
     echo 'Installing QT4'
+    brew update
     brew tap cartr/qt4
     brew tap-pin cartr/qt4
     brew install qt@4
