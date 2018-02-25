@@ -23,11 +23,13 @@ function pre_build {
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
 
-    echo 'Installing QT4'
     brew update
-    brew tap cartr/qt4
-    brew tap-pin cartr/qt4
-    brew install qt@4
+
+    echo 'Installing QT4'
+    brew tap | grep -qxF cartr/qt4 || brew tap -v cartr/qt4
+    brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin -v cartr/qt4
+    brew list --versions qt@4 || brew install -v qt@4
+    echo '-----------------'
     echo '-----------------'
     echo 'Installing FFmpeg'
     # brew install does produce output regularly on a regular MacOS,
