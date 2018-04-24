@@ -25,8 +25,8 @@ def main():
 
     if os.path.exists('.git'):
 
-        import pip.vcs.git
-        g = pip._internal.vcs.git.Git() # NOTE: pip API's are internal, this has to be refactored
+        import pip._internal.vcs.git as git
+        g = git.Git()  # NOTE: pip API's are internal, this has to be refactored
 
         g.run_command(["submodule", "sync"])
         g.run_command(["submodule", "update", "--init", "--recursive", cmake_source_dir])
