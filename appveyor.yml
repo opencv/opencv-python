@@ -57,10 +57,9 @@ environment:
 matrix:
     fast_finish: true
 
-      
 build_script:
 - cmd: |
-
+    "%PYTHON%/python.exe" -m pip install --upgrade pip
     "%PYTHON%/python.exe" setup.py bdist_wheel
 
 before_test:
