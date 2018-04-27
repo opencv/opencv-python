@@ -96,6 +96,7 @@ def main():
 
     if sys.platform.startswith('linux'):
         cmake_args.append("-DWITH_V4L=ON")
+        cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
         if all(v in os.environ for v in ('JPEG_INCLUDE_DIR', 'JPEG_LIBRARY')):
             cmake_args += [
