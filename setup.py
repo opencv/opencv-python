@@ -42,13 +42,13 @@ def main():
 
     package_name = "opencv-python"
 
-    if build_contrib and !build_headless:
+    if build_contrib and not build_headless:
         package_name = "opencv-contrib-python"
 
     if build_contrib and build_headless
         package_name = "opencv-contrib-python-headless"
 
-    if build_headless and !build_contrib:
+    if build_headless and not build_contrib:
         package_name = "opencv-python-headless"
 
     long_description = io.open('README_CONTRIB.rst' if build_contrib else 'README.rst', encoding="utf-8").read()
@@ -104,7 +104,7 @@ def main():
     ] + (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
 
     # OS-specific components
-    if (sys.platform == 'darwin' or sys.platform.startswith('linux')) and !build_headless:
+    if (sys.platform == 'darwin' or sys.platform.startswith('linux')) and not build_headless:
         cmake_args.append("-DWITH_QT=4")
 
     if build_headless:
