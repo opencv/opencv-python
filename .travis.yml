@@ -34,24 +34,58 @@ matrix:
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: osx
       language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: osx
       language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: osx
       language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+
+    # headless builds for MacOS
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
 
     # Contrib builds for MacOS
     - os: osx
@@ -60,74 +94,179 @@ matrix:
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: osx
       language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: osx
       language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: osx
       language: generic
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+
+    # headless contrib builds for MacOS
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
 
     # default builds for Linux
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - PLAT=i686
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - PLAT=i686
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - PLAT=i686
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - PLAT=i686
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.11.3
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - PLAT=i686
         - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.11.3
+
+    # headless builds for Linux
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - UNICODE_WIDTH=16
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - PLAT=i686
+        - UNICODE_WIDTH=16
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.11.3
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.11.3
 
     # contrib builds for Linux
@@ -135,51 +274,122 @@ matrix:
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - PLAT=i686
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - PLAT=i686
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - PLAT=i686
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - PLAT=i686
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - PLAT=i686
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+
+    # headless contrib builds for Linux
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - UNICODE_WIDTH=16
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - PLAT=i686
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+        - PLAT=i686
+        - UNICODE_WIDTH=16
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+        - PLAT=i686
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+        - PLAT=i686
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - TEST_DEPENDS=numpy==1.11.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - PLAT=i686
+        - TEST_DEPENDS=numpy==1.11.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
 
 # The first line is printed in the folding header in Travis output
 before_install: |
@@ -195,6 +405,7 @@ before_install: |
     # This sets -x
     source multibuild_customize.sh
     echo $ENABLE_CONTRIB > contrib.enabled
+    echo $ENABLE_HEADLESS > headless.enabled
     before_install
     # Not interested in travis internal scripts' output
     set +x
@@ -218,9 +429,17 @@ after_success: |
         pip install twine
 
         if [[ $ENABLE_CONTRIB == 0 ]]; then
-            echo "This is default build. Deployment will be done to to PyPI entry opencv-python."
+            if [[ $ENABLE_HEADLESS == 0 ]]; then
+              echo "This is default build. Deployment will be done to to PyPI entry opencv-python."
+            else
+              echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-python-headless."
+            fi
         else
-            echo "This is contrib build. Deployment will be done to to PyPI entry opencv-contrib-python."
+            if [[ $ENABLE_HEADLESS == 0 ]]; then
+              echo "This is contrib build. Deployment will be done to to PyPI entry opencv-contrib-python."
+            else
+              echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-contrib-python-headless."
+            fi
         fi
 
         twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*

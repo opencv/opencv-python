@@ -8,51 +8,131 @@ environment:
   matrix:
     - PYTHON: "C:/Python27"
       ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python27-x64"
       ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python34"
       ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python34-x64"
       ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python35"
       ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python35-x64"
       ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python36"
       ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python36-x64"
       ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python27"
       ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python27-x64"
       ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python34"
       ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python34-x64"
       ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python35"
       ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python35-x64"
       ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python36"
       ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python36-x64"
       ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 0
+
+    - PYTHON: "C:/Python27"
+      ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python27-x64"
+      ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python34"
+      ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python34-x64"
+      ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python35"
+      ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python35-x64"
+      ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python36"
+      ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python36-x64"
+      ENABLE_CONTRIB: 0
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python27"
+      ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python27-x64"
+      ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python34"
+      ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python34-x64"
+      ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python35"
+      ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python35-x64"
+      ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python36"
+      ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 1
+
+    - PYTHON: "C:/Python36-x64"
+      ENABLE_CONTRIB: 1
+      ENABLE_HEADLESS: 1
 
 matrix:
     fast_finish: true
@@ -83,13 +163,27 @@ deploy_script:
 - ps: |
 
     if (${Env:APPVEYOR_REPO_TAG} -eq "true") {
-        cd ${Env:APPVEYOR_BUILD_FOLDER}
-        if (${Env:ENABLE_CONTRIB} -eq 0) `
-            {echo "This is a default build. Deployment will be done to PyPI entry opencv-python."} `
-        else `
-            {echo "This is a contrib build. Deployment will be done to PyPI entry opencv-contrib-python."}
+      cd ${Env:APPVEYOR_BUILD_FOLDER}
+      if (${Env:ENABLE_CONTRIB} -eq 0) {
+        if (${Env:ENABLE_HEADLESS} -eq 0) {
+          echo "This is a default build. Deployment will be done to PyPI entry opencv-python."
+        }
+        else {
+          echo "This is a headless build. Deployment will be done to PyPI entry opencv-python-headless."
+        }
+      }
+      else {
+        if (${Env:ENABLE_HEADLESS} -eq 0) {
+          echo "This is a contrib build. Deployment will be done to PyPI entry opencv-contrib-python."
+        }
+        else {
+          echo "This is a headless contrib build. Deployment will be done to PyPI entry opencv-contrib-python-headless."
+        }
+      }
 
-        &"${Env:PYTHON}/python.exe" -m pip install twine
-        &"${Env:PYTHON}/python.exe" -m twine upload -u ${Env:USER} -p ${Env:PASS} --skip-existing dist/opencv* } `
-    else
-        {echo "Tag not set, deployment skipped."}
+      &"${Env:PYTHON}/python.exe" -m pip install twine
+      &"${Env:PYTHON}/python.exe" -m twine upload -u ${Env:USER} -p ${Env:PASS} --skip-existing dist/opencv*
+    }
+    else {
+      echo "Tag not set, deployment skipped."
+    }

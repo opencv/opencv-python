@@ -10,11 +10,14 @@ import sysconfig
 
 
 def main():
+
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     # These are neede for source fetching
     cmake_source_dir = "opencv"
-    build_contrib = get_build_contrib()
+    build_contrib = get_build_env_var_by_name("contrib")
+    # headless flag to skip GUI deps if needed
+    build_headless = get_build_env_var_by_name("headless")
 
     # Only import 3rd-party modules after having installed all the build dependencies:
     # any of them, or their dependencies, can be updated during that process,
@@ -37,7 +40,17 @@ def main():
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     x64 = sys.maxsize > 2**32
 
-    package_name = "opencv-contrib-python" if build_contrib else "opencv-python"
+    package_name = "opencv-python"
+
+    if build_contrib and !build_headless:
+        package_name = "opencv-contrib-python"
+
+    if build_contrib and build_headless
+        package_name = "opencv-contrib-python-headless"
+
+    if build_headless and !build_contrib:
+        package_name = "opencv-python-headless"
+
     long_description = io.open('README_CONTRIB.rst' if build_contrib else 'README.rst', encoding="utf-8").read()
     package_version = get_opencv_version()
 
@@ -91,8 +104,13 @@ def main():
     ] + (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
 
     # OS-specific components
-    if sys.platform == 'darwin' or sys.platform.startswith('linux'):
+    if (sys.platform == 'darwin' or sys.platform.startswith('linux')) and !build_headless:
         cmake_args.append("-DWITH_QT=4")
+
+    if build_headless:
+        # it seems that cocoa cannot be disabled so on macOS the package is not truly headless
+        cmake_args.append("-DWITH_WIN32UI=OFF")
+        cmake_args.append("-DWITH_QT=OFF")
 
     if sys.platform.startswith('linux'):
         cmake_args.append("-DWITH_V4L=ON")
@@ -300,19 +318,22 @@ def get_opencv_version():
     return opencv_version
 
 
-def get_build_contrib():
-    build_contrib = False
+def get_build_env_var_by_name(flag_name):
+
+    flag_set = False
+
     try:
-        build_contrib = bool(int(os.getenv('ENABLE_CONTRIB', None)))
+        flag_set = bool(int(os.getenv('ENABLE_' + flag_name.upper() , None)))
     except Exception:
         pass
 
-    if not build_contrib:
+    if not flag_set:
         try:
-            build_contrib = bool(int(open("contrib.enabled").read(1)))
+            flag_set = bool(int(open(flag_name + ".enabled").read(1)))
         except Exception:
             pass
-    return build_contrib
+
+    return flag_set
 
 
 def get_or_install(name, version=None):
