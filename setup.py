@@ -45,7 +45,7 @@ def main():
     if build_contrib and not build_headless:
         package_name = "opencv-contrib-python"
 
-    if build_contrib and build_headless
+    if build_contrib and build_headless:
         package_name = "opencv-contrib-python-headless"
 
     if build_headless and not build_contrib:
