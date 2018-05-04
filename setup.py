@@ -51,10 +51,11 @@ def main():
     if build_headless and not build_contrib:
         package_name = "opencv-python-headless"
 
-    long_description = io.open('README_CONTRIB.rst' if build_contrib else 'README.rst', encoding="utf-8").read()
+    long_description = io.open('README.md', encoding="utf-8").read()
     package_version = get_opencv_version()
 
     packages = ['cv2', 'cv2.data']
+
     package_data = {
         'cv2':
             ['*%s' % sysconfig.get_config_var('SO')] +
@@ -67,11 +68,13 @@ def main():
     # Files from CMake output to copy to package.
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = {
+
         'cv2': ([r'bin/opencv_ffmpeg\d{3}%s\.dll' % ('_64' if x64 else '')] if os.name == 'nt' else []) +
-            # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
-            # Naming conventions vary so widely between versions and OSes
-            # had to give up on checking them.
-            ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {'ext': re.escape(sysconfig.get_config_var('SO'))}],
+        # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
+        # Naming conventions vary so widely between versions and OSes
+        # had to give up on checking them.
+        ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {'ext': re.escape(sysconfig.get_config_var('SO'))}],
+
         'cv2.data': [  # OPENCV_OTHER_INSTALL_PATH
             ('etc' if os.name == 'nt' else 'share/OpenCV') +
             r'/haarcascades/.*\.xml'
@@ -150,6 +153,7 @@ def main():
         license='MIT',
         description='Wrapper package for OpenCV python bindings.',
         long_description=long_description,
+        long_description_content_type="text/markdown",
         packages=packages,
         package_data=package_data,
         maintainer="Olli-Pekka Heinisuo",
@@ -196,8 +200,7 @@ class RearrangeCMakeOutput(object):
     # Have to wrap a function reference, or it's converted
     # into an instance method on attr assignment
     import argparse
-    wraps = argparse.Namespace(
-        _classify_files=None)
+    wraps = argparse.Namespace(_classify_files=None)
     del argparse
 
     package_paths_re = None
@@ -253,6 +256,7 @@ class RearrangeCMakeOutput(object):
         final_install_relpaths = []
 
         print("Copying files from CMake output")
+
         for package_name, relpaths_re in cls.package_paths_re.items():
             package_dest_reldir = package_name.replace('.', os.path.sep)
             for relpath_re in relpaths_re:
@@ -278,6 +282,7 @@ class RearrangeCMakeOutput(object):
         del relpaths_zip
 
         print("Copying files from non-default sourcetree locations")
+
         for package_name, paths in cls.files_outside_package.items():
             package_dest_reldir = package_name.replace('.', os.path.sep)
             for path in paths:
@@ -288,7 +293,7 @@ class RearrangeCMakeOutput(object):
                         os.path.basename(path))
                 cls._setuptools_wrap._copy_file(
                     path, os.path.join(cmake_install_dir, new_install_relpath),
-                    hide_listing = False
+                    hide_listing=False
                 )
                 final_install_relpaths.append(new_install_relpath)
 
@@ -337,7 +342,7 @@ def get_build_env_var_by_name(flag_name):
 
 
 def get_or_install(name, version=None):
-    """If a package is already installed, build against it. If not, install"""
+    """ If a package is already installed, build against it. If not, install """
     # Do not import 3rd-party modules into the current process
     import json
     js_packages = json.loads(
