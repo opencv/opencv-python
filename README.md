@@ -4,7 +4,7 @@
 
 ### Installation and Usage
 
-1. If you have previous/other manually installed version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
+1. If you have previous/other manually installed (= not installed via ``pip``) version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
 2. Select the correct package for your environment:
 
     There are four different packages and you should **select only one of them**. Do not install multiple different packages in the same enviroment.
