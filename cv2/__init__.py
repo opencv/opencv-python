@@ -1,6 +1,5 @@
 import importlib
 
-# make IDE's (PyCharm) autocompletion happy
 from .cv2 import *
 from .data import *
 
