@@ -24,17 +24,16 @@ with open(version_file_path, 'r') as f:
 
 # used in local dev releases
 git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).splitlines()[0].decode()
+# this outputs the annotated tag if we are exactly on a tag, otherwise <tag>-<n>-g<shortened sha-1>
+tag = subprocess.check_output(['git', 'describe', '--tags']).splitlines()[0].decode().split('-')
 
-if os.name == 'posix':
-    version = os.getenv('TRAVIS_TAG', git_hash)
-else:
-    version = os.getenv('APPVEYOR_REPO_TAG_NAME', git_hash)
-
-if version != git_hash:
+if len(tag) == 1:
     # tag identifies the build and should be a sequential revision number
+    version = tag[0]
     opencv_version += ".{}".format(version)
 else:
     # local version identifier, not to be published on PyPI
+    version = git_hash
     opencv_version += "+{}".format(version)
 
 print("Version: ", opencv_version)
