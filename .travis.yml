@@ -428,6 +428,10 @@ after_success: |
         set -x
         pip install twine
 
+        if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+          pip install --upgrade pyOpenSSL
+        fi
+
         if [[ $ENABLE_CONTRIB == 0 ]]; then
             if [[ $ENABLE_HEADLESS == 0 ]]; then
               echo "This is default build. Deployment will be done to to PyPI entry opencv-python."
