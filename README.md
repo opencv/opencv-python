@@ -59,7 +59,7 @@ A: Make sure you have removed old manual installations of OpenCV Python bindings
 [![AppVeyor CI test status (Windows)](https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows)](https://ci.appveyor.com/project/skvark/opencv-python)
 [![Travis CI test status (Linux and OS X)](https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label=Linux+macOS)](https://travis-ci.org/skvark/opencv-python)
 
-The aim of this repository is to provide means to package each new [OpenCV release](https://github.com/opencv/opencv/releases>) for the most used Python versions and platforms.
+The aim of this repository is to provide means to package each new [OpenCV release](https://github.com/opencv/opencv/releases) for the most used Python versions and platforms.
 
 ### Build process
 
