@@ -3,7 +3,7 @@ FROM quay.io/pypa/manylinux1_i686:latest
 RUN wget --no-check-certificate https://download.qt.io/official_releases/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	tar -xf qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	cd qt-everywhere* && \
-	./configure -prefix /opt/Qt4.8.7 -release -opensource -confirm-license && \
+	./configure -prefix /opt/Qt4.8.7 -release -opensource -confirm-license -qtnamespace Qt4 && \
 	gmake && \
 	gmake install && \
 	cd .. && \
