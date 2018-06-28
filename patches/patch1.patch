@@ -1,0 +1,84 @@
+--- opencv/modules/highgui/src/window_QT.h	2018-06-28 13:13:55.119434000 +0300
++++ opencv/modules/highgui/src/window_QT_patched.h	2018-06-28 13:21:30.934272400 +0300
+@@ -46,43 +46,47 @@
+ #define QT_NO_DEBUG_OUTPUT
+ #endif
+ 
++QT_BEGIN_NAMESPACE
++
+ #if defined( HAVE_QT_OPENGL )
+-#include <QtOpenGL>
+-#include <QGLWidget>
++class QtOpenGL;
++class QGLWidget;
+ #endif
+ 
+-#include <QAbstractEventDispatcher>
+-#include <QApplication>
+-#include <QFile>
+-#include <QPushButton>
+-#include <QGraphicsView>
+-#include <QSizePolicy>
+-#include <QInputDialog>
+-#include <QBoxLayout>
+-#include <QSettings>
+-#include <qtimer.h>
+-#include <QtConcurrentRun>
+-#include <QWaitCondition>
+-#include <QKeyEvent>
+-#include <QMetaObject>
+-#include <QPointer>
+-#include <QSlider>
+-#include <QLabel>
+-#include <QIODevice>
+-#include <QShortcut>
+-#include <QStatusBar>
+-#include <QVarLengthArray>
+-#include <QFileInfo>
+-#include <QDate>
+-#include <QFileDialog>
+-#include <QToolBar>
+-
+-#include <QAction>
+-#include <QCheckBox>
+-#include <QRadioButton>
+-#include <QButtonGroup>
+-#include <QMenu>
+-#include <QTest>
++class QAbstractEventDispatcher;
++class QApplication;
++class QFile;
++class QPushButton;
++class QGraphicsView;
++class QSizePolicy;
++class QInputDialog;
++class QBoxLayout;
++class QSettings;
++class QTimer;
++class QtConcurrentRun;
++class QWaitCondition;
++class QKeyEvent;
++class QMetaObject;
++class QPointer;
++class QSlider;
++class QLabel;
++class QIODevice;
++class QShortcut;
++class QStatusBar;
++class QVarLengthArray;
++class QFileInfo;
++class QDate;
++class QFileDialog;
++class QToolBar;
++
++class QAction;
++class QCheckBox;
++class QRadioButton;
++class QButtonGroup;
++class QMenu;
++class QTest;
++
++QT_END_NAMESPACE
+ 
+ //start private enum
+ enum { CV_MODE_NORMAL = 0, CV_MODE_OPENGL = 1 };

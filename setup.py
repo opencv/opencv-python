@@ -109,6 +109,9 @@ def main():
     # OS-specific components
     if (sys.platform == 'darwin' or sys.platform.startswith('linux')) and not build_headless:
         cmake_args.append("-DWITH_QT=4")
+        # Apply Qt namespace patches to OpenCV GUI code
+        subprocess.check_call(["patch", "-p0", "<", "patches/patch1.patch"])
+        subprocess.check_call(["patch", "-p0", "<", "patches/patch2.patch"])
 
     if build_headless:
         # it seems that cocoa cannot be disabled so on macOS the package is not truly headless

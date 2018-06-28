@@ -1,0 +1,55 @@
+--- opencv/modules/highgui/src/window_QT.cpp	2018-06-28 13:13:52.234096700 +0300
++++ opencv/modules/highgui/src/window_QT_patched.cpp	2018-06-28 13:20:54.896046500 +0300
+@@ -46,6 +46,44 @@
+ 
+ #include <window_QT.h>
+ 
++#if defined( HAVE_QT_OPENGL )
++#include <QtOpenGL>
++#include <QGLWidget>
++#endif
++
++#include <QAbstractEventDispatcher>
++#include <QApplication>
++#include <QFile>
++#include <QPushButton>
++#include <QGraphicsView>
++#include <QSizePolicy>
++#include <QInputDialog>
++#include <QBoxLayout>
++#include <QSettings>
++#include <QTimer>
++#include <QtConcurrentRun>
++#include <QWaitCondition>
++#include <QKeyEvent>
++#include <QMetaObject>
++#include <QPointer>
++#include <QSlider>
++#include <QLabel>
++#include <QIODevice>
++#include <QShortcut>
++#include <QStatusBar>
++#include <QVarLengthArray>
++#include <QFileInfo>
++#include <QDate>
++#include <QFileDialog>
++#include <QToolBar>
++
++#include <QAction>
++#include <QCheckBox>
++#include <QRadioButton>
++#include <QButtonGroup>
++#include <QMenu>
++#include <QTest>
++
+ #include <math.h>
+ 
+ #ifdef _WIN32
+@@ -60,7 +98,6 @@
+     #endif
+ #endif
+ 
+-
+ //Static and global first
+ static GuiReceiver *guiMainThread = NULL;
+ static int parameterSystemC = 1;
