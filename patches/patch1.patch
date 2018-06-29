@@ -1,16 +1,14 @@
 --- opencv/modules/highgui/src/window_QT.h	2018-06-28 13:13:55.119434000 +0300
-+++ opencv/modules/highgui/src/window_QT_patched.h	2018-06-28 13:21:30.934272400 +0300
-@@ -46,43 +46,47 @@
++++ opencv/modules/highgui/src/window_QT_patched.h	2018-06-30 01:10:16.135894200 +0300
+@@ -46,43 +46,48 @@
  #define QT_NO_DEBUG_OUTPUT
  #endif
  
-+QT_BEGIN_NAMESPACE
++#include <QApplication>
 +
  #if defined( HAVE_QT_OPENGL )
--#include <QtOpenGL>
--#include <QGLWidget>
-+class QtOpenGL;
-+class QGLWidget;
+ #include <QtOpenGL>
+ #include <QGLWidget>
  #endif
  
 -#include <QAbstractEventDispatcher>
@@ -45,8 +43,9 @@
 -#include <QButtonGroup>
 -#include <QMenu>
 -#include <QTest>
++QT_BEGIN_NAMESPACE
++
 +class QAbstractEventDispatcher;
-+class QApplication;
 +class QFile;
 +class QPushButton;
 +class QGraphicsView;
