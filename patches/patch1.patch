@@ -1,20 +1,18 @@
 --- opencv/modules/highgui/src/window_QT.h	2018-06-28 13:13:55.119434000 +0300
-+++ opencv/modules/highgui/src/window_QT_patched.h	2018-06-30 01:10:16.135894200 +0300
-@@ -46,43 +46,48 @@
++++ opencv/modules/highgui/src/window_QT_patched.h	2018-06-30 16:11:10.233722700 +0300
+@@ -46,58 +46,64 @@
  #define QT_NO_DEBUG_OUTPUT
  #endif
  
-+#include <QApplication>
-+
- #if defined( HAVE_QT_OPENGL )
- #include <QtOpenGL>
- #include <QGLWidget>
- #endif
- 
+-#if defined( HAVE_QT_OPENGL )
+-#include <QtOpenGL>
+-#include <QGLWidget>
+-#endif
+-
 -#include <QAbstractEventDispatcher>
--#include <QApplication>
+ #include <QApplication>
 -#include <QFile>
--#include <QPushButton>
+ #include <QPushButton>
 -#include <QGraphicsView>
 -#include <QSizePolicy>
 -#include <QInputDialog>
@@ -25,7 +23,7 @@
 -#include <QWaitCondition>
 -#include <QKeyEvent>
 -#include <QMetaObject>
--#include <QPointer>
+ #include <QPointer>
 -#include <QSlider>
 -#include <QLabel>
 -#include <QIODevice>
@@ -38,17 +36,25 @@
 -#include <QToolBar>
 -
 -#include <QAction>
--#include <QCheckBox>
--#include <QRadioButton>
+ #include <QCheckBox>
++#include <QSlider>
+ #include <QRadioButton>
 -#include <QButtonGroup>
 -#include <QMenu>
--#include <QTest>
++#include <QWidget>
++#include <QGraphicsView>
+ #include <QTest>
++#include <QVarLengthArray>
++
++#if defined( HAVE_QT_OPENGL )
++#include <QtOpenGL>
++#include <QGLWidget>
++#endif
++
 +QT_BEGIN_NAMESPACE
 +
 +class QAbstractEventDispatcher;
 +class QFile;
-+class QPushButton;
-+class QGraphicsView;
 +class QSizePolicy;
 +class QInputDialog;
 +class QBoxLayout;
@@ -58,26 +64,45 @@
 +class QWaitCondition;
 +class QKeyEvent;
 +class QMetaObject;
-+class QPointer;
-+class QSlider;
 +class QLabel;
 +class QIODevice;
 +class QShortcut;
 +class QStatusBar;
-+class QVarLengthArray;
 +class QFileInfo;
 +class QDate;
 +class QFileDialog;
 +class QToolBar;
 +
 +class QAction;
-+class QCheckBox;
-+class QRadioButton;
 +class QButtonGroup;
 +class QMenu;
-+class QTest;
 +
 +QT_END_NAMESPACE
  
  //start private enum
  enum { CV_MODE_NORMAL = 0, CV_MODE_OPENGL = 1 };
+ 
+ //we can change the keyboard shortcuts from here !
+-enum {	shortcut_zoom_normal 	= Qt::CTRL + Qt::Key_Z,
+-        shortcut_zoom_imgRegion = Qt::CTRL + Qt::Key_X,
+-        shortcut_save_img		= Qt::CTRL + Qt::Key_S,
+-        shortcut_properties_win	= Qt::CTRL + Qt::Key_P,
+-        shortcut_zoom_in 		= Qt::CTRL + Qt::Key_Plus,//QKeySequence(QKeySequence::ZoomIn),
+-        shortcut_zoom_out		= Qt::CTRL + Qt::Key_Minus,//QKeySequence(QKeySequence::ZoomOut),
+-        shortcut_panning_left 	= Qt::CTRL + Qt::Key_Left,
+-        shortcut_panning_right 	= Qt::CTRL + Qt::Key_Right,
+-        shortcut_panning_up 	= Qt::CTRL + Qt::Key_Up,
+-        shortcut_panning_down 	= Qt::CTRL + Qt::Key_Down
++enum {	shortcut_zoom_normal 	= QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_Z,
++        shortcut_zoom_imgRegion = QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_X,
++        shortcut_save_img		= QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_S,
++        shortcut_properties_win	= QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_P,
++        shortcut_zoom_in 		= QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_Plus,//QKeySequence(QKeySequence::ZoomIn),
++        shortcut_zoom_out		= QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_Minus,//QKeySequence(QKeySequence::ZoomOut),
++        shortcut_panning_left 	= QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_Left,
++        shortcut_panning_right 	= QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_Right,
++        shortcut_panning_up 	= QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_Up,
++        shortcut_panning_down 	= QT_NAMESPACE::CTRL + QT_NAMESPACE::Key_Down
+     };
+ //end enum
+ 
