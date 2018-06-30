@@ -1,5 +1,5 @@
 --- opencv/modules/highgui/src/window_QT.h	2018-06-28 13:13:55.119434000 +0300
-+++ opencv/modules/highgui/src/window_QT_patched.h	2018-06-30 16:46:55.848126700 +0300
++++ opencv/modules/highgui/src/window_QT_patched.h	2018-06-30 17:10:09.916999500 +0300
 @@ -46,43 +46,50 @@
  #define QT_NO_DEBUG_OUTPUT
  #endif
@@ -45,6 +45,7 @@
 +#include <QGraphicsView>
  #include <QTest>
 +#include <QVarLengthArray>
++#include <QHBoxLayout>
 +
 +#if defined( HAVE_QT_OPENGL )
 +#include <QtOpenGL>
@@ -72,7 +73,6 @@
 +class QDate;
 +class QFileDialog;
 +class QToolBar;
-+class QHBoxLayout;
 +
 +class QAction;
 +class QButtonGroup;
