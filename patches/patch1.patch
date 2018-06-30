@@ -1,6 +1,6 @@
 --- opencv/modules/highgui/src/window_QT.h	2018-06-28 13:13:55.119434000 +0300
-+++ opencv/modules/highgui/src/window_QT_patched.h	2018-06-30 17:10:09.916999500 +0300
-@@ -46,43 +46,50 @@
++++ opencv/modules/highgui/src/window_QT_patched.h	2018-06-30 17:35:55.145192900 +0300
+@@ -46,43 +46,51 @@
  #define QT_NO_DEBUG_OUTPUT
  #endif
  
@@ -73,6 +73,7 @@
 +class QDate;
 +class QFileDialog;
 +class QToolBar;
++class QHBoxLayout;
 +
 +class QAction;
 +class QButtonGroup;
