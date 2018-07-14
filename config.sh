@@ -40,7 +40,6 @@ function pre_build {
     echo '-----------------'
   else
     echo "Running for linux"
-    export LDFLAGS="-Wl,--no-as-needed -Wl,--no-undefined ${LDFLAGS}"
   fi
   qmake -query
 }

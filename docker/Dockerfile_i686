@@ -1,10 +1,10 @@
 FROM quay.io/pypa/manylinux1_i686:latest
 
-RUN wget --no-check-certificate https://download.qt.io/official_releases/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz && \
+RUN curl -O -L https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	tar -xf qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	cd qt-everywhere* && \
-	./configure -prefix /opt/Qt4.8.7 -release -opensource -confirm-license -qtnamespace Qt4 && \
-	gmake && \
+	./configure -prefix /opt/Qt4.8.7 -release -opensource -confirm-license && \
+	gmake -j5 && \
 	gmake install && \
 	cd .. && \
 	rm -rf qt-everywhere-opensource-src-4.8.7 && \
@@ -13,7 +13,7 @@ RUN wget --no-check-certificate https://download.qt.io/official_releases/qt/4.8/
 ENV QTDIR /opt/Qt4.8.7
 ENV PATH "$QTDIR/bin:$PATH"
 
-RUN wget --no-check-certificate https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
+RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
 	tar -zxf cmake-3.9.0.tar.gz && \
 	cd cmake-3.9.0 && \
 	yum -y install curl-devel zlib-devel && \
