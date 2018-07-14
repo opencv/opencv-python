@@ -56,6 +56,13 @@ matrix:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
 
     # headless builds for MacOS
     - os: osx
@@ -84,6 +91,13 @@ matrix:
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.6
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
 
@@ -116,6 +130,13 @@ matrix:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
 
     # headless contrib builds for MacOS
     - os: osx
@@ -144,6 +165,13 @@ matrix:
       osx_image: xcode7.3
       env:
         - MB_PYTHON_VERSION=3.6
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: osx
+      language: generic
+      osx_image: xcode7.3
+      env:
+        - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
 
@@ -207,6 +235,13 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.11.3
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.14.5
 
     # headless builds for Linux
     - os: linux
@@ -268,6 +303,13 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.11.3
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.14.5
 
     # contrib builds for Linux
     - os: linux
@@ -329,6 +371,14 @@ matrix:
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - PLAT=i686
+        - TEST_DEPENDS=numpy==1.14.5
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+
 
     # headless contrib builds for Linux
     - os: linux
@@ -388,6 +438,13 @@ matrix:
         - MB_PYTHON_VERSION=3.6
         - PLAT=i686
         - TEST_DEPENDS=numpy==1.11.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - PLAT=i686
+        - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
 

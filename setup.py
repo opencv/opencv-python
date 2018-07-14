@@ -22,7 +22,14 @@ def main():
     # Only import 3rd-party modules after having installed all the build dependencies:
     # any of them, or their dependencies, can be updated during that process,
     # leading to version conflicts
-    numpy_version = get_or_install("numpy", "1.11.3" if sys.version_info[:2] >= (3, 6) else "1.11.1")
+    minimum_supported_numpy = "1.11.1"
+
+    if sys.version_info[:2] >= (3, 6):
+        minimum_supported_numpy = "1.11.3"
+    if sys.version_info[:2] >= (3, 7):
+        minimum_supported_numpy = "1.14.5"
+
+    numpy_version = get_or_install("numpy", minimum_supported_numpy)
     get_or_install("scikit-build")
     import skbuild
 
