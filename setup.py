@@ -207,7 +207,7 @@ class RearrangeCMakeOutput(object):
     # Have to wrap a function reference, or it's converted
     # into an instance method on attr assignment
     import argparse
-    wraps = argparse.Namespace(_classify_files=None)
+    wraps = argparse.Namespace(_classify_installed_files=None)
     del argparse
 
     package_paths_re = None
@@ -216,12 +216,12 @@ class RearrangeCMakeOutput(object):
 
     def __init__(self, package_paths_re, files_outside_package, packages):
         cls = self.__class__
-        assert not cls.wraps._classify_files, "Singleton object"
+        assert not cls.wraps._classify_installed_files, "Singleton object"
         import skbuild.setuptools_wrap
 
         cls._setuptools_wrap = skbuild.setuptools_wrap
-        cls.wraps._classify_files = cls._setuptools_wrap._classify_files
-        cls._setuptools_wrap._classify_files = self._classify_files_override
+        cls.wraps._classify_installed_files = cls._setuptools_wrap._classify_installed_files
+        cls._setuptools_wrap._classify_installed_files = self._classify_installed_files_override
 
         cls.package_paths_re = package_paths_re
         cls.files_outside_package = files_outside_package
@@ -229,11 +229,11 @@ class RearrangeCMakeOutput(object):
 
     def __del__(self):
         cls = self.__class__
-        cls._setuptools_wrap._classify_files = cls.wraps._classify_files
-        cls.wraps._classify_files = None
+        cls._setuptools_wrap._classify_installed_files = cls.wraps._classify_installed_files
+        cls.wraps._classify_installed_files = None
         cls._setuptools_wrap = None
 
-    def _classify_files_override(self, install_paths,
+    def _classify_installed_files_override(self, install_paths,
             package_data, package_prefixes,
             py_modules, new_py_modules,
             scripts, new_scripts,
@@ -306,7 +306,7 @@ class RearrangeCMakeOutput(object):
 
         final_install_paths = [os.path.join(cmake_install_dir, p) for p in final_install_relpaths]
 
-        return (cls.wraps._classify_files)(
+        return (cls.wraps._classify_installed_files)(
             final_install_paths,
             package_data, package_prefixes,
             py_modules, new_py_modules,
