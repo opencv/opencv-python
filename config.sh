@@ -25,6 +25,8 @@ function pre_build {
 
     brew update
 
+    export CXXFLAGS=-mmacosx-version-min=10.10
+
     echo 'Installing QT4'
     brew tap | grep -qxF cartr/qt4 || brew tap -v cartr/qt4
     brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin -v cartr/qt4
