@@ -30,35 +30,35 @@ matrix:
     # default builds for MacOS
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
@@ -67,35 +67,35 @@ matrix:
     # headless builds for MacOS
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
@@ -104,35 +104,35 @@ matrix:
     # Contrib builds for MacOS
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
@@ -141,35 +141,35 @@ matrix:
     # headless contrib builds for MacOS
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
     - os: osx
       language: generic
-      osx_image: xcode7.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
