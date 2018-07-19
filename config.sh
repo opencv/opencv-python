@@ -22,8 +22,6 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
-    
-    MACOSX_DEPLOYMENT_TARGET=10.7
 
     brew update
 
@@ -40,6 +38,9 @@ function pre_build {
     travis_wait brew install -v ffmpeg --without-x264 --without-xvid --without-gpl
     brew info ffmpeg
     echo '-----------------'
+
+    export MACOSX_DEPLOYMENT_TARGET=10.7
+
   else
     echo "Running for linux"
   fi
