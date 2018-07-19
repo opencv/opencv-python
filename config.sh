@@ -14,7 +14,7 @@ function bdist_wheel_cmd {
     # copied from multibuild's common_utils.sh
     # add osx deployment target so it doesnt default to 10.6
     local abs_wheelhouse=$1
-    python setup.py bdist_wheel -- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7
+    python setup.py bdist_wheel $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
 }
 
