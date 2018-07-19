@@ -133,10 +133,13 @@ def main():
                 "-DJPEG_LIBRARY=%s" % os.environ['JPEG_LIBRARY']
             ]
 
-    # Turn off broken components
+    # Fixes for macOS builds
     if sys.platform == 'darwin':
         cmake_args.append("-DWITH_LAPACK=OFF")  # Some OSX LAPACK fns are incompatible, see
                                                 # https://github.com/skvark/opencv-python/issues/21
+        cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++")
+        cmake_args.append("-DCMAKE_OSX_SYSROOT=%s" % os.environ['MACOS_SDK_PATH'])
+        cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET=%s" % os.environ['MIN_MACOS_VERSION'])
 
     if sys.platform.startswith('linux'):
         cmake_args.append("-DWITH_IPP=OFF")   # https://github.com/opencv/opencv/issues/10411

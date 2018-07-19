@@ -39,8 +39,8 @@ function pre_build {
     brew info ffmpeg
     echo '-----------------'
 
-    MACOS_SDK_PATH=`xcrun --sdk macosx --show-sdk-path`
-    export CXXFLAGS="-stdlib=libc++ -isysroot ${MACOS_SDK_PATH} -mmacosx-version-min=10.7"
+    export MACOS_SDK_PATH=`xcrun --sdk macosx --show-sdk-path`
+    export MIN_MACOS_VERSION="10.7"
 
   else
     echo "Running for linux"
