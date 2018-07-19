@@ -22,8 +22,6 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
-    
-    MACOSX_DEPLOYMENT_TARGET=10.7
 
     brew update
 
