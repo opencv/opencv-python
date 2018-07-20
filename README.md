@@ -140,3 +140,4 @@ Currently, builds for following Python versions are provided:
 - 3.4
 - 3.5
 - 3.6
+- 3.7
