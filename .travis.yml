@@ -264,6 +264,12 @@ matrix:
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.14.5
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.7
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
@@ -329,6 +335,12 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.11.3
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.14.5
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
@@ -400,6 +412,12 @@ matrix:
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
+        - TEST_DEPENDS=numpy==1.14.5
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.7
         - PLAT=i686
         - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
@@ -464,6 +482,12 @@ matrix:
         - MB_PYTHON_VERSION=3.6
         - PLAT=i686
         - TEST_DEPENDS=numpy==1.11.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
     - os: linux
