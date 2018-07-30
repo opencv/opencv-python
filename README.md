@@ -9,7 +9,7 @@
 1. If you have previous/other manually installed (= not installed via ``pip``) version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
 2. Select the correct package for your environment:
 
-    There are four different packages and you should **select only one of them**. Do not install multiple different packages in the same enviroment.
+    There are four different packages and you should **select only one of them**. Do not install multiple different packages in the same enviroment. There is no plugin architecture: all the packages use the same namespace (`cv2`). If you installed multiple different packages in the same environment, uninstall them all with ``pip uninstall`` and reinstall only one package.
 
     **a.** Packages for standard desktop environments (Windows, macOS, almost any GNU/Linux distribution)
 
@@ -44,7 +44,7 @@ A: No, the packages are special wheel binary packages and they already contain s
 
 **Q: Pip fails with ``Could not find a version that satisfies the requirement ...``?**
 
-A: Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip``. Note that PyPI does not currently support ARM architecture so you can't install these packages for example on Raspberry Pi.
+A: Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip``. Note that the wheel (especially manylinux) format does not currently support properly ARM architecture so there are no packages for ARM based platforms in PyPI. However, ``opencv-python`` packages for Raspberry Pi can be found from https://www.piwheels.org/.
 
 **Q: Import fails on Windows: ``ImportError: DLL load failed: The specified module could not be found.``?**
 
@@ -55,6 +55,10 @@ If the above does not help, check if you are using Anaconda. Old Anaconda versio
 **Q: I have some other import errors?**
 
 A: Make sure you have removed old manual installations of OpenCV Python bindings (cv2.so or cv2.pyd in site-packages).
+
+**Q: Why the package and import are different (opencv-python vs. cv2)?**
+
+A: It's easier for users to understand ``opencv-python`` than ``cv2`` and it makes it easier to find the package with search engines. `cv2` (old interface in old OpenCV versions was named as `cv`) is the name that OpenCV developers chose when they created the binding generators. This is kept as the import name to be consistent with different kind of tutorials around the internet. Changing the import name or behaviour would be also confusing to experienced users who are accustomed to the ``import cv2``.
 
 ## Documentation for opencv-python
 
