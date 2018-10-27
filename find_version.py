@@ -25,7 +25,15 @@ with open(version_file_path, 'r') as f:
 # used in local dev releases
 git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).splitlines()[0].decode()
 # this outputs the annotated tag if we are exactly on a tag, otherwise <tag>-<n>-g<shortened sha-1>
-tag = subprocess.check_output(['git', 'describe', '--tags']).splitlines()[0].decode().split('-')
+try:
+    tag = subprocess.check_output(['git', 'describe', '--tags'], stderr = subprocess.STDOUT).splitlines()[0].decode().split('-')
+except subprocess.CalledProcessError as e:
+    # no tags reachable (e.g. on a topic branch in a fork), see
+    # https://stackoverflow.com/questions/4916492/git-describe-fails-with-fatal-no-names-found-cannot-describe-anything
+    if e.output.rstrip() == b"fatal: No names found, cannot describe anything.":
+        tag=[]
+    else:
+        print(e.output); raise
 
 if len(tag) == 1:
     # tag identifies the build and should be a sequential revision number
