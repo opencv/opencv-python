@@ -33,6 +33,8 @@ cache:
     - /usr/local/Homebrew/
     # used in OSX custom build script dealing with local bottle caching
     - $HOME/local_bottle_metadata
+    # `cache: ccache: true` has no effect if `language:` is not `c` or `cpp`
+    - $HOME/.ccache
     
 matrix:
   fast_finish: true
