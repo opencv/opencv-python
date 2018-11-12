@@ -25,6 +25,15 @@ dist: trusty
 git:
     submodules: false
 
+# https://docs.travis-ci.com/user/caching
+cache:
+  directories:
+    # https://stackoverflow.com/questions/39930171/cache-brew-builds-with-travis-ci
+    - $HOME/Library/Caches/Homebrew
+    - /usr/local/Homebrew/
+    # used in OSX custom build script dealing with local bottle caching
+    - $HOME/local_bottle_metadata
+    
 matrix:
   fast_finish: true
   include:
@@ -526,9 +535,36 @@ install: |
 script: |
     # Install and run tests
     set -x
-    install_run $PLAT
+    install_run $PLAT && rc=$? || rc=$?
     set +x
 
+    #otherwise, Travis logic terminates prematurely
+    #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
+    trap ERR
+    
+    test "$rc" -eq 0
+
+before_cache: |
+    # Cleanup dirs to be cached
+    set -x
+    if [ -n "$IS_OSX" ]; then
+
+        # When Taps is cached, this dir causes "Error: file exists" on `brew update`
+        rm -rf "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask"
+        find "$(brew --repository)/Library/Taps" -type d -name .git -exec \
+            bash -xec '
+                cd $(dirname '\''{}'\'')
+                git status
+                # https://stackoverflow.com/questions/8296710/how-to-ignore-xargs-commands-if-stdin-input-is-empty/19038748#19038748
+                git ls-files --other -z | xargs -0 -n100 git add
+                git commit -a -m "Travis auto changes"
+                [[ -n $(git stash list) ]] && git stash drop' \;
+
+        brew_cache_cleanup
+        
+    fi
+    set +x
+    
 after_success: |
     # Upload wheels to pypi if requested
     if [ -n "$TRAVIS_TAG" ]; then
