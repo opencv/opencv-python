@@ -20,8 +20,10 @@ function bdist_wheel_cmd {
 
 if [ -n "$IS_OSX" ]; then
   echo "    > OSX environment "
+  export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 else
   echo "    > Linux environment "
+  export MAKEFLAGS="-j$(grep -E '^processor[[:space:]]*:' /proc/cpuinfo | wc -l)"
 fi
 
 if [ -n "$IS_OSX" ]; then
