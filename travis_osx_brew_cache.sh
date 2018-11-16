@@ -174,12 +174,14 @@ function brew_cache_cleanup {
     # so we're saving and restoring them
     local BOTTLE_LINK BOTTLE
     for BOTTLE_LINK in "$BREW_LOCAL_BOTTLE_METADATA"/*.lnk; do
+        [ -e "$BOTTLE_LINK" ] || break
         BOTTLE=$(cat "$BOTTLE_LINK")
         ln "$BOTTLE" "$BREW_LOCAL_BOTTLE_METADATA/"
     done
     brew cleanup
     local BOTTLE_BASENAME
     for BOTTLE_LINK in "$BREW_LOCAL_BOTTLE_METADATA"/*.lnk; do
+        [ -e "$BOTTLE_LINK" ] || break
         BOTTLE=$(cat "$BOTTLE_LINK")
         BOTTLE_BASENAME=$(basename "$BOTTLE")
         if test ! -e "$BOTTLE"; then

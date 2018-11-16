@@ -524,6 +524,21 @@ before_install: |
     source multibuild_customize.sh
     echo $ENABLE_CONTRIB > contrib.enabled
     echo $ENABLE_HEADLESS > headless.enabled
+    
+    if [ -n "$IS_OSX" ]; then
+        TAPS="$(brew --repository)/Library/Taps"
+        if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
+            rm -rf "$TAPS/caskroom/homebrew-cask"
+        fi
+        find "$TAPS" -type d -name .git -exec \
+                bash -xec '
+                    cd $(dirname '\''{}'\'')
+                    git clean -fxd
+                    git status' \;
+                    
+        brew_cache_cleanup
+    fi
+    
     before_install
     # Not interested in travis internal scripts' output
     set +x
@@ -552,15 +567,9 @@ before_cache: |
     if [ -n "$IS_OSX" ]; then
 
         # When Taps is cached, this dir causes "Error: file exists" on `brew update`
-        rm -rf "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask"
-        find "$(brew --repository)/Library/Taps" -type d -name .git -exec \
-            bash -xec '
-                cd $(dirname '\''{}'\'')
-                git status
-                # https://stackoverflow.com/questions/8296710/how-to-ignore-xargs-commands-if-stdin-input-is-empty/19038748#19038748
-                git ls-files --other -z | xargs -0 -n100 git add
-                git commit -a -m "Travis auto changes"
-                [[ -n $(git stash list) ]] && git stash drop' \;
+        if [ -e "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask" ]; then
+            rm -rf "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask"
+        fi
 
         brew_cache_cleanup
         
