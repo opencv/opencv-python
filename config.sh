@@ -65,8 +65,8 @@ function pre_build {
     export PATH="/usr/local/opt/ccache/libexec:$PATH"
 
     echo 'Installing QT4'
-    brew tap | grep -qxF cartr/qt4 || brew tap -v cartr/qt4
-    brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin -v cartr/qt4
+    brew tap | grep -qxF cartr/qt4 || brew tap cartr/qt4
+    brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin cartr/qt4
     brew_install_and_cache_within_time_limit qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
 
     echo 'Installing FFmpeg'
