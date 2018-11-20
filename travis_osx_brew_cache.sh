@@ -1,10 +1,12 @@
 # Library to cache downloaded and locally-built Homebrew bottles in Travis OSX build.
 
-trap '{ sleep 1;    #if we terminale too abruptly, Travis will lose some log output
+_BREW_ERREXIT='
+set -e -o pipefail
+trap '\''{ sleep 3;    #if we terminale too abruptly, Travis will lose some log output
         exit 2;     #The trap isn''t called in the parent function, so can''t use `return` here.
                     #`exit` will terminate the entire build but it seems we have no choice.
-}' ERR
-set -E
+}'\'' ERR
+set -E'
 
 #Should be in Travis' cache
 BREW_LOCAL_BOTTLE_METADATA="$HOME/local_bottle_metadata"
@@ -30,11 +32,12 @@ function brew_install_and_cache_within_time_limit {
     # use bottle if available, build and cache bottle if not.
     # Terminate and exit with status 1 if this takes too long.
     # Exit with status 2 on any other error.
+    ( eval "$_BREW_ERREXIT"
     
-    local PACKAGE; PACKAGE="${1:?}"
-    local TIME_LIMIT;TIME_LIMIT=${2:-$BREW_TIME_LIMIT}
-    local TIME_HARD_LIMIT;TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT}
-    local TIME_START;TIME_START=${4:-$BREW_TIME_START}
+    local PACKAGE; PACKAGE="${1:?}" || return 2
+    local TIME_LIMIT;TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || return 2
+    local TIME_HARD_LIMIT;TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || return 2
+    local TIME_START;TIME_START=${4:-$BREW_TIME_START} || return 2
 
     local BUILD_FROM_SOURCE INCLUDE_BUILD
     
@@ -42,7 +45,7 @@ function brew_install_and_cache_within_time_limit {
     [ -n "$BUILD_FROM_SOURCE" ] && INCLUDE_BUILD="--include-build" || true
 
     # Whitespace is illegal in package names so converting all whitespace into single spaces due to no quotes is okay.
-    DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD`
+    DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD` || return 2
     for dep in $DEPS; do
         #TIME_LIMIT only has to be met if we'll be actually building the main project this iteration, i.e. after the "root" module installation
         #While we don't know that yet, we can make better use of Travis-given time with a laxer limit
@@ -51,8 +54,10 @@ function brew_install_and_cache_within_time_limit {
     done
 
     _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || return $?
-    _brew_install_and_cache "$PACKAGE" "$([[ -z "$INCLUDE_BUILD" ]] && echo 1 || echo 0)"
+    _brew_install_and_cache "$PACKAGE" "$([[ -z "$INCLUDE_BUILD" ]] && echo 1 || echo 0)" || return 2
     _brew_check_elapsed_build_time "$TIME_START" "$TIME_LIMIT" || return $?
+    ) \
+    || if test $? -eq 1; then brew_go_bootstrap_mode; return 1; else return 2; fi      #must run this in current process
 }
 
 function brew_add_local_bottles {
@@ -220,9 +225,8 @@ function brew_go_bootstrap_mode {
 #Internal functions
 
 function _brew_parse_bottle_json {
-    # Parse JSON info about a package
-    # from `brew info --json=v1` input or a JSON file on stdin
-    # and save it into bash global variables specified in arguments
+    # Parse JSON file resulting from `brew bottle --json`
+    # and save data into specified variables
 
     local JSON; JSON="${1:?}"; shift
 
@@ -247,7 +251,7 @@ function _brew_parse_bottle_json {
 
 function _brew_parse_package_info {
     # Get and parse `brew info --json` about a package
-    # and save it into bash variables specified in arguments
+    # and save data into specified variables
     
     local PACKAGE; PACKAGE="${1:?}"; shift
     local OS_CODENAME;OS_CODENAME="${1:?}"; shift
@@ -255,12 +259,14 @@ function _brew_parse_package_info {
     local JSON_DATA; JSON_DATA=$(python2.7 -c 'if True:
     import sys, json, subprocess; j=json.loads(subprocess.check_output(("brew","info","--json=v1",sys.argv[1])))
     data=j[0]
-    print data["versions"]["stable"]
+    revision=data["revision"]
+    # in bottle''s json, revision is included into version; here, they are separate
+    print data["versions"]["stable"]+("_"+str(revision) if revision else "")
     bottle_data=data["bottle"]["stable"]
     print bottle_data["rebuild"]
-    print bottle_data["files"].get(sys.argv[2],{"sha256":""})["sha256"]
+    print bottle_data["files"].get(sys.argv[2],{"sha256":"!?"})["sha256"]     #prevent losing trailing blank line to command substitution
     ' \
-    "$PACKAGE" "$OS_CODENAME")
+    "$PACKAGE" "$OS_CODENAME"); JSON_DATA="${JSON_DATA%\!\?}"  #!? can't occur in a hash
     
     unset PACKAGE OS_CODENAME
     
