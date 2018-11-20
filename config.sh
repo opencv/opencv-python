@@ -100,12 +100,6 @@ function pre_build {
     # see https://docs.brew.sh/Manpage , "info formula" section
     export HOMEBREW_NO_GITHUB_API=1
 
-    # https://docs.travis-ci.com/user/caching/#ccache-cache
-    # No need to allow rc 1 -- if this triggers a timeout,
-    #  something is clearly wrong
-    brew_install_and_cache_within_time_limit ccache
-    export PATH="/usr/local/opt/ccache/libexec:$PATH"
-
     echo 'Installing QT4'
     brew tap | grep -qxF cartr/qt4 || brew tap cartr/qt4
     brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin cartr/qt4
