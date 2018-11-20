@@ -84,4 +84,4 @@ RUN curl -O https://raw.githubusercontent.com/torvalds/linux/v4.14/include/uapi/
 	curl -O https://raw.githubusercontent.com/torvalds/linux/v4.14/include/linux/compiler.h && \
 	mv videodev2.h v4l2-common.h v4l2-controls.h compiler.h /usr/include/linux
 
-ENV PATH "$PATH=~/bin:$PATH"
+ENV PATH "$HOME/bin:$PATH"
