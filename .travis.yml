@@ -643,6 +643,7 @@ install: |
     # Build and package
     set -x
     build_wheel $REPO_DIR $PLAT
+    if [ -n "$USE_CCACHE" ]; then ccache --show-stats; fi
     set +x
 
 script: |
