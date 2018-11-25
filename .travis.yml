@@ -5,7 +5,7 @@ env:
         - TEST_DEPENDS="numpy==1.11.1"
         # params to bdist_wheel. used to set osx build target.
         - BDIST_PARAMS=""
-
+        - USE_CCACHE=1
         - PLAT=x86_64
         - UNICODE_WIDTH=32
 
@@ -216,18 +216,24 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
@@ -235,34 +241,46 @@ matrix:
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.11.3
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
@@ -270,12 +288,16 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.11.3
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
@@ -283,6 +305,8 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
 
     # headless builds for Linux
     - os: linux
@@ -290,18 +314,24 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
@@ -309,34 +339,46 @@ matrix:
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.11.3
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
@@ -344,12 +386,16 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.11.3
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
@@ -357,6 +403,8 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
 
     # contrib builds for Linux
     - os: linux
@@ -364,18 +412,24 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - PLAT=i686
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
@@ -383,34 +437,46 @@ matrix:
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - PLAT=i686
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - PLAT=i686
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
@@ -418,12 +484,16 @@ matrix:
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
         - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
@@ -431,6 +501,8 @@ matrix:
         - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
 
 
     # headless contrib builds for Linux
@@ -439,18 +511,24 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
         - PLAT=i686
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
@@ -458,34 +536,46 @@ matrix:
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
         - PLAT=i686
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
         - PLAT=i686
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
@@ -493,12 +583,16 @@ matrix:
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
         - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
@@ -506,6 +600,8 @@ matrix:
         - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
 
 # The first line is printed in the folding header in Travis output
 before_install: |
@@ -545,6 +641,7 @@ install: |
     # Build and package
     set -x
     build_wheel $REPO_DIR $PLAT
+    if [ -n "$USE_CCACHE" ]; then ccache --show-stats; fi
     set +x
 
 script: |
