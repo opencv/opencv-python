@@ -20,32 +20,58 @@ function bdist_wheel_cmd {
 
 if [ -n "$IS_OSX" ]; then
   echo "    > OSX environment "
+  export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 else
   echo "    > Linux environment "
+  export MAKEFLAGS="-j$(grep -E '^processor[[:space:]]*:' /proc/cpuinfo | wc -l)"
+fi
+
+if [ -n "$IS_OSX" ]; then
+
+    source travis_osx_brew_cache.sh
+    
+    BREW_SLOW_BUILIDING_PACKAGES=$(printf '%s\n' \
+        "x265 20"  \
+        "cmake 15" \
+        "ffmpeg 10" \
+    )
+    
+    #Contrib adds significantly to project's build time
+    if [ "$ENABLE_CONTRIB" -eq 1 ]; then
+        BREW_TIME_LIMIT=$((BREW_TIME_LIMIT - 10*60))
+    fi
+        
 fi
 
 function pre_build {
   echo "Starting pre-build"
-  set -e
+  set -e -o pipefail
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
+    
+    brew update --merge
+    brew_add_local_bottles
 
-    brew update
+    # Don't query analytical info online on `brew info`,
+    #  this takes several seconds and we don't need it
+    # see https://docs.brew.sh/Manpage , "info formula" section
+    export HOMEBREW_NO_GITHUB_API=1
+
+    # https://docs.travis-ci.com/user/caching/#ccache-cache
+    # No need to allow rc 1 -- if this triggers a timeout,
+    #  something is clearly wrong
+    brew_install_and_cache_within_time_limit ccache
+    export PATH="/usr/local/opt/ccache/libexec:$PATH"
 
     echo 'Installing QT4'
-    brew tap | grep -qxF cartr/qt4 || brew tap -v cartr/qt4
-    brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin -v cartr/qt4
-    brew list --versions qt@4 || brew install -v qt@4
-    echo '-----------------'
-    echo '-----------------'
+    brew tap | grep -qxF cartr/qt4 || brew tap cartr/qt4
+    brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin cartr/qt4
+    brew_install_and_cache_within_time_limit qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
+
     echo 'Installing FFmpeg'
-    # brew install does produce output regularly on a regular MacOS,
-    # but Travis doesn't see it for some reason
-    brew list --versions ffmpeg || \
-    travis_wait brew install -v ffmpeg --without-x264 --without-xvid --without-gpl
-    brew info ffmpeg
-    echo '-----------------'
+
+    brew_install_and_cache_within_time_limit ffmpeg || { [ $? -gt 1 ] && return 2 || return 0; }
 
   else
     echo "Running for linux"

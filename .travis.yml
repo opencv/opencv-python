@@ -23,6 +23,17 @@ dist: trusty
 git:
     submodules: false
 
+# https://docs.travis-ci.com/user/caching
+cache:
+  directories:
+    # https://stackoverflow.com/questions/39930171/cache-brew-builds-with-travis-ci
+    - $HOME/Library/Caches/Homebrew
+    - /usr/local/Homebrew/
+    # used in OSX custom build script dealing with local bottle caching
+    - $HOME/local_bottle_metadata
+    # `cache: ccache: true` has no effect if `language:` is not `c` or `cpp`
+    - $HOME/.ccache
+    
 matrix:
   fast_finish: true
   include:
@@ -511,6 +522,21 @@ before_install: |
     source multibuild_customize.sh
     echo $ENABLE_CONTRIB > contrib.enabled
     echo $ENABLE_HEADLESS > headless.enabled
+    
+    if [ -n "$IS_OSX" ]; then
+        TAPS="$(brew --repository)/Library/Taps"
+        if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
+            rm -rf "$TAPS/caskroom/homebrew-cask"
+        fi
+        find "$TAPS" -type d -name .git -exec \
+                bash -xec '
+                    cd $(dirname '\''{}'\'')
+                    git clean -fxd
+                    git status' \;
+                    
+        brew_cache_cleanup
+    fi
+    
     before_install
     # Not interested in travis internal scripts' output
     set +x
@@ -524,9 +550,30 @@ install: |
 script: |
     # Install and run tests
     set -x
-    install_run $PLAT
+    install_run $PLAT && rc=$? || rc=$?
     set +x
 
+    #otherwise, Travis logic terminates prematurely
+    #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
+    trap ERR
+    
+    test "$rc" -eq 0
+
+before_cache: |
+    # Cleanup dirs to be cached
+    set -x
+    if [ -n "$IS_OSX" ]; then
+
+        # When Taps is cached, this dir causes "Error: file exists" on `brew update`
+        if [ -e "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask" ]; then
+            rm -rf "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask"
+        fi
+
+        brew_cache_cleanup
+        
+    fi
+    set +x
+    
 after_success: |
     # Upload wheels to pypi if requested
     if [ -n "$TRAVIS_TAG" ]; then
