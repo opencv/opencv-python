@@ -33,13 +33,55 @@ if [ -n "$IS_OSX" ]; then
     BREW_SLOW_BUILIDING_PACKAGES=$(printf '%s\n' \
         "x265 20"  \
         "cmake 15" \
-        "ffmpeg 10" \
+        "ffmpeg_opencv 10" \
     )
     
     #Contrib adds significantly to project's build time
     if [ "$ENABLE_CONTRIB" -eq 1 ]; then
         BREW_TIME_LIMIT=$((BREW_TIME_LIMIT - 10*60))
     fi
+    
+    function generate_ffmpeg_formula {
+        local FF="ffmpeg"
+        local LFF="ffmpeg_opencv"
+        local FF_FORMULA; FF_FORMULA=$(brew formula "$FF")
+        local LFF_FORMULA; LFF_FORMULA="$(dirname "$FF_FORMULA")/${LFF}.rb"
+        
+        local REGENERATE
+        if [ -f "$LFF_FORMULA" ]; then
+            local UPSTREAM_VERSION VERSION
+            _brew_parse_package_info "$FF" " " UPSTREAM_VERSION _ _
+            _brew_parse_package_info "$LFF" " " VERSION _ _   || REGENERATE=1
+            #`rebuild` clause is ignored on `brew bottle` and deleted
+            # from newly-generated formula on `brew bottle --merge` for some reason
+            # so can't compare rebuild numbers
+            if [ "$UPSTREAM_VERSION" != "$VERSION" ]; then
+                REGENERATE=1
+            fi
+        else
+            REGENERATE=1
+        fi
+        if [ -n "$REGENERATE" ]; then
+            echo "Regenerating custom ffmpeg formula"
+            # Bottle block syntax: https://docs.brew.sh/Bottles#bottle-dsl-domain-specific-language
+            perl -wpe 'BEGIN {our ($found_blank, $bottle_block);}
+                if (/(^class )(Ffmpeg)(\s.*)/) {$_=$1.$2."Opencv".$3."\n"; next;}
+                if (!$found_blank && /^$/) {$_.="conflicts_with \"ffmpeg\"\n\n"; $found_blank=1; next;}
+                if (!$bottle_block && /^\s*bottle do$/) { $bottle_block=1; next; }
+                if ($bottle_block) { if (/^\s*end\s*$/) { $bottle_block=0} elsif (/^\s*sha256\s/) {$_=""} next; }
+if (/^\s*depends_on "(x264|x265|xvid)"$/) {$_=""; next;}
+                if (/^\s*--enable-(gpl|libx264|libx265|libxvid)$/) {$_=""; next;}
+                ' <"$FF_FORMULA" >"$LFF_FORMULA"
+            diff -u "$FF_FORMULA" "$LFF_FORMULA" || test $? -le 1
+
+            (   cd "$(dirname "$LFF_FORMULA")"
+                # This is the official way to add a formula
+                # https://docs.brew.sh/Formula-Cookbook#commit
+                git add "$(basename "$LFF_FORMULA")"
+                git commit -m "add/update custom ffmpeg ${VERSION}"
+            )
+        fi
+    }
         
 fi
 
@@ -71,7 +113,8 @@ function pre_build {
 
     echo 'Installing FFmpeg'
 
-    brew_install_and_cache_within_time_limit ffmpeg || { [ $? -gt 1 ] && return 2 || return 0; }
+    generate_ffmpeg_formula
+    brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
 
   else
     echo "Running for linux"
