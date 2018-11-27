@@ -3,7 +3,7 @@ environment:
     secure: fXgF9uyy6sT0JoVOR7BoqA==
 
   PASS:
-    secure: HHNjmjxQSvgSY9Zde0qh6A==
+    secure: 0bXSOVjf9x8L7nErTivu92TF1FwNosTjFJQPmxp8Dys=
 
   matrix:
     - PYTHON: "C:/Python27"
