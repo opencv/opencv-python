@@ -110,7 +110,8 @@ def main():
         "-DBUILD_SHARED_LIBS=OFF",
         "-DBUILD_TESTS=OFF",
         "-DBUILD_PERF_TESTS=OFF",
-        "-DBUILD_DOCS=OFF"
+        "-DBUILD_DOCS=OFF",
+        "-DOPENCV_SKIP_PYTHON_LOADER=ON"
     ] + (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
 
     # OS-specific components
@@ -123,7 +124,6 @@ def main():
         cmake_args.append("-DWITH_QT=OFF")
 
     if sys.platform.startswith('linux'):
-        cmake_args.append("-DOPENCV_SKIP_PYTHON_LOADER=ON")
         cmake_args.append("-DWITH_V4L=ON")
         cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
