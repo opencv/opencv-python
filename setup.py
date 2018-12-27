@@ -103,7 +103,8 @@ def main():
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
         "-DOPENCV_SKIP_PYTHON_LOADER=ON",
-        "-DOPENCV_PYTHON_INSTALL_PATH=python",
+        "-DOPENCV_PYTHON2_INSTALL_PATH=python",
+        "-DOPENCV_PYTHON3_INSTALL_PATH=python",
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
         # and skbuild bails out on seeing that
         "-DINSTALL_CREATE_DISTRIB=ON",
