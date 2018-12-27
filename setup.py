@@ -80,7 +80,7 @@ def main():
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
-        ['python/([^/]+/){1,2}cv2[^/]*%(ext)s' % {'ext': re.escape(sysconfig.get_config_var('SO'))}],
+        ['python/cv2[^/]*%(ext)s' % {'ext': re.escape(sysconfig.get_config_var('SO'))}],
 
         'cv2.data': [  # OPENCV_OTHER_INSTALL_PATH
             ('etc' if os.name == 'nt' else 'share/OpenCV') +
