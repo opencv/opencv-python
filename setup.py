@@ -105,6 +105,7 @@ def main():
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
         # and skbuild bails out on seeing that
         "-DINSTALL_CREATE_DISTRIB=ON",
+        "-DOPENCV_SKIP_PYTHON_LOADER=ON",
         # See opencv/CMakeLists.txt for options and defaults
         "-DBUILD_opencv_apps=OFF",
         "-DBUILD_SHARED_LIBS=OFF",
@@ -123,7 +124,6 @@ def main():
         cmake_args.append("-DWITH_QT=OFF")
 
     if sys.platform.startswith('linux'):
-        cmake_args.append("-DOPENCV_SKIP_PYTHON_LOADER=ON")
         cmake_args.append("-DWITH_V4L=ON")
         cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
