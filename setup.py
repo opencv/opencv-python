@@ -146,6 +146,8 @@ def main():
         cmake_args.append("-DWITH_IPP=OFF")   # tests fail with IPP compiled with
                                               # devtoolset-2 GCC 4.8.2 or vanilla GCC 4.9.4
                                               # see https://github.com/skvark/opencv-python/issues/138
+    if sys.platform.startswith('linux') and not x64:
+        cmake_args.append("-DCMAKE_CXX_FLAGS=-U__STRICT_ANSI__")
 
     # ABI config variables are introduced in PEP 425
     if sys.version_info[:2] < (3, 2):
