@@ -52,6 +52,9 @@ A: If the import fails on Windows, make sure you have [Visual C++ redistributabl
 
 If the above does not help, check if you are using Anaconda. Old Anaconda versions have a bug which causes the error, see [this issue](https://github.com/skvark/opencv-python/issues/36) for a manual fix.
 
+On all Windows Server versions, need enable "Desktop Experience" featuer under "User Interfaces and Infrastructure" in Add roles and features. Because mfplat.dll was missing which is related to Window Media Service.
+
+
 **Q: I have some other import errors?**
 
 A: Make sure you have removed old manual installations of OpenCV Python bindings (cv2.so or cv2.pyd in site-packages).
