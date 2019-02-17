@@ -29,24 +29,24 @@ fi
 if [ -n "$IS_OSX" ]; then
 
     source travis_osx_brew_cache.sh
-    
+
     BREW_SLOW_BUILIDING_PACKAGES=$(printf '%s\n' \
         "x265 20"  \
         "cmake 15" \
         "ffmpeg_opencv 10" \
     )
-    
+
     #Contrib adds significantly to project's build time
     if [ "$ENABLE_CONTRIB" -eq 1 ]; then
         BREW_TIME_LIMIT=$((BREW_TIME_LIMIT - 10*60))
     fi
-    
+
     function generate_ffmpeg_formula {
         local FF="ffmpeg"
         local LFF="ffmpeg_opencv"
         local FF_FORMULA; FF_FORMULA=$(brew formula "$FF")
         local LFF_FORMULA; LFF_FORMULA="$(dirname "$FF_FORMULA")/${LFF}.rb"
-        
+
         local REGENERATE
         if [ -f "$LFF_FORMULA" ]; then
             local UPSTREAM_VERSION VERSION
@@ -82,7 +82,7 @@ if (/^\s*depends_on "(x264|x265|xvid)"$/) {$_=""; next;}
             )
         fi
     }
-        
+
 fi
 
 function pre_build {
@@ -91,8 +91,8 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
-    
-    brew update --merge
+
+    brew update
     brew_add_local_bottles
 
     # Don't query analytical info online on `brew info`,
