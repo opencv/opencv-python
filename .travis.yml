@@ -33,7 +33,7 @@ cache:
     - $HOME/local_bottle_metadata
     # `cache: ccache: true` has no effect if `language:` is not `c` or `cpp`
     - $HOME/.ccache
-
+    
 matrix:
   fast_finish: true
   include:
@@ -41,7 +41,7 @@ matrix:
     # default builds for MacOS
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
@@ -49,7 +49,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
@@ -57,7 +57,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
@@ -65,7 +65,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
@@ -73,7 +73,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
@@ -84,7 +84,7 @@ matrix:
     # headless builds for MacOS
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
@@ -92,7 +92,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
@@ -100,7 +100,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
@@ -108,7 +108,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
@@ -116,7 +116,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
@@ -127,7 +127,7 @@ matrix:
     # Contrib builds for MacOS
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
@@ -135,7 +135,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
@@ -143,7 +143,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
@@ -151,7 +151,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
@@ -159,7 +159,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
@@ -170,7 +170,7 @@ matrix:
     # headless contrib builds for MacOS
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
@@ -178,7 +178,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
@@ -186,7 +186,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
@@ -194,7 +194,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
@@ -202,7 +202,7 @@ matrix:
         - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
@@ -618,7 +618,7 @@ before_install: |
     source multibuild_customize.sh
     echo $ENABLE_CONTRIB > contrib.enabled
     echo $ENABLE_HEADLESS > headless.enabled
-
+    
     if [ -n "$IS_OSX" ]; then
         TAPS="$(brew --repository)/Library/Taps"
         if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
@@ -629,10 +629,10 @@ before_install: |
                     cd $(dirname '\''{}'\'')
                     git clean -fxd
                     git status' \;
-
+                    
         brew_cache_cleanup
     fi
-
+    
     before_install
     # Not interested in travis internal scripts' output
     set +x
@@ -653,7 +653,7 @@ script: |
     #otherwise, Travis logic terminates prematurely
     #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
     trap ERR
-
+    
     test "$rc" -eq 0
 
 before_cache: |
@@ -667,10 +667,10 @@ before_cache: |
         fi
 
         brew_cache_cleanup
-
+        
     fi
     set +x
-
+    
 after_success: |
     # Upload wheels to pypi if requested
     if [ -n "$TRAVIS_TAG" ]; then
