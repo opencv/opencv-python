@@ -41,6 +41,12 @@ function brew_install_and_cache_within_time_limit {
 
     local BUILD_FROM_SOURCE INCLUDE_BUILD
     
+    if brew list --versions "$PACKAGE" && ! (brew outdated | grep -qx "$PACKAGE"); then
+        echo "Already installed and the latest version: $PACKAGE"
+        return 0
+    fi
+
+    
     _brew_is_bottle_available "$PACKAGE" || BUILD_FROM_SOURCE=1
     [ -n "$BUILD_FROM_SOURCE" ] && INCLUDE_BUILD="--include-build" || true
 
@@ -152,7 +158,7 @@ function brew_add_local_bottles {
                 )
             fi
             
-            if [ -n "$BOTTLE" ]; then rm "$BOTTLE"; fi
+            if [ -n "$BOTTLE" -a -n "$BOTTLE_EXISTS" ]; then rm "$BOTTLE"; fi
             rm -f "$BOTTLE_LINK"
             rm "$JSON"
             
@@ -295,17 +301,14 @@ function _brew_is_bottle_available {
 
 function _brew_install_and_cache {
     # Install bottle or make and cache bottle.
-    # assumes that deps were already installed.
+    # assumes that deps were already installed
+    # and not already the latest version
     
     local PACKAGE;PACKAGE="${1:?}"
     local USE_BOTTLE;USE_BOTTLE="${2:?}"
     local VERB
     
     if brew list --versions "$PACKAGE"; then
-        if ! (brew outdated | grep -qx "$PACKAGE"); then
-            echo "Already the latest version: $PACKAGE"
-            return 0
-        fi
         VERB=upgrade
     else
         VERB=install

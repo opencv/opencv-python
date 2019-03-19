@@ -619,7 +619,7 @@ script: |
 
 before_cache: |
     # Cleanup dirs to be cached
-    set -x
+    set -e; set -x
     if [ -n "$IS_OSX" ]; then
 
         # When Taps is cached, this dir causes "Error: file exists" on `brew update`
@@ -630,7 +630,7 @@ before_cache: |
         brew_cache_cleanup
 
     fi
-    set +x
+    set +x; set +e
 
 after_success: |
     # Upload wheels to pypi if requested
