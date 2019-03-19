@@ -24,6 +24,11 @@ BREW_TIME_LIMIT=$((30*60))
 BREW_TIME_HARD_LIMIT=$((40*60))
 
 
+# Auto cleanup can delete locally-built bottles
+# when the caching logic isn't prepared for that
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+
+
 
 #Public functions
 
@@ -34,12 +39,12 @@ function brew_install_and_cache_within_time_limit {
     # Exit with status 2 on any other error.
     ( eval "$_BREW_ERREXIT"
     
-    local PACKAGE; PACKAGE="${1:?}" || return 2
-    local TIME_LIMIT;TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || return 2
-    local TIME_HARD_LIMIT;TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || return 2
-    local TIME_START;TIME_START=${4:-$BREW_TIME_START} || return 2
+    local PACKAGE; PACKAGE="${1:?}" || exit 2
+    local TIME_LIMIT;TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || exit 2
+    local TIME_HARD_LIMIT;TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || exit 2
+    local TIME_START;TIME_START=${4:-$BREW_TIME_START} || exit 2
 
-    local BUILD_FROM_SOURCE INCLUDE_BUILD
+    local BUILD_FROM_SOURCE INCLUDE_BUILD KEG_ONLY
     
     if brew list --versions "$PACKAGE" && ! (brew outdated | grep -qx "$PACKAGE"); then
         echo "Already installed and the latest version: $PACKAGE"
@@ -47,21 +52,21 @@ function brew_install_and_cache_within_time_limit {
     fi
 
     
-    _brew_is_bottle_available "$PACKAGE" || BUILD_FROM_SOURCE=1
+    _brew_is_bottle_available "$PACKAGE" KEG_ONLY || BUILD_FROM_SOURCE=1
     [ -n "$BUILD_FROM_SOURCE" ] && INCLUDE_BUILD="--include-build" || true
 
     # Whitespace is illegal in package names so converting all whitespace into single spaces due to no quotes is okay.
-    DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD` || return 2
+    DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD` || exit 2
     for dep in $DEPS; do
         #TIME_LIMIT only has to be met if we'll be actually building the main project this iteration, i.e. after the "root" module installation
         #While we don't know that yet, we can make better use of Travis-given time with a laxer limit
         #We still can't overrun TIME_HARD_LIMIT as that would't leave time to save the cache
-        brew_install_and_cache_within_time_limit "$dep" $(((TIME_LIMIT+TIME_HARD_LIMIT)/2)) "$TIME_HARD_LIMIT" "$TIME_START" || return $?
+        brew_install_and_cache_within_time_limit "$dep" $(((TIME_LIMIT+TIME_HARD_LIMIT)/2)) "$TIME_HARD_LIMIT" "$TIME_START" || exit $?
     done
 
-    _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || return $?
-    _brew_install_and_cache "$PACKAGE" "$([[ -z "$INCLUDE_BUILD" ]] && echo 1 || echo 0)" || return 2
-    _brew_check_elapsed_build_time "$TIME_START" "$TIME_LIMIT" || return $?
+    _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || exit $?
+    _brew_install_and_cache "$PACKAGE" "$([[ -z "$BUILD_FROM_SOURCE" ]] && echo 1 || echo 0)" "$KEG_ONLY" || exit 2
+    _brew_check_elapsed_build_time "$TIME_START" "$TIME_LIMIT" || exit $?
     ) \
     || if test $? -eq 1; then brew_go_bootstrap_mode; return 1; else return 2; fi      #must run this in current process
 }
@@ -288,8 +293,22 @@ function _brew_parse_package_info {
 function _brew_is_bottle_available {
 
     local PACKAGE;PACKAGE="${1:?}"
-    
-    local INFO="$(brew info "$PACKAGE" | head -n 1)"
+    local VAR_KEG_ONLY="$2"
+
+    local INFO;INFO="$(brew info "$PACKAGE" | head -n 1)"
+    if [ -n "$VAR_KEG_ONLY" ]; then
+        if grep -qwF '[keg-only]' <<<"$INFO"; then
+            eval "${VAR_KEG_ONLY}=1"
+        else
+            eval "${VAR_KEG_ONLY}=0"
+        fi
+    fi
+
+    if grep -qxEe '[[:space:]]*bottle :unneeded' $(brew formula "$PACKAGE"); then
+        echo "Bottle disabled: $PACKAGE"
+        return 0
+    fi
+
     if grep -qwF '(bottled)' <<<"$INFO"; then
         echo "Bottle available: $INFO"
         return 0
@@ -306,10 +325,16 @@ function _brew_install_and_cache {
     
     local PACKAGE;PACKAGE="${1:?}"
     local USE_BOTTLE;USE_BOTTLE="${2:?}"
+    local KEG_ONLY;KEG_ONLY="${3:?}"
     local VERB
     
-    if brew list --versions "$PACKAGE"; then
-        VERB=upgrade
+    if brew list --versions "$PACKAGE" >/dev/null; then
+        # Install alongside the old version to avoid to have to update "runtime dependents"
+        # https://discourse.brew.sh/t/can-i-install-a-new-version-without-having-to-upgrade-runtime-dependents/4443
+        VERB="install --force"
+        if [ "$KEG_ONLY" -eq 0 ]; then
+            brew unlink "$PACKAGE"
+        fi
     else
         VERB=install
     fi
@@ -328,8 +353,8 @@ function _brew_install_and_cache {
         # doesn't seem to be a documented way to get file names
         local BOTTLE; BOTTLE=$(grep -Ee '^./' <<<"$OUT")
         #proper procedure as per https://discourse.brew.sh/t/how-are-bottle-and-postinstall-related-is-it-safe-to-run-bottle-after-postinstall/3410/4
-        brew uninstall "$PACKAGE"
-        brew install "$BOTTLE"
+        brew uninstall --ignore-dependencies "$PACKAGE"
+        brew $VERB "$BOTTLE"
         
         local JSON; JSON=$(sed -E 's/bottle(.[[:digit:]]+)?\.tar\.gz$/bottle.json/' <<<"$BOTTLE")
         
