@@ -586,9 +586,10 @@ before_install: |
         fi
         find "$TAPS" -type d -name .git -exec \
                 bash -xec '
-                    cd $(dirname '\''{}'\'')
-                    git clean -fxd
-                    git status' \;
+                    cd $(dirname '\''{}'\'') || echo "status: $?"
+                    git clean -fxd || echo "status: $?"
+                    sleep 1 || echo "status: $?"
+                    git status || echo "status: $?"' \; || echo "status: $?"
 
         brew_cache_cleanup
     fi
