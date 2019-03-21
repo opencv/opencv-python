@@ -594,7 +594,6 @@ before_install: |
         brew_cache_cleanup
     fi
 
-    before_install
     # Not interested in travis internal scripts' output
     set +x
 
@@ -602,7 +601,6 @@ install: |
     # Build and package
     set -x
     build_wheel $REPO_DIR $PLAT
-    if [ -n "$USE_CCACHE" ]; then ccache --show-stats; fi
     set +x
 
 script: |

@@ -16,6 +16,7 @@ function bdist_wheel_cmd {
     local abs_wheelhouse=$1
     python setup.py bdist_wheel $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
+    if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache --show-stats; fi
 }
 
 if [ -n "$IS_OSX" ]; then
@@ -99,7 +100,7 @@ function pre_build {
     #  this takes several seconds and we don't need it
     # see https://docs.brew.sh/Manpage , "info formula" section
     export HOMEBREW_NO_GITHUB_API=1
-    
+
     echo 'Installing QT4'
     brew tap | grep -qxF cartr/qt4 || brew tap cartr/qt4
     brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin cartr/qt4
@@ -108,8 +109,13 @@ function pre_build {
     echo 'Installing FFmpeg'
 
     generate_ffmpeg_formula
-    brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
-
+    local IS_BOTTLE_AVAILABLE; _brew_is_bottle_available ffmpeg_opencv && IS_BOTTLE_AVAILABLE=1 || IS_BOTTLE_AVAILABLE=0
+    _brew_install_and_cache ffmpeg_opencv "$IS_BOTTLE_AVAILABLE"
+    #brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
+    
+    # Have to install macpython late to avoid conflict with Homebrew Python update
+    before_install
+    
   else
     echo "Running for linux"
   fi

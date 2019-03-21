@@ -215,6 +215,8 @@ function brew_go_bootstrap_mode {
 # Terminate the build but ensure saving the cache
 
     echo "Going into cache bootstrap mode"
+    
+    BREW_BOOTSTRAP_MODE=1
         
     #Can't just `exit` because that would terminate the build without saving the cache
     #Have to replace further actions with no-ops
