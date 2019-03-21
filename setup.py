@@ -102,12 +102,16 @@ def main():
         # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
+        
+        # When off, adds __init__.py and a few more helper .py's. We use our own helper files with a different structure.
         "-DOPENCV_SKIP_PYTHON_LOADER=ON",
-        "-DOPENCV_PYTHON2_INSTALL_PATH=python",
-        "-DOPENCV_PYTHON3_INSTALL_PATH=python",
+        # Relative dir to install the built module to in the build tree.
+        # The default is generated from sysconfig, we'd rather have a constant for simplicity
+        "-DOPENCV_PYTHON%d_INSTALL_PATH=python" % sys.version_info[0],
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
         # and skbuild bails out on seeing that
         "-DINSTALL_CREATE_DISTRIB=ON",
+        
         # See opencv/CMakeLists.txt for options and defaults
         "-DBUILD_opencv_apps=OFF",
         "-DBUILD_SHARED_LIBS=OFF",
