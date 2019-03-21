@@ -45,35 +45,30 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
         - TEST_DEPENDS=numpy==1.14.5
 
     # headless builds for MacOS
@@ -83,35 +78,30 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
         - TEST_DEPENDS=numpy==1.14.5
 
     # Contrib builds for MacOS
@@ -121,35 +111,30 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
         - TEST_DEPENDS=numpy==1.14.5
 
     # headless contrib builds for MacOS
@@ -159,35 +144,30 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
     - os: osx
       osx_image: xcode8
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
         - TEST_DEPENDS=numpy==1.14.5
 
     # default builds for Linux
