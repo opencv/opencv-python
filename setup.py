@@ -268,7 +268,7 @@ class RearrangeCMakeOutput(object):
 
         # 'relpath'/'reldir' = relative to CMAKE_INSTALL_DIR/cmake_install_dir
         # 'path'/'dir' = relative to sourcetree root
-        cmake_install_dir = os.path.join(cls._setuptools_wrap.CMAKE_INSTALL_DIR,
+        cmake_install_dir = os.path.join(cls._setuptools_wrap.CMAKE_INSTALL_DIR(),
                                          cmake_install_reldir)
         install_relpaths = [os.path.relpath(p, cmake_install_dir) for p in install_paths]
         fslash_install_relpaths = [p.replace(os.path.sep, '/') for p in install_relpaths]
