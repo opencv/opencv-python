@@ -37,11 +37,6 @@ if [ -n "$IS_OSX" ]; then
         "ffmpeg_opencv 10" \
     )
 
-    #Contrib adds significantly to project's build time
-    if [ "$ENABLE_CONTRIB" -eq 1 ]; then
-        BREW_TIME_LIMIT=$((BREW_TIME_LIMIT - 10*60))
-    fi
-
     function generate_ffmpeg_formula {
         local FF="ffmpeg"
         local LFF="ffmpeg_opencv"
@@ -92,9 +87,14 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
+    
+    local CACHE_STAGE; (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
 
-    brew update
-    brew_add_local_bottles
+    #after the cache stage, all bottles and Homebrew metadata should be already cached locally
+    if [ -n "$CACHE_STAGE" ]; then
+        brew update
+        brew_add_local_bottles
+    fi
 
     # Don't query analytical info online on `brew info`,
     #  this takes several seconds and we don't need it
@@ -104,14 +104,25 @@ function pre_build {
     echo 'Installing QT4'
     brew tap | grep -qxF cartr/qt4 || brew tap cartr/qt4
     brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin cartr/qt4
-    brew_install_and_cache_within_time_limit qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
+    if [ -n "$CACHE_STAGE" ]; then
+        brew_install_and_cache_within_time_limit qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
+    else
+        brew install qt@4
+    fi
 
     echo 'Installing FFmpeg'
 
-    generate_ffmpeg_formula
-    local IS_BOTTLE_AVAILABLE; _brew_is_bottle_available ffmpeg_opencv && IS_BOTTLE_AVAILABLE=1 || IS_BOTTLE_AVAILABLE=0
-    _brew_install_and_cache ffmpeg_opencv "$IS_BOTTLE_AVAILABLE"
-    #brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
+    if [ -n "$CACHE_STAGE" ]; then
+        generate_ffmpeg_formula
+        brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
+    else
+        brew install ffmpeg_opencv
+    fi
+
+    if [ -n "$CACHE_STAGE" ]; then
+        brew_go_bootstrap_mode 0
+        return 0
+    fi
     
     # Have to install macpython late to avoid conflict with Homebrew Python update
     before_install

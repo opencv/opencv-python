@@ -10,7 +10,8 @@ BREW_TIME_START=$(($TRAVIS_TIMER_START_TIME/10**9))
 
 # If after a package is built, elapsed time is more than this many seconds, fail the build but save Travis cache
 # The cutoff moment should leave enough time till Travis' job time limit to process the main project.
-BREW_TIME_LIMIT=$((30*60))
+#  Since we have moved deps into a separate stage, we don't need to leave time for the project any more
+BREW_TIME_LIMIT=$((38*60))
 # If a slow-building package is about to be built and the projected build end moment is beyond this many seconds,
 # skip that build, fail the Travis job and save Travis cache.
 # This cutoff should leave enough time for before_cache and cache save.
@@ -207,6 +208,7 @@ function brew_cache_cleanup {
 function brew_go_bootstrap_mode {
 # Can be overridden
 # Terminate the build but ensure saving the cache
+    local EXIT_CODE=${1:-1}
 
     echo "Going into cache bootstrap mode"
     
@@ -223,7 +225,7 @@ function brew_go_bootstrap_mode {
         
         # Travis runs user scripts via `eval` i.e. in the same shell process.
         # So have to unset errexit in order to get to cache save stage
-        set +e; return 1
+        set +e; return '"$EXIT_CODE"'
     }'    
 }
 
