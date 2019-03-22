@@ -1,12 +1,5 @@
 # Library to cache downloaded and locally-built Homebrew bottles in Travis OSX build.
 
-_BREW_ERREXIT='
-set -e -o pipefail
-trap '\''{ sleep 3;    #if we terminale too abruptly, Travis will lose some log output
-        exit 2;     #The trap isn''t called in the parent function, so can''t use `return` here.
-                    #`exit` will terminate the entire build but it seems we have no choice.
-}'\'' ERR
-set -E'
 
 #Should be in Travis' cache
 BREW_LOCAL_BOTTLE_METADATA="$HOME/local_bottle_metadata"
@@ -37,16 +30,17 @@ function brew_install_and_cache_within_time_limit {
     # use bottle if available, build and cache bottle if not.
     # Terminate and exit with status 1 if this takes too long.
     # Exit with status 2 on any other error.
-    ( eval "$_BREW_ERREXIT"
-    
-    local PACKAGE; PACKAGE="${1:?}" || exit 2
-    local TIME_LIMIT;TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || exit 2
-    local TIME_HARD_LIMIT;TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || exit 2
-    local TIME_START;TIME_START=${4:-$BREW_TIME_START} || exit 2
+    ( set -eE -o pipefail; trap '{ sleep 3; exit 2; }' ERR
+
+    local PACKAGE TIME_LIMIT TIME_HARD_LIMIT TIME_START
+    PACKAGE="${1:?}" || exit 2
+    TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || exit 2
+    TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || exit 2
+    TIME_START=${4:-$BREW_TIME_START} || exit 2
 
     local BUILD_FROM_SOURCE INCLUDE_BUILD KEG_ONLY
     
-    if brew list --versions "$PACKAGE" && ! (brew outdated | grep -qx "$PACKAGE"); then
+    if brew list --versions "$PACKAGE" >/dev/null && ! (brew outdated | grep -qxF "$PACKAGE"); then
         echo "Already installed and the latest version: $PACKAGE"
         return 0
     fi
@@ -266,8 +260,9 @@ function _brew_parse_package_info {
     # Get and parse `brew info --json` about a package
     # and save data into specified variables
     
-    local PACKAGE; PACKAGE="${1:?}"; shift
-    local OS_CODENAME;OS_CODENAME="${1:?}"; shift
+    local PACKAGE OS_CODENAME
+    PACKAGE="${1:?}"; shift
+    OS_CODENAME="${1:?}"; shift
 
     local JSON_DATA; JSON_DATA=$(python2.7 -c 'if True:
     import sys, json, subprocess; j=json.loads(subprocess.check_output(("brew","info","--json=v1",sys.argv[1])))
@@ -325,12 +320,13 @@ function _brew_install_and_cache {
     # assumes that deps were already installed
     # and not already the latest version
     
-    local PACKAGE;PACKAGE="${1:?}"
-    local USE_BOTTLE;USE_BOTTLE="${2:?}"
-    local KEG_ONLY;KEG_ONLY="${3:?}"
+    local PACKAGE USE_BOTTLE KEG_ONLY
+    PACKAGE="${1:?}"
+    USE_BOTTLE="${2:?}"
+    KEG_ONLY="${3:?}"
     local VERB
     
-    if brew list --versions "$PACKAGE" >/dev/null; then
+    if brew list --versions "$PACKAGE"; then
         # Install alongside the old version to avoid to have to update "runtime dependents"
         # https://discourse.brew.sh/t/can-i-install-a-new-version-without-having-to-upgrade-runtime-dependents/4443
         VERB="install --force"
@@ -382,10 +378,11 @@ function _brew_check_elapsed_build_time {
     # If time limit has been reached,
     # arrange for further build to be skipped and return 1
 
-    local TIME_START;TIME_START="${1:?}"
-    local TIME_LIMIT;TIME_LIMIT="${2:?}"
+    local TIME_START TIME_LIMIT ELAPSED_TIME
+    TIME_START="${1:?}"
+    TIME_LIMIT="${2:?}"
     
-    local ELAPSED_TIME;ELAPSED_TIME=$(($(date +%s) - $TIME_START))
+    ELAPSED_TIME=$(($(date +%s) - $TIME_START))
     echo "Elapsed time: "$(($ELAPSED_TIME/60))"m (${ELAPSED_TIME}s)"
     
     if [[ "$ELAPSED_TIME" -gt $TIME_LIMIT ]]; then 
@@ -400,10 +397,12 @@ function _brew_check_slow_building_ahead {
     #If the package's projected build completion is higher than hard limit,
     # skip it and arrange for further build to be skipped and return 1
     
-    local PACKAGE="${1:?}"
-    local TIME_START="${2:?}"
-    local TIME_HARD_LIMIT="${3:?}"
+    local PACKAGE TIME_START TIME_HARD_LIMIT
+    PACKAGE="${1:?}"
+    TIME_START="${2:?}"
+    TIME_HARD_LIMIT="${3:?}"
     
+    local PROJECTED_BUILD_TIME 
     PROJECTED_BUILD_TIME=$(echo "$BREW_SLOW_BUILIDING_PACKAGES" | awk '$1=="'"$PACKAGE"'"{print $2}')
     [ -z "$PROJECTED_BUILD_TIME" ] && return 0 || true
     
