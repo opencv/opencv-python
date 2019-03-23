@@ -32,7 +32,6 @@ if [ -n "$IS_OSX" ]; then
     source travis_osx_brew_cache.sh
 
     BREW_SLOW_BUILIDING_PACKAGES=$(printf '%s\n' \
-        "x265 20"  \
         "cmake 15" \
         "ffmpeg_opencv 10" \
     )
