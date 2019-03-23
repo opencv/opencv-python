@@ -22,6 +22,12 @@ BREW_TIME_HARD_LIMIT=$((43*60))
 # when the caching logic isn't prepared for that
 export HOMEBREW_NO_INSTALL_CLEANUP=1
 
+# Don't query analytical info online on `brew info`,
+#  this takes several seconds and we don't need it
+# see https://docs.brew.sh/Manpage , "info formula" section
+export HOMEBREW_NO_GITHUB_API=1
+
+
 
 
 #Public functions

@@ -95,11 +95,6 @@ function pre_build {
         brew_add_local_bottles
     fi
 
-    # Don't query analytical info online on `brew info`,
-    #  this takes several seconds and we don't need it
-    # see https://docs.brew.sh/Manpage , "info formula" section
-    export HOMEBREW_NO_GITHUB_API=1
-
     echo 'Installing QT4'
     brew tap | grep -qxF cartr/qt4 || brew tap cartr/qt4
     brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin cartr/qt4
