@@ -11,11 +11,11 @@ BREW_TIME_START=$(($TRAVIS_TIMER_START_TIME/10**9))
 # If after a package is built, elapsed time is more than this many seconds, fail the build but save Travis cache
 # The cutoff moment should leave enough time till Travis' job time limit to process the main project.
 #  Since we have moved deps into a separate stage, we don't need to leave time for the project any more
-BREW_TIME_LIMIT=$((38*60))
+BREW_TIME_LIMIT=$((42*60))
 # If a slow-building package is about to be built and the projected build end moment is beyond this many seconds,
 # skip that build, fail the Travis job and save Travis cache.
 # This cutoff should leave enough time for before_cache and cache save.
-BREW_TIME_HARD_LIMIT=$((40*60))
+BREW_TIME_HARD_LIMIT=$((43*60))
 
 
 # Auto cleanup can delete locally-built bottles
