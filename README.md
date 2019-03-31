@@ -9,7 +9,7 @@
 1. If you have previous/other manually installed (= not installed via ``pip``) version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
 2. Select the correct package for your environment:
 
-    There are four different packages and you should **select only one of them**. Do not install multiple different packages in the same enviroment. There is no plugin architecture: all the packages use the same namespace (`cv2`). If you installed multiple different packages in the same environment, uninstall them all with ``pip uninstall`` and reinstall only one package.
+    There are four different packages and you should **select only one of them**. Do not install multiple different packages in the same environment. There is no plugin architecture: all the packages use the same namespace (`cv2`). If you installed multiple different packages in the same environment, uninstall them all with ``pip uninstall`` and reinstall only one package.
 
     **a.** Packages for standard desktop environments (Windows, macOS, almost any GNU/Linux distribution)
 
