@@ -102,12 +102,16 @@ def main():
         # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
+        
+        # When off, adds __init__.py and a few more helper .py's. We use our own helper files with a different structure.
         "-DOPENCV_SKIP_PYTHON_LOADER=ON",
-        "-DOPENCV_PYTHON2_INSTALL_PATH=python",
-        "-DOPENCV_PYTHON3_INSTALL_PATH=python",
+        # Relative dir to install the built module to in the build tree.
+        # The default is generated from sysconfig, we'd rather have a constant for simplicity
+        "-DOPENCV_PYTHON%d_INSTALL_PATH=python" % sys.version_info[0],
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
         # and skbuild bails out on seeing that
         "-DINSTALL_CREATE_DISTRIB=ON",
+        
         # See opencv/CMakeLists.txt for options and defaults
         "-DBUILD_opencv_apps=OFF",
         "-DBUILD_SHARED_LIBS=OFF",
@@ -141,6 +145,7 @@ def main():
         cmake_args.append("-DWITH_LAPACK=OFF")  # Some OSX LAPACK fns are incompatible, see
                                                 # https://github.com/skvark/opencv-python/issues/21
         cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++")
+        cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7")
 
     if sys.platform.startswith('linux'):
         cmake_args.append("-DWITH_IPP=OFF")   # tests fail with IPP compiled with
@@ -263,7 +268,7 @@ class RearrangeCMakeOutput(object):
 
         # 'relpath'/'reldir' = relative to CMAKE_INSTALL_DIR/cmake_install_dir
         # 'path'/'dir' = relative to sourcetree root
-        cmake_install_dir = os.path.join(cls._setuptools_wrap.CMAKE_INSTALL_DIR,
+        cmake_install_dir = os.path.join(cls._setuptools_wrap.CMAKE_INSTALL_DIR(),
                                          cmake_install_reldir)
         install_relpaths = [os.path.relpath(p, cmake_install_dir) for p in install_paths]
         fslash_install_relpaths = [p.replace(os.path.sep, '/') for p in install_relpaths]

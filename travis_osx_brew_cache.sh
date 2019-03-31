@@ -1,12 +1,5 @@
 # Library to cache downloaded and locally-built Homebrew bottles in Travis OSX build.
 
-_BREW_ERREXIT='
-set -e -o pipefail
-trap '\''{ sleep 3;    #if we terminale too abruptly, Travis will lose some log output
-        exit 2;     #The trap isn''t called in the parent function, so can''t use `return` here.
-                    #`exit` will terminate the entire build but it seems we have no choice.
-}'\'' ERR
-set -E'
 
 #Should be in Travis' cache
 BREW_LOCAL_BOTTLE_METADATA="$HOME/local_bottle_metadata"
@@ -17,11 +10,23 @@ BREW_TIME_START=$(($TRAVIS_TIMER_START_TIME/10**9))
 
 # If after a package is built, elapsed time is more than this many seconds, fail the build but save Travis cache
 # The cutoff moment should leave enough time till Travis' job time limit to process the main project.
-BREW_TIME_LIMIT=$((30*60))
+#  Since we have moved deps into a separate stage, we don't need to leave time for the project any more
+BREW_TIME_LIMIT=$((42*60))
 # If a slow-building package is about to be built and the projected build end moment is beyond this many seconds,
 # skip that build, fail the Travis job and save Travis cache.
 # This cutoff should leave enough time for before_cache and cache save.
-BREW_TIME_HARD_LIMIT=$((40*60))
+BREW_TIME_HARD_LIMIT=$((43*60))
+
+
+# Auto cleanup can delete locally-built bottles
+# when the caching logic isn't prepared for that
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+
+# Don't query analytical info online on `brew info`,
+#  this takes several seconds and we don't need it
+# see https://docs.brew.sh/Manpage , "info formula" section
+export HOMEBREW_NO_GITHUB_API=1
+
 
 
 
@@ -32,30 +37,37 @@ function brew_install_and_cache_within_time_limit {
     # use bottle if available, build and cache bottle if not.
     # Terminate and exit with status 1 if this takes too long.
     # Exit with status 2 on any other error.
-    ( eval "$_BREW_ERREXIT"
-    
-    local PACKAGE; PACKAGE="${1:?}" || return 2
-    local TIME_LIMIT;TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || return 2
-    local TIME_HARD_LIMIT;TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || return 2
-    local TIME_START;TIME_START=${4:-$BREW_TIME_START} || return 2
+    ( set -eE -o pipefail; trap '{ sleep 3; exit 2; }' ERR
 
-    local BUILD_FROM_SOURCE INCLUDE_BUILD
+    local PACKAGE TIME_LIMIT TIME_HARD_LIMIT TIME_START
+    PACKAGE="${1:?}" || exit 2
+    TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || exit 2
+    TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || exit 2
+    TIME_START=${4:-$BREW_TIME_START} || exit 2
+
+    local BUILD_FROM_SOURCE INCLUDE_BUILD KEG_ONLY
     
-    _brew_is_bottle_available "$PACKAGE" || BUILD_FROM_SOURCE=1
+    if brew list --versions "$PACKAGE" >/dev/null && ! (brew outdated | grep -qxF "$PACKAGE"); then
+        echo "Already installed and the latest version: $PACKAGE"
+        return 0
+    fi
+
+    
+    _brew_is_bottle_available "$PACKAGE" KEG_ONLY || BUILD_FROM_SOURCE=1
     [ -n "$BUILD_FROM_SOURCE" ] && INCLUDE_BUILD="--include-build" || true
 
     # Whitespace is illegal in package names so converting all whitespace into single spaces due to no quotes is okay.
-    DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD` || return 2
+    DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD` || exit 2
     for dep in $DEPS; do
         #TIME_LIMIT only has to be met if we'll be actually building the main project this iteration, i.e. after the "root" module installation
         #While we don't know that yet, we can make better use of Travis-given time with a laxer limit
         #We still can't overrun TIME_HARD_LIMIT as that would't leave time to save the cache
-        brew_install_and_cache_within_time_limit "$dep" $(((TIME_LIMIT+TIME_HARD_LIMIT)/2)) "$TIME_HARD_LIMIT" "$TIME_START" || return $?
+        brew_install_and_cache_within_time_limit "$dep" $(((TIME_LIMIT+TIME_HARD_LIMIT)/2)) "$TIME_HARD_LIMIT" "$TIME_START" || exit $?
     done
 
-    _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || return $?
-    _brew_install_and_cache "$PACKAGE" "$([[ -z "$INCLUDE_BUILD" ]] && echo 1 || echo 0)" || return 2
-    _brew_check_elapsed_build_time "$TIME_START" "$TIME_LIMIT" || return $?
+    _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || exit $?
+    _brew_install_and_cache "$PACKAGE" "$([[ -z "$BUILD_FROM_SOURCE" ]] && echo 1 || echo 0)" "$KEG_ONLY" || exit 2
+    _brew_check_elapsed_build_time "$TIME_START" "$TIME_LIMIT" || exit $?
     ) \
     || if test $? -eq 1; then brew_go_bootstrap_mode; return 1; else return 2; fi      #must run this in current process
 }
@@ -152,7 +164,7 @@ function brew_add_local_bottles {
                 )
             fi
             
-            if [ -n "$BOTTLE" ]; then rm "$BOTTLE"; fi
+            if [ -n "$BOTTLE" -a -n "$BOTTLE_EXISTS" ]; then rm "$BOTTLE"; fi
             rm -f "$BOTTLE_LINK"
             rm "$JSON"
             
@@ -202,8 +214,11 @@ function brew_cache_cleanup {
 function brew_go_bootstrap_mode {
 # Can be overridden
 # Terminate the build but ensure saving the cache
+    local EXIT_CODE=${1:-1}
 
     echo "Going into cache bootstrap mode"
+    
+    BREW_BOOTSTRAP_MODE=1
         
     #Can't just `exit` because that would terminate the build without saving the cache
     #Have to replace further actions with no-ops
@@ -216,7 +231,7 @@ function brew_go_bootstrap_mode {
         
         # Travis runs user scripts via `eval` i.e. in the same shell process.
         # So have to unset errexit in order to get to cache save stage
-        set +e; return 1
+        set +e; return '"$EXIT_CODE"'
     }'    
 }
 
@@ -253,8 +268,9 @@ function _brew_parse_package_info {
     # Get and parse `brew info --json` about a package
     # and save data into specified variables
     
-    local PACKAGE; PACKAGE="${1:?}"; shift
-    local OS_CODENAME;OS_CODENAME="${1:?}"; shift
+    local PACKAGE OS_CODENAME
+    PACKAGE="${1:?}"; shift
+    OS_CODENAME="${1:?}"; shift
 
     local JSON_DATA; JSON_DATA=$(python2.7 -c 'if True:
     import sys, json, subprocess; j=json.loads(subprocess.check_output(("brew","info","--json=v1",sys.argv[1])))
@@ -282,8 +298,22 @@ function _brew_parse_package_info {
 function _brew_is_bottle_available {
 
     local PACKAGE;PACKAGE="${1:?}"
-    
-    local INFO="$(brew info "$PACKAGE" | head -n 1)"
+    local VAR_KEG_ONLY="$2"
+
+    local INFO;INFO="$(brew info "$PACKAGE" | head -n 1)"
+    if [ -n "$VAR_KEG_ONLY" ]; then
+        if grep -qwF '[keg-only]' <<<"$INFO"; then
+            eval "${VAR_KEG_ONLY}=1"
+        else
+            eval "${VAR_KEG_ONLY}=0"
+        fi
+    fi
+
+    if grep -qxEe '[[:space:]]*bottle :unneeded' $(brew formula "$PACKAGE"); then
+        echo "Bottle disabled: $PACKAGE"
+        return 0
+    fi
+
     if grep -qwF '(bottled)' <<<"$INFO"; then
         echo "Bottle available: $INFO"
         return 0
@@ -295,18 +325,22 @@ function _brew_is_bottle_available {
 
 function _brew_install_and_cache {
     # Install bottle or make and cache bottle.
-    # assumes that deps were already installed.
+    # assumes that deps were already installed
+    # and not already the latest version
     
-    local PACKAGE;PACKAGE="${1:?}"
-    local USE_BOTTLE;USE_BOTTLE="${2:?}"
+    local PACKAGE USE_BOTTLE KEG_ONLY
+    PACKAGE="${1:?}"
+    USE_BOTTLE="${2:?}"
+    KEG_ONLY="${3:?}"
     local VERB
     
     if brew list --versions "$PACKAGE"; then
-        if ! (brew outdated | grep -qx "$PACKAGE"); then
-            echo "Already the latest version: $PACKAGE"
-            return 0
+        # Install alongside the old version to avoid to have to update "runtime dependents"
+        # https://discourse.brew.sh/t/can-i-install-a-new-version-without-having-to-upgrade-runtime-dependents/4443
+        VERB="install --force"
+        if [ "$KEG_ONLY" -eq 0 ]; then
+            brew unlink "$PACKAGE"
         fi
-        VERB=upgrade
     else
         VERB=install
     fi
@@ -325,8 +359,8 @@ function _brew_install_and_cache {
         # doesn't seem to be a documented way to get file names
         local BOTTLE; BOTTLE=$(grep -Ee '^./' <<<"$OUT")
         #proper procedure as per https://discourse.brew.sh/t/how-are-bottle-and-postinstall-related-is-it-safe-to-run-bottle-after-postinstall/3410/4
-        brew uninstall "$PACKAGE"
-        brew install "$BOTTLE"
+        brew uninstall --ignore-dependencies "$PACKAGE"
+        brew $VERB "$BOTTLE"
         
         local JSON; JSON=$(sed -E 's/bottle(.[[:digit:]]+)?\.tar\.gz$/bottle.json/' <<<"$BOTTLE")
         
@@ -352,10 +386,11 @@ function _brew_check_elapsed_build_time {
     # If time limit has been reached,
     # arrange for further build to be skipped and return 1
 
-    local TIME_START;TIME_START="${1:?}"
-    local TIME_LIMIT;TIME_LIMIT="${2:?}"
+    local TIME_START TIME_LIMIT ELAPSED_TIME
+    TIME_START="${1:?}"
+    TIME_LIMIT="${2:?}"
     
-    local ELAPSED_TIME;ELAPSED_TIME=$(($(date +%s) - $TIME_START))
+    ELAPSED_TIME=$(($(date +%s) - $TIME_START))
     echo "Elapsed time: "$(($ELAPSED_TIME/60))"m (${ELAPSED_TIME}s)"
     
     if [[ "$ELAPSED_TIME" -gt $TIME_LIMIT ]]; then 
@@ -370,10 +405,12 @@ function _brew_check_slow_building_ahead {
     #If the package's projected build completion is higher than hard limit,
     # skip it and arrange for further build to be skipped and return 1
     
-    local PACKAGE="${1:?}"
-    local TIME_START="${2:?}"
-    local TIME_HARD_LIMIT="${3:?}"
+    local PACKAGE TIME_START TIME_HARD_LIMIT
+    PACKAGE="${1:?}"
+    TIME_START="${2:?}"
+    TIME_HARD_LIMIT="${3:?}"
     
+    local PROJECTED_BUILD_TIME 
     PROJECTED_BUILD_TIME=$(echo "$BREW_SLOW_BUILIDING_PACKAGES" | awk '$1=="'"$PACKAGE"'"{print $2}')
     [ -z "$PROJECTED_BUILD_TIME" ] && return 0 || true
     

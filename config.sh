@@ -16,6 +16,7 @@ function bdist_wheel_cmd {
     local abs_wheelhouse=$1
     python setup.py bdist_wheel $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
+    if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache --show-stats; fi
 }
 
 if [ -n "$IS_OSX" ]; then
@@ -31,15 +32,9 @@ if [ -n "$IS_OSX" ]; then
     source travis_osx_brew_cache.sh
 
     BREW_SLOW_BUILIDING_PACKAGES=$(printf '%s\n' \
-        "x265 20"  \
         "cmake 15" \
         "ffmpeg_opencv 10" \
     )
-
-    #Contrib adds significantly to project's build time
-    if [ "$ENABLE_CONTRIB" -eq 1 ]; then
-        BREW_TIME_LIMIT=$((BREW_TIME_LIMIT - 10*60))
-    fi
 
     function generate_ffmpeg_formula {
         local FF="ffmpeg"
@@ -69,8 +64,8 @@ if [ -n "$IS_OSX" ]; then
                 if (!$found_blank && /^$/) {$_.="conflicts_with \"ffmpeg\"\n\n"; $found_blank=1; next;}
                 if (!$bottle_block && /^\s*bottle do$/) { $bottle_block=1; next; }
                 if ($bottle_block) { if (/^\s*end\s*$/) { $bottle_block=0} elsif (/^\s*sha256\s/) {$_=""} next; }
-if (/^\s*depends_on "(x264|x265|xvid)"$/) {$_=""; next;}
-                if (/^\s*--enable-(gpl|libx264|libx265|libxvid)$/) {$_=""; next;}
+if (/^\s*depends_on "(x264|x265|xvid|frei0r|rubberband)"$/) {$_=""; next;}
+                if (/^\s*--enable-(gpl|libx264|libx265|libxvid|frei0r|librubberband)$/) {$_=""; next;}
                 ' <"$FF_FORMULA" >"$LFF_FORMULA"
             diff -u "$FF_FORMULA" "$LFF_FORMULA" || test $? -le 1
 
@@ -91,25 +86,41 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
+    
+    local CACHE_STAGE; (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
 
-    brew update --force
-    brew_add_local_bottles
-
-    # Don't query analytical info online on `brew info`,
-    #  this takes several seconds and we don't need it
-    # see https://docs.brew.sh/Manpage , "info formula" section
-    export HOMEBREW_NO_GITHUB_API=1
+    #after the cache stage, all bottles and Homebrew metadata should be already cached locally
+    if [ -n "$CACHE_STAGE" ]; then
+        brew update
+        brew_add_local_bottles
+    fi
 
     echo 'Installing QT4'
     brew tap | grep -qxF cartr/qt4 || brew tap cartr/qt4
     brew tap --list-pinned | grep -qxF cartr/qt4 || brew tap-pin cartr/qt4
-    brew_install_and_cache_within_time_limit qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
+    if [ -n "$CACHE_STAGE" ]; then
+        brew_install_and_cache_within_time_limit qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
+    else
+        brew install qt@4
+    fi
 
     echo 'Installing FFmpeg'
 
-    generate_ffmpeg_formula
-    brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
+    if [ -n "$CACHE_STAGE" ]; then
+        generate_ffmpeg_formula
+        brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
+    else
+        brew install ffmpeg_opencv
+    fi
 
+    if [ -n "$CACHE_STAGE" ]; then
+        brew_go_bootstrap_mode 0
+        return 0
+    fi
+    
+    # Have to install macpython late to avoid conflict with Homebrew Python update
+    before_install
+    
   else
     echo "Running for linux"
   fi

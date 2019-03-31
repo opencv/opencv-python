@@ -33,185 +33,233 @@ cache:
     - $HOME/local_bottle_metadata
     # `cache: ccache: true` has no effect if `language:` is not `c` or `cpp`
     - $HOME/.ccache
+
+# Add more cache stages (s2 etc) and corresponding OSX jobs like s1
+# if brew builds start to take longer than one Travis time limit
+stages:
+  - s1
+  - final
     
 matrix:
   fast_finish: true
   include:
 
     # default builds for MacOS
-    - os: osx
-      language: generic
-      osx_image: xcode8
+    - &osx-10
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-10
+      stage: s1
+    - &osx-30
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-30
+      stage: s1
+    - &osx-40
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-40
+      stage: s1
+    - &osx-50
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-50
+      stage: s1
+    - &osx-60
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
         - TEST_DEPENDS=numpy==1.14.5
+      stage: final
+    - <<: *osx-60
+      stage: s1
 
     # headless builds for MacOS
-    - os: osx
-      language: generic
-      osx_image: xcode8
+    - &osx-70
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-70
+      stage: s1
+    - &osx-80
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-80
+      stage: s1
+    - &osx-90
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-90
+      stage: s1
+    - &osx-100
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-100
+      stage: s1
+    - &osx-110
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
         - TEST_DEPENDS=numpy==1.14.5
+      stage: final
+    - <<: *osx-110
+      stage: s1
 
     # Contrib builds for MacOS
-    - os: osx
-      language: generic
-      osx_image: xcode8
+    - &osx-120
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-120
+      stage: s1
+    - &osx-130
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-130
+      stage: s1
+    - &osx-140
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-140
+      stage: s1
+    - &osx-150
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-150
+      stage: s1
+    - &osx-160
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
         - TEST_DEPENDS=numpy==1.14.5
+      stage: final
+    - <<: *osx-160
+      stage: s1
 
     # headless contrib builds for MacOS
-    - os: osx
-      language: generic
-      osx_image: xcode8
+    - &osx-170
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-170
+      stage: s1
+    - &osx-180
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-180
+      stage: s1
+    - &osx-190
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-190
+      stage: s1
+    - &osx-200
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
-    - os: osx
-      language: generic
-      osx_image: xcode8
+      stage: final
+    - <<: *osx-200
+      stage: s1
+    - &osx-210
+      os: osx
+      osx_image: xcode8.3
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - BDIST_PARAMS="-- -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"
         - TEST_DEPENDS=numpy==1.14.5
+      stage: final
+    - <<: *osx-210
+      stage: s1
 
     # default builds for Linux
     - os: linux
+      # the following jobs will use the same stage name by default
+      stage: s1
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
@@ -618,7 +666,7 @@ before_install: |
     source multibuild_customize.sh
     echo $ENABLE_CONTRIB > contrib.enabled
     echo $ENABLE_HEADLESS > headless.enabled
-    
+
     if [ -n "$IS_OSX" ]; then
         TAPS="$(brew --repository)/Library/Taps"
         if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
@@ -626,14 +674,14 @@ before_install: |
         fi
         find "$TAPS" -type d -name .git -exec \
                 bash -xec '
-                    cd $(dirname '\''{}'\'')
-                    git clean -fxd
-                    git status' \;
-                    
+                    cd $(dirname '\''{}'\'') || echo "status: $?"
+                    git clean -fxd || echo "status: $?"
+                    sleep 1 || echo "status: $?"
+                    git status || echo "status: $?"' \; || echo "status: $?"
+
         brew_cache_cleanup
     fi
-    
-    before_install
+
     # Not interested in travis internal scripts' output
     set +x
 
@@ -641,7 +689,6 @@ install: |
     # Build and package
     set -x
     build_wheel $REPO_DIR $PLAT
-    if [ -n "$USE_CCACHE" ]; then ccache --show-stats; fi
     set +x
 
 script: |
@@ -653,12 +700,12 @@ script: |
     #otherwise, Travis logic terminates prematurely
     #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
     trap ERR
-    
+
     test "$rc" -eq 0
 
 before_cache: |
     # Cleanup dirs to be cached
-    set -x
+    set -e; set -x
     if [ -n "$IS_OSX" ]; then
 
         # When Taps is cached, this dir causes "Error: file exists" on `brew update`
@@ -667,10 +714,10 @@ before_cache: |
         fi
 
         brew_cache_cleanup
-        
+
     fi
-    set +x
-    
+    set +x; set +e
+
 after_success: |
     # Upload wheels to pypi if requested
     if [ -n "$TRAVIS_TAG" ]; then
