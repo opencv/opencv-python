@@ -50,11 +50,19 @@ A: Most likely the issue is related to too old pip and can be fixed by running `
 
 A: If the import fails on Windows, make sure you have [Visual C++ redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145) installed. If you are using older Windows version than Windows 10 and latest system updates are not installed, [Universal C Runtime](https://support.microsoft.com/en-us/help/2999226/update-for-universal-c-runtime-in-windows) might be also required.
 
+Windows N and KN editions do not include Media Feature Pack which is required by OpenCV. If you are using Windows N or KN edition, please install also [Windows Media Feature Pack](https://support.microsoft.com/en-us/help/3145500/media-feature-pack-list-for-windows-n-editions).
+
 If the above does not help, check if you are using Anaconda. Old Anaconda versions have a bug which causes the error, see [this issue](https://github.com/skvark/opencv-python/issues/36) for a manual fix.
+
+If you still encounter the error after you have checked all the previous solutions, download [Dependencies](https://github.com/lucasg/Dependencies) and open the ``cv2.pyd`` (located usually at ``C:\Users\username\AppData\Local\Programs\Python\PythonXX\Lib\site-packages\cv2``) file with it to debug missing DLL issues.
 
 **Q: I have some other import errors?**
 
 A: Make sure you have removed old manual installations of OpenCV Python bindings (cv2.so or cv2.pyd in site-packages).
+
+**Q: Why the packages do not include non-free algorithms?**
+
+A: Non-free algorithms such as SIFT and SURF are not included in these packages because they are patented and therefore cannot be distributed as built binaries. See this issue for more info: https://github.com/skvark/opencv-python/issues/126
 
 **Q: Why the package and import are different (opencv-python vs. cv2)?**
 
