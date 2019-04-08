@@ -39,7 +39,7 @@ cache:
 stages:
   - s1
   - final
-    
+
 matrix:
   fast_finish: true
   include:
@@ -722,10 +722,10 @@ after_success: |
     # Upload wheels to pypi if requested
     if [ -n "$TRAVIS_TAG" ]; then
         set -x
-        pip install twine
+        pip install --user twine
 
         if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-          pip install --upgrade pyOpenSSL
+          pip install --user --upgrade pyOpenSSL
         fi
 
         if [[ $ENABLE_CONTRIB == 0 ]]; then
