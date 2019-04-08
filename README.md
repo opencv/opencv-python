@@ -144,7 +144,9 @@ The default ``manylinux`` images have been extended with some OpenCV dependencie
 
 ### Supported Python versions
 
-Python 2.7 is the only supported version in 2.x series. Python 3.x releases follow Numpy releases. For example Python 3.3 is no longer supported by Numpy so support for it has been dropped in ``opencv-python``, too.
+Python 2.7 is the only supported version in 2.x series. Python 2.7 support will be dropped in the end of 2019.
+
+Python 3.x releases follow Numpy releases. For example Python 3.3 is no longer supported by Numpy so support for it has been dropped in ``opencv-python``, too.
 
 Currently, builds for following Python versions are provided:
 
