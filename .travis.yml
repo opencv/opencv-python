@@ -723,6 +723,7 @@ after_success: |
     if [ -n "$TRAVIS_TAG" ]; then
         set -x
         pip install --user twine
+        pip install --user --upgrade six
 
         if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
           pip install --user --upgrade pyOpenSSL
