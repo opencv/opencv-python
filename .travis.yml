@@ -722,11 +722,15 @@ after_success: |
     # Upload wheels to pypi if requested
     if [ -n "$TRAVIS_TAG" ]; then
         set -x
-        pip install --user twine
-        pip install --user --upgrade six
+
+        if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+          pip install --user twine
+          pip install --user --upgrade six
+        fi
 
         if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-          pip install --user --upgrade pyOpenSSL
+          pip install twine
+          pip install --upgrade pyOpenSSL
         fi
 
         if [[ $ENABLE_CONTRIB == 0 ]]; then
