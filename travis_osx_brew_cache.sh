@@ -106,8 +106,8 @@ function brew_add_local_bottles {
         local FORMULA_HAS_BOTTLE; [ -n "$FORMULA_BOTTLE_HASH" ] && FORMULA_HAS_BOTTLE=1 || true
         
 
-        local BOTTLE_LINK BOTTLE; BOTTLE_LINK="${JSON}.bottle.lnk";
-        local BOTTLE_EXISTS BOTTLE_MISMATCH VERSION_MISMATCH
+        local BOTTLE_LINK BOTTLE=""; BOTTLE_LINK="${JSON}.bottle.lnk";
+        local BOTTLE_EXISTS= BOTTLE_MISMATCH= VERSION_MISMATCH=
 
 
         # Check that the bottle file exists and is still appropriate for the formula
