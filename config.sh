@@ -111,6 +111,10 @@ function pre_build {
         brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
     else
         brew install ffmpeg_opencv
+        #cmake is a build dependency of ffmpeg so a bottle should be present in cache
+        if (brew outdated | grep -qxF cmake) || ! (brew list | grep -qxF cmake); then
+            _brew_install_and_cache cmake 1 0
+        fi
     fi
 
     if [ -n "$CACHE_STAGE" ]; then
