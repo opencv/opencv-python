@@ -223,12 +223,19 @@ function brew_go_bootstrap_mode {
     #Can't just `exit` because that would terminate the build without saving the cache
     #Have to replace further actions with no-ops
     
+    local MESSAGE=""; if [ "$EXIT_CODE" -ne 0 ]; then
+        MESSAGE='Building dependencies took too long. Restart the build in Travis UI to continue from cache.';
+    fi
+    
     eval '
     function '"$cmd"' { return 0; }
     function repair_wheelhouse { return 0; }
-    function install_run {
-        echo -e "\nBuilding dependencies took too long. Restart the build in Travis UI to continue from cache.\n"
-        
+    function install_run {'\
+        "$(if [ -n "$MESSAGE" ]; then
+            echo \
+        '        echo -e "\n'"$MESSAGE"'\n"'
+        fi)"\
+    '    
         # Travis runs user scripts via `eval` i.e. in the same shell process.
         # So have to unset errexit in order to get to cache save stage
         set +e; return '"$EXIT_CODE"'
