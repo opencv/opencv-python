@@ -16,7 +16,7 @@ function bdist_wheel_cmd {
     local abs_wheelhouse=$1
     python setup.py bdist_wheel $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
-    if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache --show-stats; fi
+    if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
 }
 
 if [ -n "$IS_OSX" ]; then
