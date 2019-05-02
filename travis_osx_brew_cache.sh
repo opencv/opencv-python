@@ -285,7 +285,7 @@ function _brew_parse_package_info {
     revision=data["revision"]
     # in bottle''s json, revision is included into version; here, they are separate
     print data["versions"]["stable"]+("_"+str(revision) if revision else "")
-    bottle_data=data["bottle"]["stable"]
+    bottle_data=data["bottle"].get("stable",{"rebuild":"","files":{}})
     print bottle_data["rebuild"]
     print bottle_data["files"].get(sys.argv[2],{"sha256":"!?"})["sha256"]     #prevent losing trailing blank line to command substitution
     ' \
