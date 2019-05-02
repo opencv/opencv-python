@@ -307,7 +307,9 @@ function _brew_is_bottle_available {
     local PACKAGE;PACKAGE="${1:?}"
     local VAR_KEG_ONLY="$2"
 
-    local INFO;INFO="$(brew info "$PACKAGE" | head -n 1)"
+    # `brew info` prints "Error: Broken pipe" if piped directly to `head` and the info is long
+    # 141 = 128 + SIGPIPE
+    local INFO;INFO="$((brew info "$PACKAGE" | cat || test $? -eq 141) | head -n 1)"
     if [ -n "$VAR_KEG_ONLY" ]; then
         if grep -qwF '[keg-only]' <<<"$INFO"; then
             eval "${VAR_KEG_ONLY}=1"
