@@ -16,7 +16,7 @@ function bdist_wheel_cmd {
     local abs_wheelhouse=$1
     python setup.py bdist_wheel $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
-    if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache --show-stats; fi
+    if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
 }
 
 if [ -n "$IS_OSX" ]; then
@@ -92,6 +92,7 @@ function pre_build {
     #after the cache stage, all bottles and Homebrew metadata should be already cached locally
     if [ -n "$CACHE_STAGE" ]; then
         brew update
+        generate_ffmpeg_formula
         brew_add_local_bottles
     fi
 
@@ -107,7 +108,6 @@ function pre_build {
     echo 'Installing FFmpeg'
 
     if [ -n "$CACHE_STAGE" ]; then
-        generate_ffmpeg_formula
         brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
     else
         brew install ffmpeg_opencv

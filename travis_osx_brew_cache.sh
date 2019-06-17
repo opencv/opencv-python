@@ -27,7 +27,8 @@ export HOMEBREW_NO_INSTALL_CLEANUP=1
 # see https://docs.brew.sh/Manpage , "info formula" section
 export HOMEBREW_NO_GITHUB_API=1
 
-
+#Packages already installed in the current session to avoid checking them again
+_BREW_ALREADY_INSTALLED='$'     #$ = illegal package name; a blank line would cause macos grep to swallow everything
 
 
 #Public functions
@@ -37,39 +38,8 @@ function brew_install_and_cache_within_time_limit {
     # use bottle if available, build and cache bottle if not.
     # Terminate and exit with status 1 if this takes too long.
     # Exit with status 2 on any other error.
-    ( set -eE -o pipefail; trap '{ sleep 3; exit 2; }' ERR
-
-    local PACKAGE TIME_LIMIT TIME_HARD_LIMIT TIME_START
-    PACKAGE="${1:?}" || exit 2
-    TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || exit 2
-    TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || exit 2
-    TIME_START=${4:-$BREW_TIME_START} || exit 2
-
-    local BUILD_FROM_SOURCE INCLUDE_BUILD KEG_ONLY
-    
-    if brew list --versions "$PACKAGE" >/dev/null && ! (brew outdated | grep -qxF "$PACKAGE"); then
-        echo "Already installed and the latest version: $PACKAGE"
-        return 0
-    fi
-
-    
-    _brew_is_bottle_available "$PACKAGE" KEG_ONLY || BUILD_FROM_SOURCE=1
-    [ -n "$BUILD_FROM_SOURCE" ] && INCLUDE_BUILD="--include-build" || true
-
-    # Whitespace is illegal in package names so converting all whitespace into single spaces due to no quotes is okay.
-    DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD` || exit 2
-    for dep in $DEPS; do
-        #TIME_LIMIT only has to be met if we'll be actually building the main project this iteration, i.e. after the "root" module installation
-        #While we don't know that yet, we can make better use of Travis-given time with a laxer limit
-        #We still can't overrun TIME_HARD_LIMIT as that would't leave time to save the cache
-        brew_install_and_cache_within_time_limit "$dep" $(((TIME_LIMIT+TIME_HARD_LIMIT)/2)) "$TIME_HARD_LIMIT" "$TIME_START" || exit $?
-    done
-
-    _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || exit $?
-    _brew_install_and_cache "$PACKAGE" "$([[ -z "$BUILD_FROM_SOURCE" ]] && echo 1 || echo 0)" "$KEG_ONLY" || exit 2
-    _brew_check_elapsed_build_time "$TIME_START" "$TIME_LIMIT" || exit $?
-    ) \
-    || if test $? -eq 1; then brew_go_bootstrap_mode; return 1; else return 2; fi      #must run this in current process
+    _brew_install_and_cache_within_time_limit $@ \
+    || if test $? -eq 1; then brew_go_bootstrap_mode; return 1; else return 2; fi
 }
 
 function brew_add_local_bottles {
@@ -106,8 +76,8 @@ function brew_add_local_bottles {
         local FORMULA_HAS_BOTTLE; [ -n "$FORMULA_BOTTLE_HASH" ] && FORMULA_HAS_BOTTLE=1 || true
         
 
-        local BOTTLE_LINK BOTTLE; BOTTLE_LINK="${JSON}.bottle.lnk";
-        local BOTTLE_EXISTS BOTTLE_MISMATCH VERSION_MISMATCH
+        local BOTTLE_LINK BOTTLE=""; BOTTLE_LINK="${JSON}.bottle.lnk";
+        local BOTTLE_EXISTS= BOTTLE_MISMATCH= VERSION_MISMATCH=
 
 
         # Check that the bottle file exists and is still appropriate for the formula
@@ -223,12 +193,19 @@ function brew_go_bootstrap_mode {
     #Can't just `exit` because that would terminate the build without saving the cache
     #Have to replace further actions with no-ops
     
+    local MESSAGE=""; if [ "$EXIT_CODE" -ne 0 ]; then
+        MESSAGE='Building dependencies took too long. Restart the build in Travis UI to continue from cache.';
+    fi
+    
     eval '
     function '"$cmd"' { return 0; }
     function repair_wheelhouse { return 0; }
-    function install_run {
-        echo -e "\nBuilding dependencies took too long. Restart the build in Travis UI to continue from cache.\n"
-        
+    function install_run {'\
+        "$(if [ -n "$MESSAGE" ]; then
+            echo \
+        '        echo -e "\n'"$MESSAGE"'\n"'
+        fi)"\
+    '    
         # Travis runs user scripts via `eval` i.e. in the same shell process.
         # So have to unset errexit in order to get to cache save stage
         set +e; return '"$EXIT_CODE"'
@@ -238,6 +215,46 @@ function brew_go_bootstrap_mode {
 
 
 #Internal functions
+
+function _brew_install_and_cache_within_time_limit {
+    # This fn is run with || so errexit can't be enabled
+
+    local PACKAGE TIME_LIMIT TIME_HARD_LIMIT TIME_START MARKED_INSTALLED
+    PACKAGE="${1:?}" || return 2
+    TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || return 2
+    TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || return 2
+    TIME_START=${4:-$BREW_TIME_START} || return 2
+
+    if grep -qxFf <(cat <<<"$_BREW_ALREADY_INSTALLED") <<<"$PACKAGE"; then
+        MARKED_INSTALLED=1
+    fi
+        
+    if [ -n "$MARKED_INSTALLED" ] || (brew list --versions "$PACKAGE" >/dev/null && ! (brew outdated | grep -qxF "$PACKAGE")); then
+        echo "Already installed and the latest version: $PACKAGE"
+        if [ -z "$MARKED_INSTALLED" ]; then _brew_mark_installed "$PACKAGE"; fi
+        return 0
+    fi
+    
+    local BUILD_FROM_SOURCE INCLUDE_BUILD KEG_ONLY
+    
+    _brew_is_bottle_available "$PACKAGE" KEG_ONLY || BUILD_FROM_SOURCE=1
+    [ -n "$BUILD_FROM_SOURCE" ] && INCLUDE_BUILD="--include-build" || true
+
+    # Whitespace is illegal in package names so converting all whitespace into single spaces due to no quotes is okay.
+    DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD` || return 2
+    DEPS=`grep -vxF <(cat <<<"$_BREW_ALREADY_INSTALLED") <<<"$DEPS"` || test $? -eq 1 || return 2
+    for dep in $DEPS; do
+        #TIME_LIMIT only has to be met if we'll be actually building the main project this iteration, i.e. after the "root" module installation
+        #While we don't know that yet, we can make better use of Travis-given time with a laxer limit
+        #We still can't overrun TIME_HARD_LIMIT as that would't leave time to save the cache
+        _brew_install_and_cache_within_time_limit "$dep" $(((TIME_LIMIT+TIME_HARD_LIMIT)/2)) "$TIME_HARD_LIMIT" "$TIME_START" || return $?
+    done
+
+    _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || return $?
+    _brew_install_and_cache "$PACKAGE" "$([[ -z "$BUILD_FROM_SOURCE" ]] && echo 1 || echo 0)" "$KEG_ONLY" || return 2
+    _brew_check_elapsed_build_time "$TIME_START" "$TIME_LIMIT" || return $?
+}
+    
 
 function _brew_parse_bottle_json {
     # Parse JSON file resulting from `brew bottle --json`
@@ -278,7 +295,7 @@ function _brew_parse_package_info {
     revision=data["revision"]
     # in bottle''s json, revision is included into version; here, they are separate
     print data["versions"]["stable"]+("_"+str(revision) if revision else "")
-    bottle_data=data["bottle"]["stable"]
+    bottle_data=data["bottle"].get("stable",{"rebuild":"","files":{}})
     print bottle_data["rebuild"]
     print bottle_data["files"].get(sys.argv[2],{"sha256":"!?"})["sha256"]     #prevent losing trailing blank line to command substitution
     ' \
@@ -300,7 +317,9 @@ function _brew_is_bottle_available {
     local PACKAGE;PACKAGE="${1:?}"
     local VAR_KEG_ONLY="$2"
 
-    local INFO;INFO="$(brew info "$PACKAGE" | head -n 1)"
+    # `brew info` prints "Error: Broken pipe" if piped directly to `head` and the info is long
+    # 141 = 128 + SIGPIPE
+    local INFO;INFO="$((brew info "$PACKAGE" | cat || test $? -eq 141) | head -n 1)"
     if [ -n "$VAR_KEG_ONLY" ]; then
         if grep -qwF '[keg-only]' <<<"$INFO"; then
             eval "${VAR_KEG_ONLY}=1"
@@ -377,10 +396,13 @@ function _brew_install_and_cache {
         echo "$CACHED_BOTTLE" >"$BOTTLE_LINK"
         
     fi
+    
+    _brew_mark_installed "$PACKAGE"
 }
 
-
-
+function _brew_mark_installed {
+    _BREW_ALREADY_INSTALLED="$_BREW_ALREADY_INSTALLED"$'\n'"${1:?}"
+}
 
 function _brew_check_elapsed_build_time {
     # If time limit has been reached,
