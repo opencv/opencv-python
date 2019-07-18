@@ -52,6 +52,17 @@ matrix:
             - /usr/local/Homebrew/
             # used in OSX custom build script dealing with local bottle caching
             - $HOME/local_bottle_metadata
+      #workspaces share within the same build, cache shares between builds
+      cache:
+        directories:
+          # `cache: ccache: true` has no effect if `language:` is not `c` or `cpp`
+          - $HOME/.ccache
+          # https://stackoverflow.com/questions/39930171/cache-brew-builds-with-travis-ci
+          - $HOME/Library/Caches/Homebrew
+          - /usr/local/Homebrew/
+          # used in OSX custom build script dealing with local bottle caching
+          - $HOME/local_bottle_metadata
+
     # default builds for MacOS
       #further jobs in the list will use the same stage until the next assignment
     - stage: final
