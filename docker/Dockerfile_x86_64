@@ -23,7 +23,7 @@ RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
 	cd .. && \
 	rm -rf cmake-3.9.0*
 
-RUN yum install autoconf automake bzip2 cmake freetype-devel gcc gcc-c++ libtool make mercurial pkgconfig zlib-devel -y && \
+RUN yum install autoconf automake bzip2 cmake freetype-devel gcc gcc-c++ libtool make mercurial pkgconfig openssl-devel zlib-devel -y && \
 	yum remove nasm -y && \
 	mkdir ~/ffmpeg_sources && \
 	cd ~/ffmpeg_sources && \
@@ -50,7 +50,7 @@ RUN yum install autoconf automake bzip2 cmake freetype-devel gcc gcc-c++ libtool
 	tar xjvf ffmpeg-snapshot.tar.bz2 && \
 	cd ffmpeg && \
 	PATH=~/bin:$PATH && \
-	PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --extra-cflags="-I$HOME/ffmpeg_build/include" --extra-ldflags="-L$HOME/ffmpeg_build/lib" --enable-libvpx --enable-shared --enable-pic --bindir="$HOME/bin" && \
+	PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --extra-cflags="-I$HOME/ffmpeg_build/include" --extra-ldflags="-L$HOME/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-protocol=file,ftp,http,https,httpproxy,hls,mmsh,mmst,pipe,rtmp,rtmps,rtmpt,rtmpts,rtp,sctp,srtp,tcp,udp --enable-shared --enable-pic --bindir="$HOME/bin" && \
 	make -j4 && \
 	make install && \
 	echo "/root/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
