@@ -13,11 +13,9 @@ env:
 
 # Host Python is never used
 language: generic
-# Required to invoke docker ourselves as per https://docs.travis-ci.com/user/docker/
-sudo: required
 services: docker
-# https://docs.travis-ci.com/user/reference/trusty/
-dist: trusty
+# https://docs.travis-ci.com/user/reference/xenial
+dist: xenial
 
 # Save some time, we and setup check them out on demand instead
 # https://docs.travis-ci.com/user/customizing-the-build/#Git-Clone-Depth
