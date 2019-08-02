@@ -45,11 +45,11 @@ RUN yum install autoconf automake bzip2 cmake freetype-devel gcc gcc-c++ libtool
 	./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
 	make -j4 && \
 	make install && \
-        cd ~/ffmpeg_sources && \
+    cd ~/ffmpeg_sources && \
 	curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1c.tar.gz && \
 	tar -zxvf OpenSSL_1_1_1c.tar.gz && \
 	cd openssl-OpenSSL_1_1_1c && \
-	./configure --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
+	./Configure --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
 	make -j4 && \
 	make install && \
 	cd ~/ffmpeg_sources && \
