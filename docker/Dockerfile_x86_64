@@ -13,24 +13,24 @@ RUN curl -O -L https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensou
 ENV QTDIR /opt/Qt4.8.7
 ENV PATH "$QTDIR/bin:$PATH"
 
-RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz  && \
-	tar -zxf cmake-3.9.0.tar.gz  && \
-	cd cmake-3.9.0  && \
-	yum -y install curl-devel zlib-devel  && \
-	./configure --system-curl  && \
+RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
+	tar -zxf cmake-3.9.0.tar.gz && \
+	cd cmake-3.9.0 && \
+	yum -y install curl-devel zlib-devel && \
+	./configure --system-curl && \
 	make -j4 && \
-	make install  && \
-	cd ..  && \
+	make install && \
+	cd .. && \
 	rm -rf cmake-3.9.0*
 
-RUN curl -O -L  https://www.cpan.org/src/5.0/perl-5.10.1.tar.gz  && \
+RUN curl -O -L https://www.cpan.org/src/5.0/perl-5.10.1.tar.gz && \
 	tar -xzf perl-5.10.1.tar.gz && \
-	yum install autoconf automake bzip2 git freetype-devel gcc gcc-c++ libtool make pkgconfig  -y  && \
-	cd perl-5.10.1  && \
+	yum install autoconf automake bzip2 git freetype-devel gcc gcc-c++ libtool make pkgconfig -y && \
+	cd perl-5.10.1 && \
 	./Configure -des -Dprefix=$HOME/ffmpeg_build && \
 	make -j4 && \
 	make install && \
-	cd ..  && \
+	cd .. && \
 	rm -rf perl-5.10.1* && \
 	PATH=$HOME/ffmpeg_build/bin:$PATH
 
