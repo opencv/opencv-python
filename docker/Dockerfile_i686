@@ -23,16 +23,15 @@ RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
 	cd .. && \
 	rm -rf cmake-3.9.0*
 
-RUN curl -O -L https://www.cpan.org/src/5.0/perl-5.10.1.tar.gz && \
+RUN	yum install autoconf automake bzip2 git freetype-devel gcc gcc-c++ libtool make pkgconfig -y && \
+    curl -O -L https://www.cpan.org/src/5.0/perl-5.10.1.tar.gz && \
 	tar -xzf perl-5.10.1.tar.gz && \
-	yum install autoconf automake bzip2 git freetype-devel gcc gcc-c++ libtool make pkgconfig -y && \
 	cd perl-5.10.1 && \
-	./Configure -des -Dprefix=$HOME/ffmpeg_build && \
+	./Configure -des -Dprefix="$HOME/ffmpeg_build" && \
 	make -j4 && \
 	make install && \
 	cd .. && \
-	rm -rf perl-5.10.1* && \
-	PATH=$HOME/ffmpeg_build/bin:$PATH #otherwise perl not detected at runtime
+	rm -rf perl-5.10.1*
 
 RUN	yum remove nasm -y && \
 	mkdir ~/ffmpeg_sources && \
@@ -59,7 +58,7 @@ RUN	yum remove nasm -y && \
 	curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1c.tar.gz && \
 	tar -zxvf OpenSSL_1_1_1c.tar.gz && \
 	cd openssl-OpenSSL_1_1_1c && \
-	./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
+	PERL="$HOME/ffmpeg_build/bin/perl" ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
 	make -j4 && \
 	make install_sw && \ #skip building man-pages
 	cd ~/ffmpeg_sources && \
