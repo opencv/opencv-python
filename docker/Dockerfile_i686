@@ -60,7 +60,7 @@ RUN	yum remove nasm -y && \
 	cd openssl-OpenSSL_1_1_1c && \
 	PERL="$HOME/ffmpeg_build/bin/perl" ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
 	make -j4 && \
-	make install_sw && \ #skip building man-pages
+	make install_sw && \
 	cd ~/ffmpeg_sources && \
 	curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
 	tar xjvf ffmpeg-snapshot.tar.bz2 && \
