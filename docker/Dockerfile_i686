@@ -1,5 +1,7 @@
 FROM quay.io/pypa/manylinux1_i686:latest
 
+ENTRYPOINT ["linux32", "--"]
+
 RUN curl -O -L https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	tar -xf qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	cd qt-everywhere* && \
