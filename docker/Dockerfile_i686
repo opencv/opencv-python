@@ -24,14 +24,14 @@ RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
 	rm -rf cmake-3.9.0*
 
 RUN	yum install autoconf automake bzip2 git freetype-devel gcc gcc-c++ libtool make pkgconfig -y && \
-    curl -O -L https://www.cpan.org/src/5.0/perl-5.10.1.tar.gz && \
-	tar -xzf perl-5.10.1.tar.gz && \
-	cd perl-5.10.1 && \
+    curl -O -L https://www.cpan.org/src/5.0/perl-5.20.1.tar.gz && \
+	tar -xzf perl-5.20.1.tar.gz && \
+	cd perl-5.20.1 && \
 	./Configure -des -Dprefix="$HOME/ffmpeg_build" && \
 	make -j4 && \
 	make install && \
 	cd .. && \
-	rm -rf perl-5.10.1*
+	rm -rf perl-5.20.1*
 
 RUN	yum remove nasm -y && \
 	mkdir ~/ffmpeg_sources && \
