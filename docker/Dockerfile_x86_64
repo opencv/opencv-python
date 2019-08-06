@@ -32,7 +32,7 @@ RUN yum install freetype-devel bzip2-devel zlib-devel -y && \
     curl -O -L https://www.cpan.org/src/5.0/perl-5.20.1.tar.gz && \
 	tar -xf perl-5.20.1.tar.gz && \
 	cd perl-5.20.1 && \
-	./Configure -des -Dprefix="$HOME/ffmpeg_build" && \
+	./Configure -des -Dprefix="$HOME/openssl_build" && \
 	make -j4 && \
 	make install && \
 	cd .. && \
@@ -62,9 +62,10 @@ RUN mkdir ~/ffmpeg_sources && \
 	curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1c.tar.gz && \
 	tar -xf OpenSSL_1_1_1c.tar.gz && \
 	cd openssl-OpenSSL_1_1_1c && \
-	PERL="$HOME/ffmpeg_build/bin/perl" ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
+	PERL="$HOME/openssl_build/bin/perl" ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
 	make -j4 && \
 	make install_sw && \
+    rm -rf ~/openssl_build && \
 	cd ~/ffmpeg_sources && \
 	curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
 	tar -xf ffmpeg-snapshot.tar.bz2 && \
