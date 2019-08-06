@@ -14,56 +14,69 @@ ENV QTDIR /opt/Qt4.8.7
 ENV PATH "$QTDIR/bin:$PATH"
 
 RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
-	tar -zxf cmake-3.9.0.tar.gz && \
+	tar -xf cmake-3.9.0.tar.gz && \
 	cd cmake-3.9.0 && \
-	yum -y install curl-devel zlib-devel && \
+    true '#manylinux1 provides curl-devel equivalent and libcurl statically linked \
+         against the same newer OpenSSL as other source-built tools \
+         (1.0.2s as of this writing)' && \
+	yum -y install zlib-devel && \
 	./configure --system-curl && \
 	make -j4 && \
 	make install && \
 	cd .. && \
 	rm -rf cmake-3.9.0*
 
-RUN	yum install autoconf automake bzip2 git freetype-devel gcc gcc-c++ libtool make pkgconfig -y && \
-    curl -O -L https://www.cpan.org/src/5.0/perl-5.20.1.tar.gz && \
-	tar -xzf perl-5.20.1.tar.gz && \
+# https://trac.ffmpeg.org/wiki/CompilationGuide/Centos#GettheDependencies
+# manylinux provides the toolchain and git; we provide cmake
+RUN yum install freetype-devel bzip2-devel zlib-devel -y && \
+    mkdir ~/ffmpeg_sources
+
+# Newer openssl configure requires newer perl
+RUN curl -O -L https://www.cpan.org/src/5.0/perl-5.20.1.tar.gz && \
+	tar -xf perl-5.20.1.tar.gz && \
 	cd perl-5.20.1 && \
-	./Configure -des -Dprefix="$HOME/ffmpeg_build" && \
-	make -j4 && \
-	make install && \
+	./Configure -des -Dprefix="$HOME/openssl_build" && \
+	true '#perl build scripts do much redundant work \
+	     if running "make install" separately' && \
+	make install -j4 && \
 	cd .. && \
 	rm -rf perl-5.20.1*
 
-RUN	yum remove nasm -y && \
-	mkdir ~/ffmpeg_sources && \
-	cd ~/ffmpeg_sources && \
+RUN cd ~/ffmpeg_sources && \
+	curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1c.tar.gz && \
+	tar -xf OpenSSL_1_1_1c.tar.gz && \
+	cd openssl-OpenSSL_1_1_1c && \
+	PERL="$HOME/openssl_build/bin/perl" ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
+	make -j4 && \
+    true '#skip installing documentation' && \
+	make install_sw && \
+    rm -rf ~/openssl_build
+
+RUN cd ~/ffmpeg_sources && \
 	curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/2.13.02/nasm-2.13.02.tar.bz2 && \
-	tar xjvf nasm-2.13.02.tar.bz2 && cd nasm-2.13.02 && ./autogen.sh && \
+	tar -xf nasm-2.13.02.tar.bz2 && cd nasm-2.13.02 && ./autogen.sh && \
 	./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
 	make -j4 && \
-	make install && \
-	cd ~/ffmpeg_sources && \
+	make install
+
+RUN cd ~/ffmpeg_sources && \
 	curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && \
-	tar xzvf yasm-1.3.0.tar.gz && \
+	tar -xf yasm-1.3.0.tar.gz && \
 	cd yasm-1.3.0 && \
 	./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
 	make -j4 && \
-	make install && \
-	cd ~/ffmpeg_sources && \
+	make install
+
+RUN cd ~/ffmpeg_sources && \
 	git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git && \
 	cd libvpx && \
 	./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
 	make -j4 && \
-	make install && \
-	cd ~/ffmpeg_sources && \
-	curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1c.tar.gz && \
-	tar -zxvf OpenSSL_1_1_1c.tar.gz && \
-	cd openssl-OpenSSL_1_1_1c && \
-	PERL="$HOME/ffmpeg_build/bin/perl" ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
-	make -j4 && \
-	make install_sw && \
-	cd ~/ffmpeg_sources && \
+	make install
+
+RUN cd ~/ffmpeg_sources && \
 	curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
-	tar xjvf ffmpeg-snapshot.tar.bz2 && \
+	tar -xf ffmpeg-snapshot.tar.bz2 && \
 	cd ffmpeg && \
 	PATH=~/bin:$PATH && \
 	PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --extra-cflags="-I$HOME/ffmpeg_build/include" --extra-ldflags="-L$HOME/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --bindir="$HOME/bin" && \
@@ -75,24 +88,6 @@ RUN	yum remove nasm -y && \
 
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/root/ffmpeg_build/lib/pkgconfig
 ENV LDFLAGS -L/root/ffmpeg_build/lib
-
-RUN mkdir libjpeg-turbo && \
-	cd libjpeg-turbo && \
-	export PATH=~/bin:$PATH && \
-	curl -L https://kent.dl.sourceforge.net/project/libjpeg-turbo/1.5.3/libjpeg-turbo-1.5.3.tar.gz > libjpeg-turbo-1.5.3.tar.gz && \
-	tar xzvf libjpeg-turbo-1.5.3.tar.gz && \
-	cd libjpeg-turbo-1.5.3 && \
-	export CFLAGS="-fPIC" && \
-	export CXXFLAGS="-fPIC" && \
-	autoreconf -fiv && \
-	./configure && \
-	make && \
-	make install && \
-	cd ../../ && \
-	rm -rf libjpeg-turbo
-
-ENV JPEG_LIBRARY /opt/libjpeg-turbo/lib64/libjpeg.a
-ENV JPEG_INCLUDE_DIR /opt/libjpeg-turbo/include
 
 RUN curl -O https://raw.githubusercontent.com/torvalds/linux/v4.14/include/uapi/linux/videodev2.h && \
 	curl -O https://raw.githubusercontent.com/torvalds/linux/v4.14/include/uapi/linux/v4l2-common.h && \

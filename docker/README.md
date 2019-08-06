@@ -10,6 +10,5 @@ The images have following extra software installed:
 
 - Qt 4.8.7
 - Cmake 3.9.0
-- FFmpeg with libvpx (latest snapshots at the build time)
-- libjpeg-turbo 1.5.3
+- FFmpeg with libvpx (latest snapshots at the build time) and recent openssl
 - Some missing headers included from more recent Linux to be able to enable V4L / V4L2 support in OpenCV
