@@ -16,7 +16,10 @@ ENV PATH "$QTDIR/bin:$PATH"
 RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
 	tar -zxf cmake-3.9.0.tar.gz && \
 	cd cmake-3.9.0 && \
-	yum -y install curl-devel zlib-devel && \
+    true '#manylinux1 provides curl-devel equivalent and libcurl statically linked \
+         against the same newer OpenSSL as other source-built tools \
+         (1.0.2s as of this writing)' && \
+	yum -y install zlib-devel && \
 	./configure --system-curl && \
 	make -j4 && \
 	make install && \
