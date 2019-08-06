@@ -66,6 +66,7 @@ RUN mkdir ~/ffmpeg_sources && \
          when run from "docker build"' && \
 	PERL="$HOME/openssl_build/bin/perl" linux32 ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
 	make -j4 && \
+    true '#skip installing documentation' && \
 	make install_sw && \
 	cd ~/ffmpeg_sources && \
     rm -rf ~/openssl_build && \

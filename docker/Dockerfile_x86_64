@@ -64,6 +64,7 @@ RUN mkdir ~/ffmpeg_sources && \
 	cd openssl-OpenSSL_1_1_1c && \
 	PERL="$HOME/openssl_build/bin/perl" ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
 	make -j4 && \
+    true '#skip installing documentation' && \
 	make install_sw && \
     rm -rf ~/openssl_build && \
 	cd ~/ffmpeg_sources && \
