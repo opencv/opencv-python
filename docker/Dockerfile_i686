@@ -62,7 +62,9 @@ RUN mkdir ~/ffmpeg_sources && \
 	curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1c.tar.gz && \
 	tar -xf OpenSSL_1_1_1c.tar.gz && \
 	cd openssl-OpenSSL_1_1_1c && \
-	PERL="$HOME/ffmpeg_build/bin/perl" ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
+    true '#in i686, ./config detects x64 in i686 without linux32 \
+         when run from "docker build"' && \
+	PERL="$HOME/ffmpeg_build/bin/perl" linux32 ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
 	make -j4 && \
 	make install_sw && \
 	cd ~/ffmpeg_sources && \
