@@ -33,8 +33,9 @@ RUN yum install freetype-devel bzip2-devel zlib-devel -y && \
 	tar -xf perl-5.20.1.tar.gz && \
 	cd perl-5.20.1 && \
 	./Configure -des -Dprefix="$HOME/openssl_build" && \
-	make -j4 && \
-	make install && \
+	true '#perl build scripts do much redundant work \
+	     if running "make install" separately' && \
+	make install -j4 && \
 	cd .. && \
 	rm -rf perl-5.20.1*
 
