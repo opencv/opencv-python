@@ -115,6 +115,9 @@ RUN curl -O https://raw.githubusercontent.com/torvalds/linux/v4.14/include/uapi/
 	curl -O https://raw.githubusercontent.com/torvalds/linux/v4.14/include/linux/compiler.h && \
 	mv videodev2.h v4l2-common.h v4l2-controls.h compiler.h /usr/include/linux
 
+#in i686, yum metadata ends up with slightly wrong timestamps
+#which inhibits its update
+#https://github.com/skvark/opencv-python/issues/148
 RUN yum clean all
 
 ENV PATH "$HOME/bin:$PATH"
