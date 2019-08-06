@@ -38,8 +38,7 @@ RUN yum install freetype-devel bzip2-devel zlib-devel -y && \
 	cd .. && \
 	rm -rf perl-5.20.1*
 
-RUN	yum remove nasm -y && \
-	mkdir ~/ffmpeg_sources && \
+RUN mkdir ~/ffmpeg_sources && \
 	cd ~/ffmpeg_sources && \
 	curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/2.13.02/nasm-2.13.02.tar.bz2 && \
 	tar -xf nasm-2.13.02.tar.bz2 && cd nasm-2.13.02 && ./autogen.sh && \
