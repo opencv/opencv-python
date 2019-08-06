@@ -26,7 +26,9 @@ RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
 	cd .. && \
 	rm -rf cmake-3.9.0*
 
-RUN	yum install autoconf automake bzip2 git freetype-devel gcc gcc-c++ libtool make pkgconfig -y && \
+# https://trac.ffmpeg.org/wiki/CompilationGuide/Centos#GettheDependencies
+# manylinux provides the toolchain and git; we provide cmake
+RUN yum install freetype-devel bzip2-devel zlib-devel -y && \
     curl -O -L https://www.cpan.org/src/5.0/perl-5.20.1.tar.gz && \
 	tar -xzf perl-5.20.1.tar.gz && \
 	cd perl-5.20.1 && \
