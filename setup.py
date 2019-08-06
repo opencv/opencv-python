@@ -133,13 +133,6 @@ def main():
         cmake_args.append("-DWITH_V4L=ON")
         cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
-        if all(v in os.environ for v in ('JPEG_INCLUDE_DIR', 'JPEG_LIBRARY')):
-            cmake_args += [
-                "-DBUILD_JPEG=OFF",
-                "-DJPEG_INCLUDE_DIR=%s" % os.environ['JPEG_INCLUDE_DIR'],
-                "-DJPEG_LIBRARY=%s" % os.environ['JPEG_LIBRARY']
-            ]
-
     # Fixes for macOS builds
     if sys.platform == 'darwin':
         cmake_args.append("-DWITH_LAPACK=OFF")  # Some OSX LAPACK fns are incompatible, see
