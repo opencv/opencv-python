@@ -91,24 +91,6 @@ RUN cd ~/ffmpeg_sources && \
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/root/ffmpeg_build/lib/pkgconfig
 ENV LDFLAGS -L/root/ffmpeg_build/lib
 
-RUN mkdir libjpeg-turbo && \
-	cd libjpeg-turbo && \
-	export PATH=~/bin:$PATH && \
-	curl -L https://kent.dl.sourceforge.net/project/libjpeg-turbo/1.5.3/libjpeg-turbo-1.5.3.tar.gz > libjpeg-turbo-1.5.3.tar.gz && \
-	tar xf libjpeg-turbo-1.5.3.tar.gz && \
-	cd libjpeg-turbo-1.5.3 && \
-	export CFLAGS="-fPIC" && \
-	export CXXFLAGS="-fPIC" && \
-	autoreconf -fiv && \
-	./configure --host=i686-pc-linux-gnu && \
-	make && \
-	make install && \
-	cd ../../ && \
-	rm -rf libjpeg-turbo
-
-ENV JPEG_LIBRARY /opt/libjpeg-turbo/lib32/libjpeg.a
-ENV JPEG_INCLUDE_DIR /opt/libjpeg-turbo/include
-
 RUN curl -O https://raw.githubusercontent.com/torvalds/linux/v4.14/include/uapi/linux/videodev2.h && \
 	curl -O https://raw.githubusercontent.com/torvalds/linux/v4.14/include/uapi/linux/v4l2-common.h && \
 	curl -O https://raw.githubusercontent.com/torvalds/linux/v4.14/include/uapi/linux/v4l2-controls.h && \
