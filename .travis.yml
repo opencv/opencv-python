@@ -239,8 +239,6 @@ matrix:
 
     # default builds for Linux
     - os: linux
-      # the following jobs will use the same stage name by default
-      stage: s1
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
