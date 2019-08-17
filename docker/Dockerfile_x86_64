@@ -3,8 +3,11 @@ FROM quay.io/pypa/manylinux1_x86_64:latest
 RUN curl -O -L https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	tar -xf qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	cd qt-everywhere* && \
-	./configure -prefix /opt/Qt4.8.7 -release -opensource -confirm-license && \
-	gmake -j5 && \
+    export MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) && \
+	./configure -prefix /opt/Qt4.8.7 -release -opensource -confirm-license \
+    -no-sql-sqlite -no-qt3support -no-xmlpatterns -no-multimedia \
+    -no-webkit -no-script -no-declarative -no-dbus -make libs && \
+	gmake && \
 	gmake install && \
 	cd .. && \
 	rm -rf qt-everywhere-opensource-src-4.8.7 && \
@@ -16,6 +19,7 @@ ENV PATH "$QTDIR/bin:$PATH"
 RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
 	tar -zxf cmake-3.9.0.tar.gz && \
 	cd cmake-3.9.0 && \
+    export MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) && \
 	yum -y install curl-devel zlib-devel && \
 	./configure --system-curl && \
 	make && \
@@ -27,10 +31,11 @@ RUN yum install autoconf automake bzip2 cmake freetype-devel gcc gcc-c++ libtool
 	yum remove nasm -y && \
 	mkdir ~/ffmpeg_sources && \
 	cd ~/ffmpeg_sources && \
+    export MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) && \
 	curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/2.13.02/nasm-2.13.02.tar.bz2 && \
 	tar xjvf nasm-2.13.02.tar.bz2 && cd nasm-2.13.02 && ./autogen.sh && \
 	./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
-	make -j4 && \
+	make && \
 	make install && \
 	cd ~/ffmpeg_sources && \
 	curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && \
