@@ -147,6 +147,12 @@ def main():
     if sys.platform.startswith('linux') and not x64:
         cmake_args.append("-DCMAKE_CXX_FLAGS=-U__STRICT_ANSI__")
 
+        
+    if 'CMAKE_ARGS' in os.environ:
+        import shlex
+        cmake_args.extend(shlex.split(os.environ['CMAKE_ARGS']))
+        del shlex
+        
     # ABI config variables are introduced in PEP 425
     if sys.version_info[:2] < (3, 2):
         import warnings
