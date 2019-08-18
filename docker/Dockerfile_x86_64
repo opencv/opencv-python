@@ -3,10 +3,10 @@ FROM quay.io/pypa/manylinux1_x86_64:latest
 RUN curl -O -L https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	tar -xf qt-everywhere-opensource-src-4.8.7.tar.gz && \
 	cd qt-everywhere* && \
-    true '#configure does a bootstrap make under the hood' && \
-    true '#manylinux1 is too old to have `nproc`' && \
+    #configure does a bootstrap make under the hood
+    #manylinux1 is too old to have `nproc`
     export MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) && \
-    true '#opencv only links against QtCore, QtGui, QtTest' && \
+    #OpenCV only links against QtCore, QtGui, QtTest
 	./configure -prefix /opt/Qt4.8.7 -release -opensource -confirm-license \
     -no-sql-sqlite -no-qt3support -no-xmlpatterns -no-multimedia \
     -no-webkit -no-script -no-declarative -no-dbus -make libs && \
@@ -22,11 +22,11 @@ ENV PATH "$QTDIR/bin:$PATH"
 RUN curl -O -L https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz && \
 	tar -xf cmake-3.9.0.tar.gz && \
 	cd cmake-3.9.0 && \
-    true '#manylinux1 provides curl-devel equivalent and libcurl statically linked \
-         against the same newer OpenSSL as other source-built tools \
-         (1.0.2s as of this writing)' && \
+    #manylinux1 provides curl-devel equivalent and libcurl statically linked
+    # against the same newer OpenSSL as other source-built tools
+    # (1.0.2s as of this writing)
 	yum -y install zlib-devel && \
-	true '#configure does a bootstrap make under the hood' && \
+	#configure does a bootstrap make under the hood
     export MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) && \
 	./configure --system-curl && \
 	make && \
@@ -44,8 +44,8 @@ RUN curl -O -L https://www.cpan.org/src/5.0/perl-5.20.1.tar.gz && \
 	tar -xf perl-5.20.1.tar.gz && \
 	cd perl-5.20.1 && \
 	./Configure -des -Dprefix="$HOME/openssl_build" && \
-	true '#perl build scripts do much redundant work \
-	     if running "make install" separately' && \
+	#perl build scripts do much redundant work
+	# if running "make install" separately
 	make install -j$(getconf _NPROCESSORS_ONLN) && \
 	cd .. && \
 	rm -rf perl-5.20.1*
@@ -56,7 +56,7 @@ RUN cd ~/ffmpeg_sources && \
 	cd openssl-OpenSSL_1_1_1c && \
 	PERL="$HOME/openssl_build/bin/perl" ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
 	make -j$(getconf _NPROCESSORS_ONLN) && \
-    true '#skip installing documentation' && \
+    #skip installing documentation
 	make install_sw && \
     rm -rf ~/openssl_build
 
