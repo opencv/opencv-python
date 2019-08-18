@@ -77,7 +77,10 @@ The aim of this repository is to provide means to package each new [OpenCV relea
 
 ### Build process
 
-The project is structured like a normal Python package with a standard ``setup.py`` file. The build process for a single entry in the build matrices is as follows (see for example ``appveyor.yml`` file):
+The project is structured like a normal Python package with a standard ``setup.py`` file.
+The build process for a single entry in the build matrices is as follows (see for example ``appveyor.yml`` file):
+
+0. In Linux and MacOS build: get OpenCV's optional C dependencies that we compile against
 
 1. Checkout repository and submodules
 
@@ -86,25 +89,32 @@ The project is structured like a normal Python package with a standard ``setup.p
    -  Contrib modules are also included as a submodule
 
 2. Find OpenCV version from the sources
-3. Install dependencies (numpy)
+3. Install Python dependencies
+
+   - ``setup.py`` installs the dependencies itself, so you need to run it in an environment
+     where you have the rights to install modules with Pip for the running Python
+
 4. Build OpenCV
 
    -  tests are disabled, otherwise build time increases too much
    -  there are 4 build matrix entries for each build combination: with and without contrib modules, with and without GUI (headless)
    -  Linux builds run in manylinux Docker containers (CentOS 5)
 
-5. Copy each ``.pyd/.so`` file to cv2 folder of this project and
-   generate wheel
+5. Rearrange OpenCV's build result, add our custom files and generate wheel
 
-   - Linux and macOS wheels are checked with auditwheel and delocate
+6. Linux and macOS wheels are transformed with auditwheel and delocate, correspondingly
 
-6. Install the generated wheel
-7. Test that Python can import the library and run some sanity checks
-8. Use twine to upload the generated wheel to PyPI (only in release builds)
+7. Install the generated wheel
+8. Test that Python can import the library and run some sanity checks
+9. Use twine to upload the generated wheel to PyPI (only in release builds)
 
-The ``cv2.pyd/.so`` file is normally copied to site-packages. To avoid polluting the root folder this package wraps the statically built binary into cv2 package and ``__init__.py`` file in the package handles the import logic correctly.
+Steps 1--5 are handled by ``setup.py bdist_wheel``.
 
-Since all packages use the same ``cv2`` namespace explained above, uninstall the other package before switching for example from ``opencv-python`` to ``opencv-contrib-python``.
+The build can be customized with environment variables.
+In addition to any variables that OpenCV's build accepts, we recognize:
+
+- ``ENABLE_CONTRIB`` and ``ENABLE_HEADLESS``. Set to ``1`` to build the contrib and/or headless version
+- ``CMAKE_ARGS``. Additional arguments for OpenCV's CMake invocation. You can use this to make a custom build.
 
 ### Licensing
 
