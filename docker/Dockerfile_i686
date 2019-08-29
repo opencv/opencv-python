@@ -7,9 +7,7 @@ RUN curl -O -L https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensou
     #manylinux1 is too old to have `nproc`
     export MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) && \
     #OpenCV only links against QtCore, QtGui, QtTest
-    ./configure -prefix /opt/Qt4.8.7 -release -opensource -confirm-license \
-    -no-sql-sqlite -no-qt3support -no-xmlpatterns -no-multimedia \
-    -no-webkit -no-script -no-declarative -no-dbus -make libs && \
+    ./configure -prefix /opt/Qt4.8.7 -release -opensource -confirm-license -make && \
     make && \
     make install && \
     cd .. && \
