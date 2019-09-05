@@ -134,9 +134,11 @@ Linux and MacOS wheels ship with [Qt 4.8.7](http://doc.qt.io/qt-4.8/lgpl.html) l
 
 ### Releases
 
-A release is made and uploaded to PyPI when a new tag is pushed to master branch. These tags differentiate packages (this repo might have modifications but OpenCV version stays same) and should be incremented sequentially. In practice, release version numbers look like this:
+A release is made and uploaded to PyPI when a new tag is pushed to the repo. These tags differentiate packages (this repo might have modifications but OpenCV version stays same) and should be incremented sequentially. In practice, release version numbers look like this:
 
 ``cv_major.cv_minor.cv_revision.package_revision`` e.g. ``3.1.0.0``
+
+The master branch follows OpenCV master branch releases. 3.4 branch follows OpenCV 3.4 bugfix releases.
 
 ### Development builds
 
