@@ -102,7 +102,7 @@ def main():
         # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
         "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
-        
+
         # When off, adds __init__.py and a few more helper .py's. We use our own helper files with a different structure.
         "-DOPENCV_SKIP_PYTHON_LOADER=ON",
         # Relative dir to install the built module to in the build tree.
@@ -111,7 +111,7 @@ def main():
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
         # and skbuild bails out on seeing that
         "-DINSTALL_CREATE_DISTRIB=ON",
-        
+
         # See opencv/CMakeLists.txt for options and defaults
         "-DBUILD_opencv_apps=OFF",
         "-DBUILD_SHARED_LIBS=OFF",
@@ -137,8 +137,8 @@ def main():
     if sys.platform == 'darwin':
         cmake_args.append("-DWITH_LAPACK=OFF")  # Some OSX LAPACK fns are incompatible, see
                                                 # https://github.com/skvark/opencv-python/issues/21
-        cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++")
-        cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7")
+        cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++ -std=c++11")
+        cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8")
 
     if sys.platform.startswith('linux'):
         cmake_args.append("-DWITH_IPP=OFF")   # tests fail with IPP compiled with
@@ -147,12 +147,12 @@ def main():
     if sys.platform.startswith('linux') and not x64:
         cmake_args.append("-DCMAKE_CXX_FLAGS=-U__STRICT_ANSI__")
 
-        
+
     if 'CMAKE_ARGS' in os.environ:
         import shlex
         cmake_args.extend(shlex.split(os.environ['CMAKE_ARGS']))
         del shlex
-        
+
     # ABI config variables are introduced in PEP 425
     if sys.version_info[:2] < (3, 2):
         import warnings
