@@ -140,6 +140,10 @@ def main():
         cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++")
         cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8")
 
+    if sys.platform == 'darwin' and build_contrib:
+        # see: https://github.com/opencv/opencv_contrib/issues/1388#issuecomment-354403896
+        cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
+
     if sys.platform.startswith('linux'):
         cmake_args.append("-DWITH_IPP=OFF")   # tests fail with IPP compiled with
                                               # devtoolset-2 GCC 4.8.2 or vanilla GCC 4.9.4
