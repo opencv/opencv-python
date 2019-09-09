@@ -141,7 +141,7 @@ def main():
         cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8")
 
     if sys.platform == 'darwin' and build_contrib:
-        cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++ -std=c++11")
+        cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++ -std=c++11 -Wno-c++11-narrowing")
 
     if sys.platform.startswith('linux'):
         cmake_args.append("-DWITH_IPP=OFF")   # tests fail with IPP compiled with
