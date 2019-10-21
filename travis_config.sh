@@ -11,10 +11,16 @@ function build_wheel {
 }
 
 function bdist_wheel_cmd {
+    # for Linux allow parallel  build
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        PARALLEL="-j$(nproc)"
+    else
+        PARALLEL=""
+    fi
     # copied from multibuild's common_utils.sh
     # add osx deployment target so it doesnt default to 10.6
     local abs_wheelhouse=$1
-    python setup.py bdist_wheel $BDIST_PARAMS
+    python setup.py bdist_wheel $BDIST_PARAMS $PARALLEL
     cp dist/*.whl $abs_wheelhouse
     if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
 }
