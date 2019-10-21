@@ -108,7 +108,8 @@ The build process for a single entry in the build matrices is as follows (see fo
 8. Test that Python can import the library and run some sanity checks
 9. Use twine to upload the generated wheel to PyPI (only in release builds)
 
-Steps 1--5 are handled by ``setup.py bdist_wheel``.
+Steps 1--5 are handled by ``setup.py bdist_wheel -j$(nproc)``.
+(The parameter `-j$(nproc)` is optional and it parallelize the build on all available cores but not supported on all OS.)
 
 The build can be customized with environment variables.
 In addition to any variables that OpenCV's build accepts, we recognize:

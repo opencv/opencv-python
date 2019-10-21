@@ -663,9 +663,15 @@ before_install: |
     set +x
 
 install: |
+    # for Linux allow parallel  build
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        PARALLEL="-j$(nproc)"
+    else
+        PARALLEL=""
+    fi
     # Build and package
     set -x
-    build_wheel $REPO_DIR $PLAT
+    build_wheel $REPO_DIR $PLAT $PARALLEL
     set +x
 
 script: |
