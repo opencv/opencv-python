@@ -46,11 +46,11 @@ environment:
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:/Python38"
+    - PYTHON: "C:\\Python38"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:/Python38-x64"
+    - PYTHON: "C:\\Python38-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
@@ -94,11 +94,11 @@ environment:
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:/Python38"
+    - PYTHON: "C:\\Python38"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:/Python38-x64"
+    - PYTHON: "C:\\Python38-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
@@ -142,11 +142,11 @@ environment:
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:/Python38"
+    - PYTHON: "C:\\Python38"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:/Python38-x64"
+    - PYTHON: "C:\\Python38-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
@@ -190,11 +190,11 @@ environment:
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:/Python38"
+    - PYTHON: "C:\\Python38"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:/Python38-x64"
+    - PYTHON: "C:\\Python38-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
