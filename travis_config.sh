@@ -64,7 +64,7 @@ if [ -n "$IS_OSX" ]; then
                 if (!$found_blank && /^$/) {$_.="conflicts_with \"ffmpeg\"\n\n"; $found_blank=1; next;}
                 if (!$bottle_block && /^\s*bottle do$/) { $bottle_block=1; next; }
                 if ($bottle_block) { if (/^\s*end\s*$/) { $bottle_block=0} elsif (/^\s*sha256\s/) {$_=""} next; }
-if (/^\s*depends_on "(x264|x265|xvid|frei0r|rubberband|vidstab)"$/) {$_=""; next;}
+if (/^\s*depends_on "(x264|x265|xvid|frei0r|rubberband|libvidstab)"$/) {$_=""; next;}
                 if (/^\s*--enable-(gpl|libx264|libx265|libxvid|frei0r|librubberband|libvidstab)$/) {$_=""; next;}
                 ' <"$FF_FORMULA" >"$LFF_FORMULA"
             diff -u "$FF_FORMULA" "$LFF_FORMULA" || test $? -le 1
