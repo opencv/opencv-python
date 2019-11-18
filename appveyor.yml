@@ -46,11 +46,11 @@ environment:
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\\Python38"
+    - PYTHON: "C:/Python38"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\\Python38-x64"
+    - PYTHON: "C:/Python38-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
@@ -94,11 +94,11 @@ environment:
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\\Python38"
+    - PYTHON: "C:/Python38"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\\Python38-x64"
+    - PYTHON: "C:/Python38-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
@@ -142,11 +142,11 @@ environment:
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\\Python38"
+    - PYTHON: "C:/Python38"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\\Python38-x64"
+    - PYTHON: "C:/Python38-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
@@ -190,26 +190,16 @@ environment:
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\\Python38"
+    - PYTHON: "C:/Python38"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\\Python38-x64"
+    - PYTHON: "C:/Python38-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
 matrix:
     fast_finish: true
-
-install:
-  - ps: |
-      if (-not (Test-Path $env:PYTHON)) {
-        curl -o install_python.ps1 https://raw.githubusercontent.com/matthew-brett/multibuild/11a389d78892cf90addac8f69433d5e22bfa422a/install_python.ps1
-        .\install_python.ps1
-      }
-  - ps: if (-not (Test-Path $env:PYTHON)) { throw "No $env:PYTHON" }
-  - "set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-  - python --version
 
 build_script:
 - cmd: |
