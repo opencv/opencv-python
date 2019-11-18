@@ -8,6 +8,7 @@ env:
         - CONFIG_PATH="travis_config.sh"
         - USE_CCACHE=1
         - UNICODE_WIDTH=32
+        - MB_PYTHON_OSX_VER=10.9
 
 
 # Host Python is never used
