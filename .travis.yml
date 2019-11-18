@@ -98,6 +98,15 @@ matrix:
         - TEST_DEPENDS=numpy==1.14.5
       workspaces:
         use: brew_cache
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.17.3
+      workspaces:
+        use: brew_cache
 
     # headless builds for MacOS
     - os: osx
@@ -131,6 +140,15 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+      workspaces:
+        use: brew_cache
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.17.3
       workspaces:
         use: brew_cache
 
@@ -168,6 +186,15 @@ matrix:
         - TEST_DEPENDS=numpy==1.14.5
       workspaces:
         use: brew_cache
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.17.3
+      workspaces:
+        use: brew_cache
 
     # headless contrib builds for MacOS
     - os: osx
@@ -201,6 +228,15 @@ matrix:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+      workspaces:
+        use: brew_cache
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.17.3
       workspaces:
         use: brew_cache
 

@@ -14,14 +14,6 @@ environment:
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:/Python34"
-      ENABLE_CONTRIB: 0
-      ENABLE_HEADLESS: 0
-
-    - PYTHON: "C:/Python34-x64"
-      ENABLE_CONTRIB: 0
-      ENABLE_HEADLESS: 0
-
     - PYTHON: "C:/Python35"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
@@ -59,14 +51,6 @@ environment:
       ENABLE_HEADLESS: 0
 
     - PYTHON: "C:/Python27-x64"
-      ENABLE_CONTRIB: 1
-      ENABLE_HEADLESS: 0
-
-    - PYTHON: "C:/Python34"
-      ENABLE_CONTRIB: 1
-      ENABLE_HEADLESS: 0
-
-    - PYTHON: "C:/Python34-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
@@ -110,14 +94,6 @@ environment:
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:/Python34"
-      ENABLE_CONTRIB: 0
-      ENABLE_HEADLESS: 1
-
-    - PYTHON: "C:/Python34-x64"
-      ENABLE_CONTRIB: 0
-      ENABLE_HEADLESS: 1
-
     - PYTHON: "C:/Python35"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
@@ -155,14 +131,6 @@ environment:
       ENABLE_HEADLESS: 1
 
     - PYTHON: "C:/Python27-x64"
-      ENABLE_CONTRIB: 1
-      ENABLE_HEADLESS: 1
-
-    - PYTHON: "C:/Python34"
-      ENABLE_CONTRIB: 1
-      ENABLE_HEADLESS: 1
-
-    - PYTHON: "C:/Python34-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
