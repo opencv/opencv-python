@@ -8,6 +8,7 @@ env:
         - CONFIG_PATH="travis_config.sh"
         - USE_CCACHE=1
         - UNICODE_WIDTH=32
+        - MB_PYTHON_VERSION=3.7
         - MB_PYTHON_OSX_VER=10.9
 
 
@@ -241,7 +242,6 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -250,7 +250,6 @@ matrix:
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -275,7 +274,6 @@ matrix:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -291,7 +289,6 @@ matrix:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -308,7 +305,6 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.11.3
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -326,7 +322,6 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -345,7 +340,6 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -354,7 +348,6 @@ matrix:
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -379,7 +372,6 @@ matrix:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -395,7 +387,6 @@ matrix:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -412,7 +403,6 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.11.3
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -430,7 +420,6 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -449,7 +438,6 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -458,7 +446,6 @@ matrix:
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -483,7 +470,6 @@ matrix:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -499,7 +485,6 @@ matrix:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -516,7 +501,6 @@ matrix:
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -534,7 +518,6 @@ matrix:
         - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -554,7 +537,6 @@ matrix:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -563,7 +545,6 @@ matrix:
         - UNICODE_WIDTH=16
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -588,7 +569,6 @@ matrix:
         - MB_PYTHON_VERSION=3.4
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -604,7 +584,6 @@ matrix:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -621,7 +600,6 @@ matrix:
         - TEST_DEPENDS=numpy==1.11.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -639,7 +617,6 @@ matrix:
         - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
-        - PLAT=x86_64
       cache:
         directories: $HOME/.ccache
     - os: linux
