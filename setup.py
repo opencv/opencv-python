@@ -28,6 +28,8 @@ def main():
         minimum_supported_numpy = "1.11.3"
     if sys.version_info[:2] >= (3, 7):
         minimum_supported_numpy = "1.14.5"
+    if sys.version_info[:2] >= (3, 8):
+        minimum_supported_numpy = "1.17.3"
 
     numpy_version = get_or_install("numpy", minimum_supported_numpy)
     get_or_install("scikit-build")
