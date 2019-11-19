@@ -9,8 +9,6 @@ env:
         - USE_CCACHE=1
         - UNICODE_WIDTH=32
         - MB_PYTHON_VERSION=3.7
-        - MB_PYTHON_OSX_VER=10.9
-
 
 # Host Python is never used
 language: generic
