@@ -85,7 +85,7 @@ def main():
         ['python/cv2[^/]*%(ext)s' % {'ext': re.escape(sysconfig.get_config_var('SO'))}],
 
         'cv2.data': [  # OPENCV_OTHER_INSTALL_PATH
-            ('etc' if os.name == 'nt' else 'share/opencv4') +
+            ('etc' if os.name == 'nt' else 'share/OpenCV') +
             r'/haarcascades/.*\.xml'
         ]
     }
