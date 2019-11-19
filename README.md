@@ -134,7 +134,7 @@ Linux and MacOS wheels ship with [Qt 4.8.7](http://doc.qt.io/qt-4.8/lgpl.html) l
 
 ### Releases
 
-A release is made and uploaded to PyPI when a new tag is pushed to the repo. These tags differentiate packages (this repo might have modifications but OpenCV version stays same) and should be incremented sequentially. In practice, release version numbers look like this:
+A release is made and uploaded to PyPI when a new tag is pushed to master branch. These tags differentiate packages (this repo might have modifications but OpenCV version stays same) and should be incremented sequentially. In practice, release version numbers look like this:
 
 ``cv_major.cv_minor.cv_revision.package_revision`` e.g. ``3.1.0.0``
 
@@ -158,12 +158,12 @@ The default ``manylinux`` images have been extended with some OpenCV dependencie
 
 Python 2.7 is the only supported version in 2.x series. Python 2.7 support will be dropped in the end of 2019.
 
-Python 3.x releases follow Numpy releases. For example Python 3.3 is no longer supported by Numpy so support for it has been dropped in ``opencv-python``, too.
+Python 3.x releases are provided for officially supported versions (not in EOL).
 
 Currently, builds for following Python versions are provided:
 
 - 2.7
-- 3.4
 - 3.5
 - 3.6
 - 3.7
+- 3.8

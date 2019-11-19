@@ -64,8 +64,8 @@ if [ -n "$IS_OSX" ]; then
                 if (!$found_blank && /^$/) {$_.="conflicts_with \"ffmpeg\"\n\n"; $found_blank=1; next;}
                 if (!$bottle_block && /^\s*bottle do$/) { $bottle_block=1; next; }
                 if ($bottle_block) { if (/^\s*end\s*$/) { $bottle_block=0} elsif (/^\s*sha256\s/) {$_=""} next; }
-if (/^\s*depends_on "(x264|x265|xvid|frei0r|rubberband)"$/) {$_=""; next;}
-                if (/^\s*--enable-(gpl|libx264|libx265|libxvid|frei0r|librubberband)$/) {$_=""; next;}
+if (/^\s*depends_on "(x264|x265|xvid|frei0r|rubberband|libvidstab)"$/) {$_=""; next;}
+                if (/^\s*--enable-(gpl|libx264|libx265|libxvid|frei0r|librubberband|libvidstab)$/) {$_=""; next;}
                 ' <"$FF_FORMULA" >"$LFF_FORMULA"
             diff -u "$FF_FORMULA" "$LFF_FORMULA" || test $? -le 1
 
@@ -86,7 +86,7 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
-    
+
     local CACHE_STAGE; (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
 
     #after the cache stage, all bottles and Homebrew metadata should be already cached locally
@@ -117,7 +117,7 @@ function pre_build {
         brew_go_bootstrap_mode 0
         return 0
     fi
-    
+
     # Have to install macpython late to avoid conflict with Homebrew Python update
     before_install
     

@@ -28,6 +28,8 @@ def main():
         minimum_supported_numpy = "1.11.3"
     if sys.version_info[:2] >= (3, 7):
         minimum_supported_numpy = "1.14.5"
+    if sys.version_info[:2] >= (3, 8):
+        minimum_supported_numpy = "1.17.3"
 
     numpy_version = get_or_install("numpy", minimum_supported_numpy)
     get_or_install("scikit-build")
@@ -76,14 +78,14 @@ def main():
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = {
 
-        'cv2': ([r'bin/opencv_ffmpeg\d{3}%s\.dll' % ('_64' if x64 else '')] if os.name == 'nt' else []) +
+        'cv2': ([r'bin/opencv_videoio_ffmpeg\d{3}%s\.dll' % ('_64' if x64 else '')] if os.name == 'nt' else []) +
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
         ['python/cv2[^/]*%(ext)s' % {'ext': re.escape(sysconfig.get_config_var('SO'))}],
 
         'cv2.data': [  # OPENCV_OTHER_INSTALL_PATH
-            ('etc' if os.name == 'nt' else 'share/OpenCV') +
+            ('etc' if os.name == 'nt' else 'share/opencv4') +
             r'/haarcascades/.*\.xml'
         ]
     }
@@ -138,7 +140,7 @@ def main():
         cmake_args.append("-DWITH_LAPACK=OFF")  # Some OSX LAPACK fns are incompatible, see
                                                 # https://github.com/skvark/opencv-python/issues/21
         cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++")
-        cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8")
+        cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9")
 
     if sys.platform == 'darwin' and build_contrib:
         cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++ -std=c++11 -Wno-c++11-narrowing")
@@ -201,10 +203,10 @@ def main():
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.8',
           'Programming Language :: C++',
           'Programming Language :: Python :: Implementation :: CPython',
           'Topic :: Scientific/Engineering',

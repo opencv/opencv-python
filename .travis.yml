@@ -7,9 +7,8 @@ env:
         - BDIST_PARAMS=""
         - CONFIG_PATH="travis_config.sh"
         - USE_CCACHE=1
-        - PLAT=x86_64
         - UNICODE_WIDTH=32
-
+        - MB_PYTHON_VERSION=3.7
 
 # Host Python is never used
 language: generic
@@ -75,14 +74,6 @@ matrix:
     - os: osx
       osx_image: xcode8.3
       env:
-        - MB_PYTHON_VERSION=3.4
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=0
-      workspaces:
-        use: brew_cache
-    - os: osx
-      osx_image: xcode8.3
-      env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
@@ -103,6 +94,15 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
+      workspaces:
+        use: brew_cache
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.17.3
       workspaces:
         use: brew_cache
 
@@ -118,14 +118,6 @@ matrix:
     - os: osx
       osx_image: xcode8.3
       env:
-        - MB_PYTHON_VERSION=3.4
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=1
-      workspaces:
-        use: brew_cache
-    - os: osx
-      osx_image: xcode8.3
-      env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
@@ -146,6 +138,15 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+      workspaces:
+        use: brew_cache
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.17.3
       workspaces:
         use: brew_cache
 
@@ -161,14 +162,6 @@ matrix:
     - os: osx
       osx_image: xcode8.3
       env:
-        - MB_PYTHON_VERSION=3.4
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=0
-      workspaces:
-        use: brew_cache
-    - os: osx
-      osx_image: xcode8.3
-      env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
@@ -189,6 +182,15 @@ matrix:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
+      workspaces:
+        use: brew_cache
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.17.3
       workspaces:
         use: brew_cache
 
@@ -204,14 +206,6 @@ matrix:
     - os: osx
       osx_image: xcode8.3
       env:
-        - MB_PYTHON_VERSION=3.4
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=1
-      workspaces:
-        use: brew_cache
-    - os: osx
-      osx_image: xcode8.3
-      env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
@@ -232,6 +226,15 @@ matrix:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+      workspaces:
+        use: brew_cache
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.17.3
       workspaces:
         use: brew_cache
 
@@ -270,21 +273,6 @@ matrix:
         directories: $HOME/.ccache
     - os: linux
       env:
-        - MB_PYTHON_VERSION=3.4
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=0
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.4
-        - PLAT=i686
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=0
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
@@ -330,6 +318,23 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.17.3
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.17.3
       cache:
         directories: $HOME/.ccache
 
@@ -368,21 +373,6 @@ matrix:
         directories: $HOME/.ccache
     - os: linux
       env:
-        - MB_PYTHON_VERSION=3.4
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=1
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.4
-        - PLAT=i686
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=1
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
@@ -428,6 +418,23 @@ matrix:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.17.3
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.17.3
       cache:
         directories: $HOME/.ccache
 
@@ -466,21 +473,6 @@ matrix:
         directories: $HOME/.ccache
     - os: linux
       env:
-        - MB_PYTHON_VERSION=3.4
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=0
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.4
-        - PLAT=i686
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=0
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
@@ -524,6 +516,23 @@ matrix:
         - MB_PYTHON_VERSION=3.7
         - PLAT=i686
         - TEST_DEPENDS=numpy==1.14.5
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - TEST_DEPENDS=numpy==1.17.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=i686
+        - TEST_DEPENDS=numpy==1.17.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
       cache:
@@ -565,21 +574,6 @@ matrix:
         directories: $HOME/.ccache
     - os: linux
       env:
-        - MB_PYTHON_VERSION=3.4
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=1
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.4
-        - PLAT=i686
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=1
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
@@ -623,6 +617,23 @@ matrix:
         - MB_PYTHON_VERSION=3.7
         - PLAT=i686
         - TEST_DEPENDS=numpy==1.14.5
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - TEST_DEPENDS=numpy==1.17.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=i686
+        - TEST_DEPENDS=numpy==1.17.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
       cache:
@@ -635,16 +646,20 @@ before_install: |
     # Multibuild doesn't have releases, so --depth would break eventually (see
     # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
     git submodule update --init multibuild
+    echo "Source multibuild/common_utils.sh"
     source multibuild/common_utils.sh
     # https://github.com/matthew-brett/multibuild/issues/116
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
+    echo "Source multibuild/travis_steps.sh"
     source multibuild/travis_steps.sh
     # This sets -x
+    echo "Source travis_multibuild_customize.sh"
     source travis_multibuild_customize.sh
     echo $ENABLE_CONTRIB > contrib.enabled
     echo $ENABLE_HEADLESS > headless.enabled
 
     if [ -n "$IS_OSX" ]; then
+        echo "homebrew"
         TAPS="$(brew --repository)/Library/Taps"
         if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
             rm -rf "$TAPS/caskroom/homebrew-cask"
@@ -658,7 +673,7 @@ before_install: |
 
         brew_cache_cleanup
     fi
-
+    echo "end"
     # Not interested in travis internal scripts' output
     set +x
 
