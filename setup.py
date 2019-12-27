@@ -67,7 +67,7 @@ def main():
 
     package_data = {
         'cv2':
-            ['*%s' % sysconfig.get_config_var('SO')] +
+            ['*%s' % sysconfig.get_config_vars().get('SO')] +
             (['*.dll'] if os.name == 'nt' else []) +
             ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"],
         'cv2.data':
