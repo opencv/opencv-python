@@ -102,7 +102,6 @@ function pre_build {
         brew_install_and_cache_within_time_limit cartr/qt4/qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
     else
         brew tap --repair
-        brew audit cartr/qt4/qt@4
         brew install cartr/qt4/qt@4
     fi
 
