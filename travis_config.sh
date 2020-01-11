@@ -101,6 +101,8 @@ function pre_build {
     if [ -n "$CACHE_STAGE" ]; then
         brew_install_and_cache_within_time_limit cartr/qt4/qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
     else
+        # Added due to: Error: openssl@1.0 is already installed from homebrew/core! Please `brew uninstall openssl@1.0` first."
+        brew uninstall openssl@1.0
         brew install cartr/qt4/qt@4
     fi
 
@@ -119,7 +121,7 @@ function pre_build {
 
     # Have to install macpython late to avoid conflict with Homebrew Python update
     before_install
-    
+
   else
     echo "Running for linux"
   fi
