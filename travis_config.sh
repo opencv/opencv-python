@@ -96,13 +96,11 @@ function pre_build {
         brew_add_local_bottles
     fi
 
-    echo 'Installing QT4'
-    brew tap | grep -qxF cartr/qt4 || brew tap cartr/qt4
+    echo 'Installing qt5'
     if [ -n "$CACHE_STAGE" ]; then
-        brew_install_and_cache_within_time_limit cartr/qt4/qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
+        brew_install_and_cache_within_time_limit qt5 || { [ $? -gt 1 ] && return 2 || return 0; }
     else
-        brew tap --repair
-        brew install cartr/qt4/qt@4
+        brew install qt5
     fi
 
     echo 'Installing FFmpeg'
