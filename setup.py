@@ -123,8 +123,11 @@ def main():
     ] + (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
 
     # OS-specific components
-    if (sys.platform == 'darwin' or sys.platform.startswith('linux')) and not build_headless:
+    if sys.platform.startswith('linux') and not build_headless:
         cmake_args.append("-DWITH_QT=4")
+
+    if sys.platform == 'darwin' and not build_headless:
+        cmake_args.append("-DWITH_QT=5")
 
     if build_headless:
         # it seems that cocoa cannot be disabled so on macOS the package is not truly headless
