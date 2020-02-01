@@ -96,12 +96,12 @@ function pre_build {
         brew_add_local_bottles
     fi
 
-    echo 'Installing QT4'
-    brew tap | grep -qxF cartr/qt4 || brew tap cartr/qt4
+    echo 'Installing qt5'
     if [ -n "$CACHE_STAGE" ]; then
-        brew_install_and_cache_within_time_limit cartr/qt4/qt@4 || { [ $? -gt 1 ] && return 2 || return 0; }
+        brew_install_and_cache_within_time_limit qt5 || { [ $? -gt 1 ] && return 2 || return 0; }
     else
-        brew install cartr/qt4/qt@4
+        brew install qt5
+        export PATH="/usr/local/opt/qt/bin:$PATH"
     fi
 
     echo 'Installing FFmpeg'
@@ -109,6 +109,7 @@ function pre_build {
     if [ -n "$CACHE_STAGE" ]; then
         brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
     else
+        brew unlink python@2
         brew install ffmpeg_opencv
     fi
 
