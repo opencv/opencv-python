@@ -38,7 +38,7 @@ matrix:
   include:
 
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       stage: s1
       workspaces:
         create:
@@ -64,7 +64,7 @@ matrix:
       #further jobs in the list will use the same stage until the next assignment
     - stage: final
       os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
@@ -72,7 +72,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
@@ -80,7 +80,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
@@ -88,7 +88,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
@@ -97,7 +97,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.8
         - ENABLE_CONTRIB=0
@@ -108,7 +108,7 @@ matrix:
 
     # headless builds for MacOS
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=0
@@ -116,7 +116,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=0
@@ -124,7 +124,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
@@ -132,7 +132,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=0
@@ -141,7 +141,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.8
         - ENABLE_CONTRIB=0
@@ -152,7 +152,7 @@ matrix:
 
     # Contrib builds for MacOS
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
@@ -160,7 +160,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
@@ -168,7 +168,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
@@ -176,7 +176,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
@@ -185,7 +185,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.8
         - ENABLE_CONTRIB=1
@@ -196,7 +196,7 @@ matrix:
 
     # headless contrib builds for MacOS
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=2.7
         - ENABLE_CONTRIB=1
@@ -204,7 +204,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.5
         - ENABLE_CONTRIB=1
@@ -212,7 +212,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
@@ -220,7 +220,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.7
         - ENABLE_CONTRIB=1
@@ -229,7 +229,7 @@ matrix:
       workspaces:
         use: brew_cache
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - MB_PYTHON_VERSION=3.8
         - ENABLE_CONTRIB=1
