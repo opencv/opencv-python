@@ -101,7 +101,7 @@ function pre_build {
         brew_install_and_cache_within_time_limit qt5 || { [ $? -gt 1 ] && return 2 || return 0; }
     else
         brew install qt5
-        brew link qt5 --force
+        export PATH="/usr/local/opt/qt/bin:$PATH"
     fi
 
     echo 'Installing FFmpeg'
