@@ -140,6 +140,8 @@ A release is made and uploaded to PyPI when a new tag is pushed to master branch
 
 ``cv_major.cv_minor.cv_revision.package_revision`` e.g. ``3.1.0.0``
 
+The master branch follows OpenCV master branch releases. 3.4 branch follows OpenCV 3.4 bugfix releases.
+
 ### Development builds
 
 Every commit to the master branch of this repo will be built. Possible build artifacts use local version identifiers:
