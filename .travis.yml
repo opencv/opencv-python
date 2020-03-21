@@ -590,8 +590,8 @@ after_success: |
           brew install azure-cli
         fi
 
-        az storage container create -n ${$TRAVIS_COMMIT} --public-access blob
-        az storage blob upload-batch -d ${$TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern *.whl
+        az storage container create -n ${TRAVIS_COMMIT} --public-access blob
+        az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern *.whl
 
         set -x
     fi
