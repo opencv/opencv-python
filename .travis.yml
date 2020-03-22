@@ -8,7 +8,6 @@ env:
         - CONFIG_PATH="travis_config.sh"
         - USE_CCACHE=1
         - UNICODE_WIDTH=32
-        - MB_PYTHON_VERSION=3.7
 
 # Save some time, we and setup check them out on demand instead
 # https://docs.travis-ci.com/user/customizing-the-build/#Git-Clone-Depth
