@@ -104,7 +104,6 @@ def main():
     ]) + [
         # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON_DEFAULT_EXECUTABLE=%s" % sys.executable,
-        "-DPYTHON3_LIBRARY=%s" % os.path.join('/usr/lib/x86_64-linux-gnu/', sysconfig.get_config_var('LDLIBRARY')),
         "-DPYTHON3_INCLUDE_DIR=%s" % gp()['include'],
         "-DBUILD_opencv_python3=ON",
         "-DBUILD_opencv_python2=OFF",
@@ -124,7 +123,10 @@ def main():
         "-DBUILD_TESTS=OFF",
         "-DBUILD_PERF_TESTS=OFF",
         "-DBUILD_DOCS=OFF"
-    ] + (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
+    ] +
+    # patch for OS-specific python libs
+    (["-DPYTHON3_LIBRARY=%s" % os.path.join(*[sysconfig.get_config_var('BINDIR'), "libs","python{}.lib".format("".join(str(v) for v in sys.version_info[:2]))])] if sys.platform.startswith('win') else ["-DPYTHON3_LIBRARY=%s" % os.path.join('/usr/lib/x86_64-linux-gnu/', sysconfig.get_config_var('LDLIBRARY'))]) +
+    (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
 
     # OS-specific components
     if sys.platform.startswith('linux') and not build_headless:
