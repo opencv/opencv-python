@@ -102,14 +102,16 @@ def main():
         "-G", "Unix Makefiles"  # don't make CMake try (and fail) Ninja first
     ]) + [
         # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
-        "-DPYTHON%d_EXECUTABLE=%s" % (sys.version_info[0], sys.executable),
-        "-DBUILD_opencv_python%d=ON" % sys.version_info[0],
+        "-DPYTHON_DEFAULT_EXECUTABLE=%s" % sys.executable,
+        "-DPYTHON3_EXECUTABLE=%s" % sys.executable,
+        "-DBUILD_opencv_python3=ON",
+        "-DBUILD_opencv_python2=OFF",
 
         # When off, adds __init__.py and a few more helper .py's. We use our own helper files with a different structure.
         "-DOPENCV_SKIP_PYTHON_LOADER=ON",
         # Relative dir to install the built module to in the build tree.
         # The default is generated from sysconfig, we'd rather have a constant for simplicity
-        "-DOPENCV_PYTHON%d_INSTALL_PATH=python" % sys.version_info[0],
+        "-DOPENCV_PYTHON3_INSTALL_PATH=python",
         # Otherwise, opencv scripts would want to install `.pyd' right into site-packages,
         # and skbuild bails out on seeing that
         "-DINSTALL_CREATE_DISTRIB=ON",
@@ -202,8 +204,6 @@ def main():
           'Operating System :: POSIX',
           'Operating System :: Unix',
           'Programming Language :: Python',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
