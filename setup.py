@@ -7,6 +7,7 @@ import runpy
 import subprocess
 import re
 import sysconfig
+from sysconfig import get_paths as gp
 
 
 def main():
@@ -103,7 +104,8 @@ def main():
     ]) + [
         # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
         "-DPYTHON_DEFAULT_EXECUTABLE=%s" % sys.executable,
-        "-DPYTHON3_EXECUTABLE=%s" % sys.executable,
+        "-DPYTHON3_LIBRARY=%s" % os.path.join('/usr/lib/x86_64-linux-gnu/', sysconfig.get_config_var('LDLIBRARY')),
+        "-DPYTHON3_INCLUDE_DIR=%s" % gp()['include'],
         "-DBUILD_opencv_python3=ON",
         "-DBUILD_opencv_python2=OFF",
 
