@@ -123,9 +123,8 @@ def main():
         "-DBUILD_TESTS=OFF",
         "-DBUILD_PERF_TESTS=OFF",
         "-DBUILD_DOCS=OFF"
-    ] +
-    # patch for OS-specific python libs
-    (["-DPYTHON3_LIBRARY=%s" % os.path.join(*[sysconfig.get_config_var('BINDIR'), "libs","python{}.lib".format("".join(str(v) for v in sys.version_info[:2]))])] if sys.platform.startswith('win') else ["-DPYTHON3_LIBRARY=%s" % os.path.join('/usr/lib/x86_64-linux-gnu/', sysconfig.get_config_var('LDLIBRARY'))]) +
+    ] + \
+    (["-DPYTHON3_LIBRARY=%s" % os.path.join(*[sysconfig.get_config_var('BINDIR'), "libs","python{}.lib".format("".join(str(v) for v in sys.version_info[:2]))])] if sys.platform.startswith('win') else ["-DPYTHON3_LIBRARY=%s" % os.path.join('/usr/lib/x86_64-linux-gnu/', sysconfig.get_config_var('LDLIBRARY'))]) + \
     (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
 
     # OS-specific components
