@@ -128,6 +128,7 @@ def main():
 
     if sys.platform == 'darwin' and not build_headless:
         cmake_args.append("-DWITH_QT=5")
+        rearrange_cmake_output_data['cv2.qt.plugins.platforms'] = [(r'lib/qt/plugins/platforms/libqcocoa\.dylib')]
 
     if build_headless:
         # it seems that cocoa cannot be disabled so on macOS the package is not truly headless
@@ -144,6 +145,7 @@ def main():
                                                 # https://github.com/skvark/opencv-python/issues/21
         cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++")
         cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9")
+        subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
     if sys.platform == 'darwin' and build_contrib:
         cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++ -std=c++11 -Wno-c++11-narrowing")
@@ -203,8 +205,6 @@ def main():
           'Operating System :: POSIX',
           'Operating System :: Unix',
           'Programming Language :: Python',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',

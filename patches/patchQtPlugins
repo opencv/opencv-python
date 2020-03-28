@@ -1,0 +1,12 @@
+diff --git a/opencv/CMakeLists.txt b/opencv/CMakeLists.txt
+index 8ccad4d03a..0d5e2a79e9 100644
+--- a/opencv/CMakeLists.txt
++++ b/opencv/CMakeLists.txt
+@@ -1164,6 +1164,7 @@ if(WITH_QT OR HAVE_QT)
+   if(HAVE_QT5)
+     status("    QT:" "YES (ver ${Qt5Core_VERSION_STRING})")
+     status("      QT OpenGL support:" HAVE_QT_OPENGL THEN "YES (${Qt5OpenGL_LIBRARIES} ${Qt5OpenGL_VERSION_STRING})" ELSE NO)
++    install(DIRECTORY ${Qt5_DIR}/../../../plugins DESTINATION lib/qt)
+   elseif(HAVE_QT)
+     status("    QT:" "YES (ver ${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}.${QT_VERSION_PATCH} ${QT_EDITION})")
+     status("      QT OpenGL support:" HAVE_QT_OPENGL THEN "YES (${QT_QTOPENGL_LIBRARY})" ELSE NO)

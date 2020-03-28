@@ -128,7 +128,9 @@ Third party package licenses are at [LICENSE-3RD-PARTY.txt](https://github.com/s
 
 All wheels ship with [FFmpeg](http://ffmpeg.org) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
 
-Linux and MacOS wheels ship with [Qt 4.8.7](http://doc.qt.io/qt-4.8/lgpl.html) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
+Linux wheels ship with [Qt 4.8.7](http://doc.qt.io/qt-4.8/lgpl.html) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
+
+MacOS wheels ship with [Qt 5](http://doc.qt.io/qt-5/lgpl.html) licensed under the [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html).
 
 ### Versioning
 
@@ -158,13 +160,10 @@ The default ``manylinux`` images have been extended with some OpenCV dependencie
 
 ### Supported Python versions
 
-Python 2.7 is the only supported version in 2.x series. Python 2.7 support will be dropped in the end of 2019.
-
 Python 3.x releases are provided for officially supported versions (not in EOL).
 
 Currently, builds for following Python versions are provided:
 
-- 2.7
 - 3.5
 - 3.6
 - 3.7
