@@ -136,6 +136,7 @@ def main():
         # it seems that cocoa cannot be disabled so on macOS the package is not truly headless
         cmake_args.append("-DWITH_WIN32UI=OFF")
         cmake_args.append("-DWITH_QT=OFF")
+        cmake_args.append("-DWITH_MSMF=OFF") # see: https://github.com/skvark/opencv-python/issues/263
 
     if sys.platform.startswith('linux'):
         cmake_args.append("-DWITH_V4L=ON")
