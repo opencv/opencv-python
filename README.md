@@ -64,7 +64,7 @@ A: Make sure you have removed old manual installations of OpenCV Python bindings
 
 **Q: Why the packages do not include non-free algorithms?**
 
-A: Non-free algorithms such as SIFT and SURF are not included in these packages because they are patented and therefore cannot be distributed as built binaries. See this issue for more info: https://github.com/skvark/opencv-python/issues/126
+A: Non-free algorithms such as SURF are not included in these packages because they are patented / non-free and therefore cannot be distributed as built binaries. Note that SIFT is included in the builds due to patent expiration since OpenCV versions 4.3.0 and 3.4.10. See this issue for more info: https://github.com/skvark/opencv-python/issues/126
 
 **Q: Why the package and import are different (opencv-python vs. cv2)?**
 
