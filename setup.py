@@ -33,6 +33,7 @@ def main():
 
     numpy_version = get_or_install("numpy", minimum_supported_numpy)
     get_or_install("scikit-build")
+    get_or_install("cmake")
     import skbuild
 
     if os.path.exists('.git'):
@@ -125,11 +126,10 @@ def main():
     ] + (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
 
     # OS-specific components
-    if sys.platform.startswith('linux') and not build_headless:
-        cmake_args.append("-DWITH_QT=4")
+    if sys.platform.startswith('linux') or sys.platform == 'darwin' and not build_headless:
+        cmake_args.append("-DWITH_QT=5")
 
     if sys.platform == 'darwin' and not build_headless:
-        cmake_args.append("-DWITH_QT=5")
         rearrange_cmake_output_data['cv2.qt.plugins.platforms'] = [(r'lib/qt/plugins/platforms/libqcocoa\.dylib')]
 
     if build_headless:
@@ -144,21 +144,8 @@ def main():
 
     # Fixes for macOS builds
     if sys.platform == 'darwin':
-        cmake_args.append("-DWITH_LAPACK=OFF")  # Some OSX LAPACK fns are incompatible, see
-                                                # https://github.com/skvark/opencv-python/issues/21
-        cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++")
         cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9")
         subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
-
-    if sys.platform.startswith('linux'):
-        cmake_args.append("-DWITH_IPP=OFF")   # tests fail with IPP compiled with
-                                              # devtoolset-2 GCC 4.8.2 or vanilla GCC 4.9.4
-                                              # see https://github.com/skvark/opencv-python/issues/138
-    if sys.platform.startswith('linux') and not x64:
-        cmake_args.append("-DCMAKE_CXX_FLAGS=-U__STRICT_ANSI__")
-        # patch openEXR when building on i386, see: https://github.com/openexr/openexr/issues/128
-        subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
-
 
     if 'CMAKE_ARGS' in os.environ:
         import shlex
