@@ -5,32 +5,6 @@
 #See multibuild/README.rst
 echo "===  Loading config.sh  === "
 
-# custom ccache install because manylinux2014 i686 does not have ccache package
-function activate_ccache {
-    # Link up the correct location for ccache
-    mkdir -p /parent-home/.ccache
-    ln -s /parent-home/.ccache $HOME/.ccache
-
-    # Now install ccache
-    if [ "$(get_platform)" == x86_64 ]; then
-        suppress yum_install ccache
-    fi
-
-    # Create fake compilers and prepend them to the PATH
-    # Note that yum is supposed to create these for us,
-    # but I had trouble finding them
-    local ccache_dir=/usr/lib/ccache/compilers
-    mkdir -p $ccache_dir
-    ln -s /usr/bin/ccache $ccache_dir/gcc
-    ln -s /usr/bin/ccache $ccache_dir/g++
-    ln -s /usr/bin/ccache $ccache_dir/cc
-    ln -s /usr/bin/ccache $ccache_dir/c++
-    export PATH=$ccache_dir:$PATH
-
-    # Prove to the developer that ccache is activated
-    echo "Using C compiler: $(which gcc)"
-}
-
 # To see build progress
 function build_wheel {
     build_bdist_wheel $@
