@@ -180,6 +180,9 @@ def main():
         cmake_args.append("-DWITH_V4L=ON")
         cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
+    if sys.platform.startswith('linux') and not x64:
+        subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
+
     # Fixes for macOS builds
     if sys.platform == "darwin":
         cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9")
