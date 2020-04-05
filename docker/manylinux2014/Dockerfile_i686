@@ -1,6 +1,6 @@
 FROM quay.io/pypa/manylinux2014_i686:latest
 
-RUN yum install freetype-devel bzip2-devel curl-devel qt5-qtbase-devel -y
+RUN yum install freetype-devel bzip2-devel curl-devel qt5-qtbase-devel lapack-devel -y
 
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \
@@ -55,6 +55,16 @@ RUN curl -O -L https://github.com/ccache/ccache/releases/download/v3.7.9/ccache-
     linux32 ./configure && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install
+
+RUN curl -O -L https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0.tar.gz && \
+    tar -xf cmake-3.17.0.tar.gz && \
+    cd cmake-3.17.0 && \
+    export MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) && \
+    ./configure --system-curl && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf cmake-3.17.0*
 
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/root/ffmpeg_build/lib/pkgconfig
 ENV LDFLAGS -L/root/ffmpeg_build/lib

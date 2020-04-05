@@ -1,6 +1,6 @@
 FROM quay.io/pypa/manylinux2014_x86_64:latest
 
-RUN yum install freetype-devel bzip2-devel curl-devel qt5-qtbase-devel -y
+RUN yum install freetype-devel bzip2-devel curl-devel qt5-qtbase-devel lapack-devel -y
 
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \
