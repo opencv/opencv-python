@@ -78,7 +78,7 @@ def main():
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = {
 
-        'cv2': ([r'bin/opencv_ffmpeg\d{3}%s\.dll' % ('_64' if x64 else '')] if os.name == 'nt' else []) +
+        'cv2': ([r'bin/opencv_ffmpeg\d{3,4}%s\.dll' % ('_64' if x64 else '')] if os.name == 'nt' else []) +
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
