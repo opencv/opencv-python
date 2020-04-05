@@ -104,6 +104,8 @@ function pre_build {
         export PATH="/usr/local/opt/qt/bin:$PATH"
     fi
 
+    qmake -query
+
     echo 'Installing FFmpeg'
 
     if [ -n "$CACHE_STAGE" ]; then
@@ -123,8 +125,8 @@ function pre_build {
 
   else
     echo "Running for linux"
+      qmake-qt5 -query
   fi
-  qmake -query
 }
 
 function run_tests {
