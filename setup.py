@@ -39,8 +39,8 @@ def main():
     from skbuild import cmaker
 
     python_version = cmaker.CMaker.get_python_version()
-    python_lib_path = cmaker.CMaker.get_python_library(python_version)
-    python_include_dir = cmaker.CMaker.get_python_include_dir(python_version)
+    python_lib_path = cmaker.CMaker.get_python_library(python_version).replace('\\', '/')
+    python_include_dir = cmaker.CMaker.get_python_include_dir(python_version).replace('\\', '/')
 
     if os.path.exists(".git"):
 
