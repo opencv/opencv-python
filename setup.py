@@ -34,7 +34,13 @@ def main():
     numpy_version = get_or_install("numpy", minimum_supported_numpy)
     get_or_install("scikit-build")
     get_or_install("cmake")
+
     import skbuild
+    from skbuild import cmaker
+
+    python_version = cmaker.CMaker.get_python_version()
+    python_lib_path = cmaker.CMaker.get_python_library(python_version)
+    python_include_dir = cmaker.CMaker.get_python_include_dir(python_version)
 
     if os.path.exists(".git"):
 
@@ -109,7 +115,8 @@ def main():
         + [
             # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
             "-DPYTHON_DEFAULT_EXECUTABLE=%s" % sys.executable,
-            "-DPYTHON3_INCLUDE_DIR=%s" % sysconfig.get_paths()["include"],
+            "-DPYTHON3_INCLUDE_DIR=%s" % python_include_dir,
+            "-DPYTHON3_LIBRARY=%s" % python_lib_path,
             "-DBUILD_opencv_python3=ON",
             "-DBUILD_opencv_python2=OFF",
             # When off, adds __init__.py and a few more helper .py's. We use our own helper files with a different structure.
@@ -127,27 +134,6 @@ def main():
             "-DBUILD_PERF_TESTS=OFF",
             "-DBUILD_DOCS=OFF",
         ]
-        + (
-            [
-                "-DPYTHON3_LIBRARY=%s"
-                % os.path.join(
-                    *[
-                        sysconfig.get_config_var("BINDIR"),
-                        "libs",
-                        "python{}.lib".format(
-                            "".join(str(v) for v in sys.version_info[:2])
-                        ),
-                    ]
-                )
-            ]
-            if sys.platform.startswith("win")
-            else [
-                "-DPYTHON3_LIBRARY=%s"
-                % os.path.join(
-                    "/usr/lib/x86_64-linux-gnu/", sysconfig.get_config_var("LDLIBRARY")
-                )
-            ]
-        )
         + (
             ["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")]
             if build_contrib
@@ -178,9 +164,10 @@ def main():
 
     if sys.platform.startswith("linux"):
         cmake_args.append("-DWITH_V4L=ON")
+        cmake_args.append("-DWITH_LAPACK=ON")
         cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
-    if sys.platform.startswith('linux') and not x64:
+    if sys.platform.startswith("linux") and not x64:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
 
     # Fixes for macOS builds
@@ -190,20 +177,8 @@ def main():
 
     if "CMAKE_ARGS" in os.environ:
         import shlex
-
         cmake_args.extend(shlex.split(os.environ["CMAKE_ARGS"]))
         del shlex
-
-    # ABI config variables are introduced in PEP 425
-    if sys.version_info[:2] < (3, 2):
-        import warnings
-
-        warnings.filterwarnings(
-            "ignore",
-            r"Config variable '[^']+' is unset, " r"Python ABI tag may be incorrect",
-            category=RuntimeWarning,
-        )
-        del warnings
 
     # works via side effect
     RearrangeCMakeOutput(
