@@ -148,7 +148,8 @@ def main():
                                                 # https://github.com/skvark/opencv-python/issues/21
         cmake_args.append("-DCMAKE_CXX_FLAGS=-stdlib=libc++")
         cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9")
-        subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
+        if "bdist_wheel" in sys.argv:
+            subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
     if sys.platform.startswith('linux'):
         cmake_args.append("-DWITH_IPP=OFF")   # tests fail with IPP compiled with
@@ -157,7 +158,8 @@ def main():
     if sys.platform.startswith('linux') and not x64:
         cmake_args.append("-DCMAKE_CXX_FLAGS=-U__STRICT_ANSI__")
         # patch openEXR when building on i386, see: https://github.com/openexr/openexr/issues/128
-        subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
+        if "bdist_wheel" in sys.argv:
+            subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
 
 
     if 'CMAKE_ARGS' in os.environ:
