@@ -68,4 +68,10 @@ RUN curl -O -L https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-
 
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/root/ffmpeg_build/lib/pkgconfig
 ENV LDFLAGS -L/root/ffmpeg_build/lib
+
+# in i686, yum metadata ends up with slightly wrong timestamps
+# which inhibits its update
+# https://github.com/skvark/opencv-python/issues/148
+RUN yum clean all
+
 ENV PATH "$HOME/bin:$PATH"

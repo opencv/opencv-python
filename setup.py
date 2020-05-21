@@ -154,6 +154,11 @@ def main():
             (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
         ]
 
+    if sys.platform.startswith("linux") and not build_headless:
+        rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
+            (r"lib/qt/plugins/platforms/libqxcb\.so")
+        ]
+
     if build_headless:
         # it seems that cocoa cannot be disabled so on macOS the package is not truly headless
         cmake_args.append("-DWITH_WIN32UI=OFF")
