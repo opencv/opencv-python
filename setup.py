@@ -155,14 +155,9 @@ def main():
         ]
 
     if sys.platform.startswith("linux") and not build_headless:
-        if x64:
-          rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
-              (r"/usr/lib64/qt5/plugins/platforms/libqxcb\.so")
-          ]
-        else:
-          rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
-              (r"/usr/lib/qt5/plugins/platforms/libqxcb\.so")
-          ]
+        rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
+            (r"lib/qt/plugins/platforms/libqxcb\.so")
+        ]
 
     if build_headless:
         # it seems that cocoa cannot be disabled so on macOS the package is not truly headless
@@ -180,10 +175,12 @@ def main():
     if sys.platform.startswith("linux") and not x64:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
 
+    if sys.platform.startswith("linux") or sys.platform == "darwin":
+        subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
+
     # Fixes for macOS builds
     if sys.platform == "darwin":
         cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9")
-        subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
     if "CMAKE_ARGS" in os.environ:
         import shlex
