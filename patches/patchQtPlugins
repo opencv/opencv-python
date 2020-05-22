@@ -1,6 +1,7 @@
+Submodule opencv contains untracked content
 Submodule opencv contains modified content
 diff --git a/opencv/CMakeLists.txt b/opencv/CMakeLists.txt
-index 4c0b3880fc..dbe1a74622 100644
+index 4c0b3880fc..54da25f151 100644
 --- a/opencv/CMakeLists.txt
 +++ b/opencv/CMakeLists.txt
 @@ -1187,6 +1187,12 @@ if(WITH_QT OR HAVE_QT)
@@ -10,7 +11,7 @@ index 4c0b3880fc..dbe1a74622 100644
 +    if(APPLE)
 +      install(DIRECTORY ${Qt5_DIR}/../../../plugins DESTINATION lib/qt)
 +    endif()
-+    if(UNIX)
++    if(UNIX AND NOT APPLE)
 +      install(DIRECTORY ${Qt5_DIR}/../../qt5/plugins DESTINATION lib/qt)
 +    endif()
    elseif(HAVE_QT)
