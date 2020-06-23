@@ -1,6 +1,21 @@
 FROM quay.io/pypa/manylinux2014_x86_64:latest
 
-RUN yum install freetype-devel bzip2-devel curl-devel qt5-qtbase-devel blas-devel lapack-devel atlas-devel -y
+RUN yum install freetype-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel bzip2-devel curl-devel blas-devel lapack-devel atlas-devel -y
+
+RUN curl -O -L https://download.qt.io/official_releases/qt/5.15/5.15.0/single/qt-everywhere-src-5.15.0.tar.xz && \
+    tar -xf qt-everywhere-src-5.15.0.tar.xz && \
+    cd qt-everywhere* && \
+    export MAKEFLAGS=-j$(nproc) && \
+    # OpenCV only links against QtCore, QtGui, QtTest
+    ./configure -prefix /opt/Qt5.15.0 -release -opensource -confirm-license -xcb -xcb-xlib -bundled-xcb-xinput -no-openssl -skip qt3d -skip qtactiveqt -skip qtcanvas3d -skip qtconnectivity -skip qtdatavis3d -skip qtdoc -skip qtgamepad -skip qtgraphicaleffects -skip qtimageformats -skip qtlocation -skip qtmultimedia -skip qtpurchasing -skip qtqa -skip qtremoteobjects -skip qtrepotools -skip qtscript -skip qtscxml -skip qtsensors -skip qtserialbus -skip qtserialport -skip qtspeech -skip qttranslations -skip qtwayland -skip qtwebchannel -skip qtwebengine -skip qtwebsockets -skip qtwebview -skip xmlpatterns -skip declarative -make libs && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf qt-everywhere-src-5.15.0 && \
+    rm qt-everywhere-src-5.15.0.tar.xz
+
+ENV QTDIR /opt/Qt5.15.0
+ENV PATH "$QTDIR/bin:$PATH"
 
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \
