@@ -24,6 +24,7 @@ if [ -n "$IS_OSX" ]; then
   export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 else
   echo "    > Linux environment "
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.15.0/lib # Qt5 libs for auditwheel
   export MAKEFLAGS="-j$(grep -E '^processor[[:space:]]*:' /proc/cpuinfo | wc -l)"
 fi
 
