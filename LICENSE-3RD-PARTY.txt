@@ -588,7 +588,7 @@ necessary.  Here is a sample; alter the names:
 That's all there is to it!
 
 ------------------------------------------------------------------------------
-Qt 5 is redistributed within opencv-pytho macOS packages.
+Qt 5 is redistributed within opencv-python macOS packages.
 This license applies to Qt binaries in the directory cv2/.
 
                    GNU LESSER GENERAL PUBLIC LICENSE
