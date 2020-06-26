@@ -80,7 +80,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
-FFmpeg is redistributed within opencv-python Windows packages.
+FFmpeg is redistributed within all opencv-python packages.
 Qt 4.8.7 is redistributed within opencv-python Linux packages.
 This license applies to FFmpeg and Qt binaries in the directory cv2/.
 
