@@ -142,21 +142,13 @@ def main():
     )
 
     # OS-specific components
-    if (
-        sys.platform.startswith("linux")
-        or sys.platform == "darwin"
-        and not build_headless
-    ):
-        cmake_args.append("-DWITH_QT=5")
+    if sys.platform.startswith('linux') and not build_headless:
+        cmake_args.append("-DWITH_QT=4")
 
-    if sys.platform == "darwin" and not build_headless:
+    if sys.platform == 'darwin' and not build_headless:
+        cmake_args.append("-DWITH_QT=5")
         rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
             (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
-        ]
-
-    if sys.platform.startswith("linux") and not build_headless:
-        rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
-            (r"lib/qt/plugins/platforms/libqxcb\.so")
         ]
 
     if build_headless:
@@ -175,7 +167,7 @@ def main():
     if sys.platform.startswith("linux") and not x64:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
 
-    if sys.platform.startswith("linux") or sys.platform == "darwin":
+    if sys.platform == "darwin":
         subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
     # Fixes for macOS builds
