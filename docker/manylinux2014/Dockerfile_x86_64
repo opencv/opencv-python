@@ -1,6 +1,6 @@
 FROM quay.io/pypa/manylinux2014_x86_64:latest
 
-RUN yum install bzip2-devel curl-devel zlib-devel qt-x11 -y
+RUN yum install bzip2-devel curl-devel zlib-devel qt-devel -y
 
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \

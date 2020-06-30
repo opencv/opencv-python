@@ -96,8 +96,6 @@ function pre_build {
         brew_add_local_bottles
     fi
 
-    brew style
-
     echo 'Installing qt5'
     if [ -n "$CACHE_STAGE" ]; then
         brew_install_and_cache_within_time_limit qt5 || { [ $? -gt 1 ] && return 2 || return 0; }
