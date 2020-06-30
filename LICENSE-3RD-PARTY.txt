@@ -80,8 +80,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
-FFmpeg is redistributed within opencv-python Windows packages.
-Qt 4.8.7 is redistributed within opencv-python Linux packages.
+FFmpeg is redistributed within all opencv-python packages.
+Qt 4.8.7 is redistributed within non-headless opencv-python Linux packages.
 This license applies to FFmpeg and Qt binaries in the directory cv2/.
 
                   GNU LESSER GENERAL PUBLIC LICENSE
@@ -588,7 +588,7 @@ necessary.  Here is a sample; alter the names:
 That's all there is to it!
 
 ------------------------------------------------------------------------------
-Qt 5 is redistributed within opencv-pytho macOS packages.
+Qt 5 is redistributed within non-headless opencv-python macOS packages.
 This license applies to Qt binaries in the directory cv2/.
 
                    GNU LESSER GENERAL PUBLIC LICENSE
