@@ -127,7 +127,7 @@ If some dependency is not enabled in the pre-built wheels, you can also run the 
 3. Add custom Cmake flags if needed, for example: `export CMAKE_FLAGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"`
 4. Run ``python setup.py bdist_wheel``
      - Optionally use the `manylinux` images as a build hosts if maximum portability is needed (and run `auditwheel` for the wheel after build)
-5. You'll have the wheel file in the `dist` folder and you can do with that whatever you wish (upload to local PyPI index, use as dependency in a CI job which runs the PyInstaller / PyOxidizer bundler for your app etc.)
+5. You'll have the wheel file in the `dist` folder and you can do with that whatever you wish
 
 ### Licensing
 
