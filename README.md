@@ -118,6 +118,17 @@ In addition to any variables that OpenCV's build accepts, we recognize:
 - ``ENABLE_CONTRIB`` and ``ENABLE_HEADLESS``. Set to ``1`` to build the contrib and/or headless version
 - ``CMAKE_ARGS``. Additional arguments for OpenCV's CMake invocation. You can use this to make a custom build.
 
+### Manual builds
+
+If some dependency is not enabled in the pre-built wheels, you can also run the `setup.py` locally to create a custom wheel.
+
+1. Clone this repository: `git clone --recursive https://github.com/skvark/opencv-python.git`
+2. Go to the root of the repository 
+3. Add custom Cmake flags if needed, for example: `export CMAKE_FLAGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"`
+4. Run ``python setup.py bdist_wheel``
+     - Optionally use the `manylinux` images as a build hosts if maximum portability is needed (and run `auditwheel` for the wheel after build)
+5. You'll have the wheel file in the `dist` folder and you can do with that whatever you wish (upload to local PyPI index, use as dependency in a CI job which runs the PyInstaller / PyOxidizer bundler for your app etc.)
+
 ### Licensing
 
 Opencv-python package (scripts in this repository) is available under MIT license.
@@ -131,6 +142,8 @@ All wheels ship with [FFmpeg](http://ffmpeg.org) licensed under the [LGPLv2.1](h
 Linux wheels ship with [Qt 4.8.7](http://doc.qt.io/qt-4.8/lgpl.html) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
 
 MacOS wheels ship with [Qt 5](http://doc.qt.io/qt-5/lgpl.html) licensed under the [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html).
+
+The packages include also other binaries. Full list of licenses can be found from [LICENSE-3RD-PARTY.txt](https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
 
 ### Versioning
 
@@ -168,3 +181,10 @@ Currently, builds for following Python versions are provided:
 - 3.6
 - 3.7
 - 3.8
+
+### Backward compatibility
+
+Starting from 4.2.0 and 3.4.9 builds the macOS Travis build environment was updated to XCode 9.4. The change effectively dropped support for older than 10.13 macOS versions.
+
+Starting from 4.3.0 and 3.4.10 builds the Linux build environment was updated from `manylinux1` to `manylinux2014`. This dropped support for old Linux distributions.
+
