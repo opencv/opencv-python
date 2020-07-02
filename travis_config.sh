@@ -94,6 +94,8 @@ function pre_build {
         brew update
         generate_ffmpeg_formula
         brew_add_local_bottles
+    else
+        brew style
     fi
 
     echo 'Installing qt5'
