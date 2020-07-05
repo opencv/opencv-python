@@ -81,11 +81,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
 FFmpeg is redistributed within all opencv-python packages.
-Qt 4.8.7 is redistributed within opencv-python Linux packages.
+Qt 4.8.7 is redistributed within non-headless opencv-python Linux packages.
 Libuuid is redistributed within all opencv-python Linux packages.
 
 Libbluray, libgnutls, libnettle, libhogweed, libintl, libmp3lame, libp11,
-librtmp, libsoxr, libtasn1,  are redistributed within all opencv-python macOS packages.
+librtmp, libsoxr and libtasn1 are redistributed within all opencv-python macOS packages.
 
 This license applies to the above library binaries in the directory cv2/.
 
@@ -549,7 +549,7 @@ DAMAGES.
                      END OF TERMS AND CONDITIONS
 
 ------------------------------------------------------------------------------
-Qt 5 is redistributed within opencv-python macOS packages.
+Qt 5 is redistributed within non-headless opencv-python macOS packages.
 libgmp is redistributed within opencv-python macOS packages.
 libidn2 is redistributed within opencv-python macOS packages.
 libunistring is redistributed within opencv-python macOS packages.
