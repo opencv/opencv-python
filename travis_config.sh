@@ -124,7 +124,6 @@ function pre_build {
   else
     echo "Running for linux"
   fi
-  qmake -query
 }
 
 function run_tests {

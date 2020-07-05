@@ -1,0 +1,77 @@
+FROM quay.io/pypa/manylinux2014_i686:latest
+
+RUN yum install bzip2-devel curl-devel zlib-devel qt-devel -y
+
+RUN mkdir ~/ffmpeg_sources && \
+    cd ~/ffmpeg_sources && \
+    curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1c.tar.gz && \
+    tar -xf OpenSSL_1_1_1c.tar.gz && \
+    cd openssl-OpenSSL_1_1_1c && \
+    # in i686, ./config detects x64 in i686 container without linux32
+    # when run from "docker build"
+    linux32 ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    #skip installing documentation
+    make install_sw && \
+    rm -rf ~/openssl_build
+
+RUN cd ~/ffmpeg_sources && \
+    curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/2.14.01/nasm-2.14.01.tar.bz2 && \
+    tar -xf nasm-2.14.01.tar.bz2 && cd nasm-2.14.01 && ./autogen.sh && \
+    linux32 ./configure && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install
+
+RUN cd ~/ffmpeg_sources && \
+    curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && \
+    tar -xf yasm-1.3.0.tar.gz && \
+    cd yasm-1.3.0 && \
+    linux32 ./configure && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install
+
+RUN cd ~/ffmpeg_sources && \
+    git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git && \
+    cd libvpx && \
+    linux32 ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install
+
+RUN cd ~/ffmpeg_sources && \
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
+    tar -xf ffmpeg-snapshot.tar.bz2 && \
+    cd ffmpeg && \
+    PATH=~/bin:$PATH && \
+    PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" linux32 ./configure --prefix="$HOME/ffmpeg_build" --extra-cflags="-I$HOME/ffmpeg_build/include" --extra-ldflags="-L$HOME/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --bindir="$HOME/bin" && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    echo "/root/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
+    ldconfig && \
+    rm -rf ~/ffmpeg_sources
+
+RUN curl -O -L https://github.com/ccache/ccache/releases/download/v3.7.9/ccache-3.7.9.tar.gz && \
+    tar -xf ccache-3.7.9.tar.gz && \
+    cd ccache-3.7.9 && \
+    linux32 ./configure && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install
+
+RUN curl -O -L https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0.tar.gz && \
+    tar -xf cmake-3.17.0.tar.gz && \
+    cd cmake-3.17.0 && \
+    export MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) && \
+    ./configure --system-curl && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf cmake-3.17.0*
+
+ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/root/ffmpeg_build/lib/pkgconfig
+ENV LDFLAGS -L/root/ffmpeg_build/lib
+
+# in i686, yum metadata ends up with slightly wrong timestamps
+# which inhibits its update
+# https://github.com/skvark/opencv-python/issues/148
+RUN yum clean all
+
+ENV PATH "$HOME/bin:$PATH"
