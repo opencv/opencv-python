@@ -647,9 +647,7 @@ jobs:
 before_install: |
     set -e
 
-    if [[ $SDIST == 1 ]]; then
-      echo "sdist build"
-    else
+    if [[ $SDIST == 0 ]]; then
       # Check out and prepare the source
       # Multibuild doesn't have releases, so --depth would break eventually (see
       # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
@@ -703,15 +701,12 @@ install: |
 
 script: |
     # Install and run tests
-    set -x
 
-    if [[ $SDIST == 1 ]]; then
-      echo "sdist"
-    else
+    if [[ $SDIST == 0 ]]; then
+      set -x
       install_run $PLAT && rc=$? || rc=$?
+      set +x
     fi
-
-    set +x
 
     # otherwise, Travis logic terminates prematurely
     # https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
