@@ -366,7 +366,7 @@ def get_opencv_version(contrib, headless):
     if not os.path.exists(version_file):
       old_args = sys.argv.copy()
       sys.argv = ['', str(contrib), str(headless)]
-      runpy.run_path("find_version.py ", run_name="__main__")
+      runpy.run_path("find_version.py", run_name="__main__")
       sys.argv = old_args
 
     with open(version_file) as fp:
