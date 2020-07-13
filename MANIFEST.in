@@ -1,0 +1,10 @@
+include LICENSE-3RD-PARTY.txt
+include LICENSE.txt
+include README.md
+include find_version.py
+include setup.py
+recursive-include cv2 *
+recursive-include docker *
+recursive-include opencv *
+recursive-include opencv_contrib *
+recursive-include patches *

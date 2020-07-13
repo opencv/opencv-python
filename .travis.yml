@@ -4,10 +4,10 @@ env:
         # pip dependencies to _test_ your project
         - TEST_DEPENDS="numpy==1.11.1"
         # params to bdist_wheel. used to set osx build target.
-        - BDIST_PARAMS=""
         - CONFIG_PATH="travis_config.sh"
         - USE_CCACHE=1
         - UNICODE_WIDTH=32
+        - SDIST=0
 
 # Save some time, we and setup check them out on demand instead
 # https://docs.travis-ci.com/user/customizing-the-build/#Git-Clone-Depth
@@ -28,6 +28,7 @@ stages:
 
 jobs:
   fast_finish: true
+  # Travis exclude is buggy, this seems to be the only way to disable default build
   exclude:
     - language: ruby
   include:
@@ -56,6 +57,40 @@ jobs:
           - /usr/local/Homebrew/
           # used in OSX custom build script dealing with local bottle caching
           - $HOME/local_bottle_metadata
+
+    # source distributions
+    - os: linux
+      env:
+        - SDIST=1
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+      python: "3.8"
+      language: python
+      dist: xenial
+    - os: linux
+      env:
+        - SDIST=1
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+      python: "3.8"
+      language: python
+      dist: xenial
+    - os: linux
+      env:
+        - SDIST=1
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+      python: "3.8"
+      language: python
+      dist: xenial
+    - os: linux
+      env:
+        - SDIST=1
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+      python: "3.8"
+      language: python
+      dist: xenial
 
     # default builds for MacOS
       #further jobs in the list will use the same stage until the next assignment
@@ -606,56 +641,74 @@ jobs:
 
 # The first line is printed in the folding header in Travis output
 before_install: |
-    # Check out and prepare the source
     set -e
-    # Multibuild doesn't have releases, so --depth would break eventually (see
-    # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
-    git submodule update --init multibuild
-    echo "Source multibuild/common_utils.sh"
-    source multibuild/common_utils.sh
-    # https://github.com/matthew-brett/multibuild/issues/116
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
-    echo "Source multibuild/travis_steps.sh"
-    source multibuild/travis_steps.sh
-    # This sets -x
-    echo "Source travis_multibuild_customize.sh"
-    source travis_multibuild_customize.sh
-    echo $ENABLE_CONTRIB > contrib.enabled
-    echo $ENABLE_HEADLESS > headless.enabled
 
-    if [ -n "$IS_OSX" ]; then
-        echo "homebrew"
-        TAPS="$(brew --repository)/Library/Taps"
-        if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
-            rm -rf "$TAPS/caskroom/homebrew-cask"
+    if [ -z "$SDIST" ]; then
+        echo "sdist build"
+    else
+        # Check out and prepare the source
+        # Multibuild doesn't have releases, so --depth would break eventually (see
+        # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
+        git submodule update --init multibuild
+
+        source multibuild/common_utils.sh
+
+        # https://github.com/matthew-brett/multibuild/issues/116
+        if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
+
+        source multibuild/travis_steps.sh
+        # This sets -x
+
+        source travis_multibuild_customize.sh
+        echo $ENABLE_CONTRIB > contrib.enabled
+        echo $ENABLE_HEADLESS > headless.enabled
+
+        if [ -n "$IS_OSX" ]; then
+            echo "homebrew"
+            TAPS="$(brew --repository)/Library/Taps"
+            if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
+                rm -rf "$TAPS/caskroom/homebrew-cask"
+            fi
+            find "$TAPS" -type d -name .git -exec \
+                    bash -xec '
+                        cd $(dirname '\''{}'\'') || echo "status: $?"
+                        git clean -fxd || echo "status: $?"
+                        sleep 1 || echo "status: $?"
+                        git status || echo "status: $?"' \; || echo "status: $?"
+            brew_cache_cleanup
         fi
-        find "$TAPS" -type d -name .git -exec \
-                bash -xec '
-                    cd $(dirname '\''{}'\'') || echo "status: $?"
-                    git clean -fxd || echo "status: $?"
-                    sleep 1 || echo "status: $?"
-                    git status || echo "status: $?"' \; || echo "status: $?"
-
-        brew_cache_cleanup
+        echo "end"
+        # Not interested in travis internal scripts' output
     fi
-    echo "end"
-    # Not interested in travis internal scripts' output
+
     set +x
 
 install: |
     # Build and package
     set -x
-    build_wheel $REPO_DIR $PLAT
+
+    if [ -z "$SDIST" ]; then
+        python setup.py sdist
+    else
+        build_wheel $REPO_DIR $PLAT
+    fi
+
     set +x
 
 script: |
     # Install and run tests
     set -x
-    install_run $PLAT && rc=$? || rc=$?
+
+    if [ -z "$SDIST" ]; then
+      echo "sdist"
+    else
+        install_run $PLAT && rc=$? || rc=$?
+    fi
+
     set +x
 
-    #otherwise, Travis logic terminates prematurely
-    #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
+    # otherwise, Travis logic terminates prematurely
+    # https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
     trap ERR
 
     test "$rc" -eq 0
@@ -676,19 +729,11 @@ before_cache: |
     set +x; set +e
 
 after_success: |
-    # Upload wheels to pypi if tag is set, otherwise save to Azure Storage
+    # Upload wheels to pypi if tag is set
+
+    set -x
+
     if [ -n "$TRAVIS_TAG" ]; then
-        set -x
-
-        if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-          pip install --user twine
-          pip install --user --upgrade six
-        fi
-
-        if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-          pip install twine
-          pip install --upgrade pyOpenSSL
-        fi
 
         if [[ $ENABLE_CONTRIB == 0 ]]; then
             if [[ $ENABLE_HEADLESS == 0 ]]; then
@@ -704,19 +749,50 @@ after_success: |
             fi
         fi
 
-        twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
-        set +x
-    else
-        set -x
-
         if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-        else
-          brew install azure-cli
+          pip install --user twine
+          pip install --user --upgrade six
+
+          if [ -z "$SDIST" ]; then
+            twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
+          else
+            twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
+          fi
+
         fi
 
-        az storage container create -n ${TRAVIS_COMMIT} --public-access blob
-        az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern *.whl
+        if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+          # macpython 3.5 doesn't support recent TLS protocols which causes twine
+          # upload to fail, so we use the system Python to run twine
+          /usr/bin/python -m ensurepip --user
+          /usr/bin/python -m pip install --user -U pip
+          /usr/bin/python -m pip install --user -U -I twine
 
-        set -x
+          if [ -z "$SDIST" ]; then
+            /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
+          else
+            /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
+          fi
+
+        fi
+
     fi
+
+    # Save to Azure storage always
+
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    else
+      brew install azure-cli
+    fi
+
+    az storage container create -n ${TRAVIS_COMMIT} --public-access blob
+
+    if [ -z "$SDIST" ]; then
+      az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/dist --pattern *.gz
+    else
+      az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern *.whl
+    fi
+
+    set +x
+
