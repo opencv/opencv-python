@@ -647,7 +647,7 @@ jobs:
 before_install: |
     set -e
 
-    if [ -n "$SDIST" ]; then
+    if [[ $SDIST == 1 ]]; then
         echo "sdist build"
     else
         # Check out and prepare the source
@@ -691,7 +691,7 @@ install: |
     # Build and package
     set -x
 
-    if [ -n "$SDIST" ]; then
+    if [[ $SDIST == 1 ]]; then
         python -m pip install --upgrade pip
         python -m pip install scikit-build
         python setup.py sdist
@@ -705,7 +705,7 @@ script: |
     # Install and run tests
     set -x
 
-    if [ -n "$SDIST" ]; then
+    if [[ $SDIST == 1 ]]; then
       echo "sdist"
     else
         install_run $PLAT && rc=$? || rc=$?
@@ -741,46 +741,46 @@ after_success: |
 
     if [ -n "$TRAVIS_TAG" ]; then
 
-        if [[ $ENABLE_CONTRIB == 0 ]]; then
-            if [[ $ENABLE_HEADLESS == 0 ]]; then
-              echo "This is default build. Deployment will be done to to PyPI entry opencv-python."
-            else
-              echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-python-headless."
-            fi
+      if [[ $ENABLE_CONTRIB == 0 ]]; then
+          if [[ $ENABLE_HEADLESS == 0 ]]; then
+            echo "This is default build. Deployment will be done to to PyPI entry opencv-python."
+          else
+            echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-python-headless."
+          fi
+      else
+          if [[ $ENABLE_HEADLESS == 0 ]]; then
+            echo "This is contrib build. Deployment will be done to to PyPI entry opencv-contrib-python."
+          else
+            echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-contrib-python-headless."
+          fi
+      fi
+
+      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        pip install --user twine
+        pip install --user --upgrade six
+
+        if [[ $SDIST == 1 ]]; then
+          twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
         else
-            if [[ $ENABLE_HEADLESS == 0 ]]; then
-              echo "This is contrib build. Deployment will be done to to PyPI entry opencv-contrib-python."
-            else
-              echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-contrib-python-headless."
-            fi
+          twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
         fi
 
-        if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-          pip install --user twine
-          pip install --user --upgrade six
+      fi
 
-          if [ -n "$SDIST" ]; then
-            twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
-          else
-            twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
-          fi
+      if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        # macpython 3.5 doesn't support recent TLS protocols which causes twine
+        # upload to fail, so we use the system Python to run twine
+        /usr/bin/python -m ensurepip --user
+        /usr/bin/python -m pip install --user -U pip
+        /usr/bin/python -m pip install --user -U -I twine
 
+        if [[ $SDIST == 1 ]]; then
+          /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
+        else
+          /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
         fi
 
-        if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-          # macpython 3.5 doesn't support recent TLS protocols which causes twine
-          # upload to fail, so we use the system Python to run twine
-          /usr/bin/python -m ensurepip --user
-          /usr/bin/python -m pip install --user -U pip
-          /usr/bin/python -m pip install --user -U -I twine
-
-          if [ -n "$SDIST" ]; then
-            /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
-          else
-            /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
-          fi
-
-        fi
+      fi
 
     fi
 
@@ -794,7 +794,7 @@ after_success: |
 
     az storage container create -n ${TRAVIS_COMMIT} --public-access blob
 
-    if [ -n "$SDIST" ]; then
+    if [[ $SDIST == 1 ]]; then
       az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/dist --pattern *.gz
     else
       az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern *.whl
