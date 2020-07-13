@@ -15,13 +15,13 @@ def main():
 
     # These are needed for source fetching
     cmake_source_dir = "opencv"
-    minimum_supported_numpy = "1.11.1"
+    minimum_supported_numpy = "1.13.1"
     build_contrib = get_build_env_var_by_name("contrib")
     # headless flag to skip GUI deps if needed
     build_headless = get_build_env_var_by_name("headless")
 
     if sys.version_info[:2] >= (3, 6):
-        minimum_supported_numpy = "1.11.3"
+        minimum_supported_numpy = "1.13.3"
     if sys.version_info[:2] >= (3, 7):
         minimum_supported_numpy = "1.14.5"
     if sys.version_info[:2] >= (3, 8):
@@ -176,7 +176,6 @@ def main():
         packages=packages,
         package_data=package_data,
         maintainer="Olli-Pekka Heinisuo",
-        include_package_data=True,
         ext_modules=EmptyListWithLength(),
         install_requires=numpy_version,
         classifiers=[

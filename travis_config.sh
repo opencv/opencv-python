@@ -14,7 +14,7 @@ function bdist_wheel_cmd {
     # copied from multibuild's common_utils.sh
     # add osx deployment target so it doesnt default to 10.6
     local abs_wheelhouse=$1
-    python setup.py bdist_wheel $BDIST_PARAMS
+    pip wheel . --no-build-isolation --verbose $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
     if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
 }

@@ -643,7 +643,7 @@ jobs:
 before_install: |
     set -e
 
-    if [ -z "$SDIST" ]; then
+    if [ -n "$SDIST" ]; then
         echo "sdist build"
     else
         # Check out and prepare the source
@@ -687,7 +687,9 @@ install: |
     # Build and package
     set -x
 
-    if [ -z "$SDIST" ]; then
+    if [ -n "$SDIST" ]; then
+        python -m pip install --upgrade pip
+        python -m pip install scikit-build
         python setup.py sdist
     else
         build_wheel $REPO_DIR $PLAT
@@ -699,7 +701,7 @@ script: |
     # Install and run tests
     set -x
 
-    if [ -z "$SDIST" ]; then
+    if [ -n "$SDIST" ]; then
       echo "sdist"
     else
         install_run $PLAT && rc=$? || rc=$?
@@ -753,7 +755,7 @@ after_success: |
           pip install --user twine
           pip install --user --upgrade six
 
-          if [ -z "$SDIST" ]; then
+          if [ -n "$SDIST" ]; then
             twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
           else
             twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
@@ -768,7 +770,7 @@ after_success: |
           /usr/bin/python -m pip install --user -U pip
           /usr/bin/python -m pip install --user -U -I twine
 
-          if [ -z "$SDIST" ]; then
+          if [ -n "$SDIST" ]; then
             /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
           else
             /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
@@ -788,7 +790,7 @@ after_success: |
 
     az storage container create -n ${TRAVIS_COMMIT} --public-access blob
 
-    if [ -z "$SDIST" ]; then
+    if [ -n "$SDIST" ]; then
       az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/dist --pattern *.gz
     else
       az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern *.whl

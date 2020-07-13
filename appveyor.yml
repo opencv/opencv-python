@@ -141,7 +141,7 @@ build_script:
 - cmd: |
     "%PYTHON%/python.exe" -m pip install --upgrade pip
     "%PYTHON%/python.exe" -m pip install --upgrade setuptools
-    "%PYTHON%/python.exe" setup.py bdist_wheel
+    "%PYTHON%/python.exe" -m pip wheel . --no-build-isolation --verbose
 
 before_test:
 - ps: |
