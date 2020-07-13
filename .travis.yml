@@ -60,6 +60,7 @@ jobs:
 
     # source distributions
     - os: linux
+      stage: s1
       env:
         - SDIST=1
         - ENABLE_CONTRIB=0
@@ -68,6 +69,7 @@ jobs:
       language: python
       dist: xenial
     - os: linux
+      stage: s1
       env:
         - SDIST=1
         - ENABLE_CONTRIB=0
@@ -76,6 +78,7 @@ jobs:
       language: python
       dist: xenial
     - os: linux
+      stage: s1
       env:
         - SDIST=1
         - ENABLE_CONTRIB=1
@@ -84,6 +87,7 @@ jobs:
       language: python
       dist: xenial
     - os: linux
+      stage: s1
       env:
         - SDIST=1
         - ENABLE_CONTRIB=1
