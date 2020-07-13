@@ -701,17 +701,15 @@ install: |
 
 script: |
     # Install and run tests
-
     if [[ $SDIST == 0 ]]; then
       set -x
       install_run $PLAT && rc=$? || rc=$?
       set +x
     fi
 
-    # otherwise, Travis logic terminates prematurely
-    # https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
+    #otherwise, Travis logic terminates prematurely
+    #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
     trap ERR
-
     test "$rc" -eq 0
 
 before_cache: |
