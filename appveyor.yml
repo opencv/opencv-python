@@ -141,7 +141,7 @@ build_script:
 - cmd: |
     "%PYTHON%/python.exe" -m pip install --upgrade pip
     "%PYTHON%/python.exe" -m pip install --upgrade setuptools
-    "%PYTHON%/python.exe" -m pip wheel . --verbose
+    "%PYTHON%/python.exe" -m pip wheel . --verbose --wheel-dir=dist
 
 before_test:
 - ps: |
