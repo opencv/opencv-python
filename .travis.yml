@@ -648,41 +648,41 @@ before_install: |
     set -e
 
     if [[ $SDIST == 1 ]]; then
-        echo "sdist build"
+      echo "sdist build"
     else
-        # Check out and prepare the source
-        # Multibuild doesn't have releases, so --depth would break eventually (see
-        # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
-        git submodule update --init multibuild
+      # Check out and prepare the source
+      # Multibuild doesn't have releases, so --depth would break eventually (see
+      # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
+      git submodule update --init multibuild
 
-        source multibuild/common_utils.sh
+      source multibuild/common_utils.sh
 
-        # https://github.com/matthew-brett/multibuild/issues/116
-        if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
+      # https://github.com/matthew-brett/multibuild/issues/116
+      if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
 
-        source multibuild/travis_steps.sh
-        # This sets -x
+      source multibuild/travis_steps.sh
+      # This sets -x
 
-        source travis_multibuild_customize.sh
-        echo $ENABLE_CONTRIB > contrib.enabled
-        echo $ENABLE_HEADLESS > headless.enabled
+      source travis_multibuild_customize.sh
+      echo $ENABLE_CONTRIB > contrib.enabled
+      echo $ENABLE_HEADLESS > headless.enabled
 
-        if [ -n "$IS_OSX" ]; then
-            echo "homebrew"
-            TAPS="$(brew --repository)/Library/Taps"
-            if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
-                rm -rf "$TAPS/caskroom/homebrew-cask"
-            fi
-            find "$TAPS" -type d -name .git -exec \
-                    bash -xec '
-                        cd $(dirname '\''{}'\'') || echo "status: $?"
-                        git clean -fxd || echo "status: $?"
-                        sleep 1 || echo "status: $?"
-                        git status || echo "status: $?"' \; || echo "status: $?"
-            brew_cache_cleanup
+      if [ -n "$IS_OSX" ]; then
+        echo "homebrew"
+        TAPS="$(brew --repository)/Library/Taps"
+        if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
+            rm -rf "$TAPS/caskroom/homebrew-cask"
         fi
-        echo "end"
-        # Not interested in travis internal scripts' output
+        find "$TAPS" -type d -name .git -exec \
+                bash -xec '
+                    cd $(dirname '\''{}'\'') || echo "status: $?"
+                    git clean -fxd || echo "status: $?"
+                    sleep 1 || echo "status: $?"
+                    git status || echo "status: $?"' \; || echo "status: $?"
+        brew_cache_cleanup
+      fi
+      echo "end"
+      # Not interested in travis internal scripts' output
     fi
 
     set +x
@@ -692,11 +692,11 @@ install: |
     set -x
 
     if [[ $SDIST == 1 ]]; then
-        python -m pip install --upgrade pip
-        python -m pip install scikit-build
-        python setup.py sdist
+      python -m pip install --upgrade pip
+      python -m pip install scikit-build
+      python setup.py sdist
     else
-        build_wheel $REPO_DIR $PLAT
+      build_wheel $REPO_DIR $PLAT
     fi
 
     set +x
@@ -708,7 +708,7 @@ script: |
     if [[ $SDIST == 1 ]]; then
       echo "sdist"
     else
-        install_run $PLAT && rc=$? || rc=$?
+      install_run $PLAT && rc=$? || rc=$?
     fi
 
     set +x
@@ -724,12 +724,12 @@ before_cache: |
     set -e; set -x
     if [ -n "$IS_OSX" ]; then
 
-        # When Taps is cached, this dir causes "Error: file exists" on `brew update`
-        if [ -e "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask" ]; then
-            rm -rf "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask"
-        fi
+      # When Taps is cached, this dir causes "Error: file exists" on `brew update`
+      if [ -e "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask" ]; then
+        rm -rf "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask"
+      fi
 
-        brew_cache_cleanup
+      brew_cache_cleanup
 
     fi
     set +x; set +e
@@ -742,17 +742,17 @@ after_success: |
     if [ -n "$TRAVIS_TAG" ]; then
 
       if [[ $ENABLE_CONTRIB == 0 ]]; then
-          if [[ $ENABLE_HEADLESS == 0 ]]; then
-            echo "This is default build. Deployment will be done to to PyPI entry opencv-python."
-          else
-            echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-python-headless."
-          fi
+        if [[ $ENABLE_HEADLESS == 0 ]]; then
+          echo "This is default build. Deployment will be done to to PyPI entry opencv-python."
+        else
+          echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-python-headless."
+        fi
       else
-          if [[ $ENABLE_HEADLESS == 0 ]]; then
-            echo "This is contrib build. Deployment will be done to to PyPI entry opencv-contrib-python."
-          else
-            echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-contrib-python-headless."
-          fi
+        if [[ $ENABLE_HEADLESS == 0 ]]; then
+          echo "This is contrib build. Deployment will be done to to PyPI entry opencv-contrib-python."
+        else
+          echo "This is headless contrib build. Deployment will be done to to PyPI entry opencv-contrib-python-headless."
+        fi
       fi
 
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then

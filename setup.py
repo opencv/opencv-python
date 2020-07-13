@@ -98,7 +98,7 @@ def main():
 
     cmake_args = (
         (
-            ["-G", "Visual Studio 15" + (" Win64" if x64 else "")]
+            ["-G", "Visual Studio 14" + (" Win64" if x64 else "")]
             if os.name == "nt"
             else ["-G", "Unix Makefiles"]  # don't make CMake try (and fail) Ninja first
         )
