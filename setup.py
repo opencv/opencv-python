@@ -154,10 +154,10 @@ def main():
         cmake_args.append("-DWITH_LAPACK=ON")
         cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
-    if sys.platform.startswith("linux") and not x64:
+    if sys.platform.startswith("linux") and not x64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
 
-    if sys.platform == "darwin":
+    if sys.platform == "darwin" and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
     # works via side effect
