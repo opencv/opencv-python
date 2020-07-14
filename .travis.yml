@@ -797,7 +797,7 @@ after_success: |
     if [[ $SDIST == 1 ]]; then
       az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/dist --pattern *.gz
     else
-      az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern *.whl
+      az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern opencv*.whl
     fi
 
     set +x

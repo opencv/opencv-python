@@ -158,7 +158,7 @@ test_script:
     "%PYTHON%/python.exe" -m unittest test
 
 artifacts:
-- path: dist\*.whl
+- path: dist\opencv*.whl
   name: wheels
 
 deploy_script:
