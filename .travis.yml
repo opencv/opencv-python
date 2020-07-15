@@ -20,8 +20,6 @@ cache:
     # `cache: ccache: true` has no effect if `language:` is not `c` or `cpp`
     - $HOME/.ccache
 
-language: python
-
 # Add more cache stages (s2 etc) and corresponding OSX jobs like s1
 # if brew builds start to take longer than one Travis time limit
 stages:
@@ -32,7 +30,7 @@ jobs:
   fast_finish: true
   # Travis exclude is buggy, this seems to be the only way to disable default build
   exclude:
-    - language: python
+    - language: ruby
   include:
     - os: osx
       env:

@@ -14,7 +14,7 @@ function bdist_wheel_cmd {
     # copied from multibuild's common_utils.sh
     # add osx deployment target so it doesnt default to 10.6
     local abs_wheelhouse=$1
-    pip wheel . --wheel-dir="$PWD/dist" --verbose $BDIST_PARAMS
+    pip wheel --wheel-dir="$PWD/dist" . --verbose $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
     if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
 }
@@ -110,6 +110,7 @@ function pre_build {
         brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
     else
         brew unlink python@2
+        brew update
         brew install ffmpeg_opencv
     fi
 
