@@ -13,11 +13,11 @@ from skbuild import cmaker
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    # These are needed for source fetching
+    CI_BUILD = os.environ.get("CI_BUILD", "False")
+    is_CI_build = True if CI_BUILD == "True" else False
     cmake_source_dir = "opencv"
     minimum_supported_numpy = "1.13.1"
     build_contrib = get_build_env_var_by_name("contrib")
-    # headless flag to skip GUI deps if needed
     build_headless = get_build_env_var_by_name("headless")
 
     if sys.version_info[:2] >= (3, 6):
@@ -30,11 +30,16 @@ def main():
     numpy_version = "numpy>=%s" % minimum_supported_numpy
 
     python_version = cmaker.CMaker.get_python_version()
-    python_lib_path = cmaker.CMaker.get_python_library(python_version).replace('\\', '/')
-    python_include_dir = cmaker.CMaker.get_python_include_dir(python_version).replace('\\', '/')
+    python_lib_path = cmaker.CMaker.get_python_library(python_version).replace(
+        "\\", "/"
+    )
+    python_include_dir = cmaker.CMaker.get_python_include_dir(python_version).replace(
+        "\\", "/"
+    )
 
     if os.path.exists(".git"):
         import pip._internal.vcs.git as git
+
         g = git.Git()  # NOTE: pip API's are internal, this has to be refactored
 
         g.run_command(["submodule", "sync"])
@@ -47,7 +52,9 @@ def main():
                 ["submodule", "update", "--init", "--recursive", "opencv_contrib"]
             )
 
-    package_version, build_contrib, build_headless = get_opencv_version(build_contrib, build_headless)
+    package_version, build_contrib, build_headless = get_opencv_version(
+        build_contrib, build_headless
+    )
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     x64 = sys.maxsize > 2 ** 32
@@ -86,7 +93,10 @@ def main():
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
-        ["python/cv2[^/]*%(ext)s" % {"ext": re.escape(sysconfig.get_config_var("EXT_SUFFIX"))}],
+        [
+            "python/cv2[^/]*%(ext)s"
+            % {"ext": re.escape(sysconfig.get_config_var("EXT_SUFFIX"))}
+        ],
         "cv2.data": [  # OPENCV_OTHER_INSTALL_PATH
             ("etc" if os.name == "nt" else "share/opencv4") + r"/haarcascades/.*\.xml"
         ],
@@ -96,12 +106,14 @@ def main():
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
 
+    ci_cmake_generator = (
+        ["-G", "Visual Studio 14" + (" Win64" if x64 else "")]
+        if os.name == "nt"
+        else ["-G", "Unix Makefiles"]
+    )
+
     cmake_args = (
-        (
-            ["-G", "Visual Studio 14" + (" Win64" if x64 else "")]
-            if os.name == "nt"
-            else ["-G", "Unix Makefiles"]  # don't make CMake try (and fail) Ninja first
-        )
+        (ci_cmake_generator if is_CI_build else [])
         + [
             # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
             "-DPYTHON3_EXECUTABLE=%s" % sys.executable,
@@ -131,33 +143,40 @@ def main():
         )
     )
 
-    # OS-specific components
-    if sys.platform.startswith('linux') and not build_headless:
-        cmake_args.append("-DWITH_QT=4")
-
-    if sys.platform == 'darwin' and not build_headless:
-        cmake_args.append("-DWITH_QT=5")
-        rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
-            (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
-        ]
-
     if build_headless:
         # it seems that cocoa cannot be disabled so on macOS the package is not truly headless
         cmake_args.append("-DWITH_WIN32UI=OFF")
         cmake_args.append("-DWITH_QT=OFF")
-        cmake_args.append(
-            "-DWITH_MSMF=OFF"
-        )  # see: https://github.com/skvark/opencv-python/issues/263
+        cmake_args.append("-DWITH_GTK=OFF")
+        if is_CI_build:
+            cmake_args.append(
+                "-DWITH_MSMF=OFF"
+            )  # see: https://github.com/skvark/opencv-python/issues/263
 
-    if sys.platform.startswith("linux"):
-        cmake_args.append("-DWITH_V4L=ON")
-        cmake_args.append("-DWITH_LAPACK=ON")
-        cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
+    # OS-specific components during CI builds
+    if is_CI_build:
+        if sys.platform.startswith("linux") and not build_headless:
+            cmake_args.append("-DWITH_QT=4")
+
+        if sys.platform == "darwin" and not build_headless:
+            cmake_args.append("-DWITH_QT=5")
+
+        if sys.platform.startswith("linux"):
+            cmake_args.append("-DWITH_V4L=ON")
+            cmake_args.append("-DWITH_LAPACK=ON")
+            cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
     if sys.platform.startswith("linux") and not x64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
 
-    if sys.platform == "darwin" and "bdist_wheel" in sys.argv:
+    if (
+        sys.platform == "darwin"
+        and "bdist_wheel" in sys.argv
+        and ("WITH_QT=5" in sys.argv or "WITH_QT=5" in cmake_args)
+    ):
+        rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
+            (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
+        ]
         subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
     # works via side effect
@@ -357,22 +376,25 @@ class RearrangeCMakeOutput(object):
             cmake_install_dir=cmake_install_reldir,
         )
 
+
 def get_opencv_version(contrib, headless):
     # cv2/version.py should be generated by running find_version.py
     version = {}
     here = os.path.abspath(os.path.dirname(__file__))
     version_file = os.path.join(here, "cv2", "version.py")
 
-    if not os.path.exists(version_file):
-      old_args = sys.argv.copy()
-      sys.argv = ['', str(contrib), str(headless)]
-      runpy.run_path("find_version.py", run_name="__main__")
-      sys.argv = old_args
+    # generate a fresh version.py always when Git repository exists
+    if os.path.exists(".git"):
+        old_args = sys.argv.copy()
+        sys.argv = ["", str(contrib), str(headless)]
+        runpy.run_path("find_version.py", run_name="__main__")
+        sys.argv = old_args
 
     with open(version_file) as fp:
         exec(fp.read(), version)
 
-    return version['opencv_version'], version['contrib'], version['headless']
+    return version["opencv_version"], version["contrib"], version["headless"]
+
 
 def get_build_env_var_by_name(flag_name):
     flag_set = False
@@ -389,6 +411,7 @@ def get_build_env_var_by_name(flag_name):
             pass
 
     return flag_set
+
 
 # This creates a list which is empty but returns a length of 1.
 # Should make the wheel a binary distribution and platlib compliant.
