@@ -90,6 +90,7 @@ function pre_build {
     local CACHE_STAGE; (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
 
     export HOMEBREW_FORCE_VENDOR_RUBY=1
+    brew style
     brew update
 
     #after the cache stage, all bottles and Homebrew metadata should be already cached locally
