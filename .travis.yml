@@ -670,8 +670,6 @@ before_install: |
       echo $ENABLE_HEADLESS > headless.enabled
 
       if [ -n "$IS_OSX" ]; then
-        export HOMEBREW_FORCE_VENDOR_RUBY=1
-        brew upgrade
         TAPS="$(brew --repository)/Library/Taps"
         if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
             rm -rf "$TAPS/caskroom/homebrew-cask"
