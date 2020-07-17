@@ -5,7 +5,7 @@ import subprocess
 if __name__ == "__main__":
   contrib = sys.argv[1]
   headless = sys.argv[2]
-  ci_build = sys.argv[2]
+  ci_build = sys.argv[3]
 
   opencv_version = ""
   # dig out the version from OpenCV sources
