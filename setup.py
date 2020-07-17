@@ -1,4 +1,3 @@
-# No 3rd-party modules here, see "3rd-party" note below
 import io
 import os
 import os.path
@@ -7,43 +6,38 @@ import runpy
 import subprocess
 import re
 import sysconfig
+import skbuild
+from skbuild import cmaker
 
 
 def main():
-
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    # These are neede for source fetching
+    CI_BUILD = os.environ.get("CI_BUILD", "False")
+    is_CI_build = True if CI_BUILD == "True" else False
     cmake_source_dir = "opencv"
+    minimum_supported_numpy = "1.13.1"
     build_contrib = get_build_env_var_by_name("contrib")
-    # headless flag to skip GUI deps if needed
     build_headless = get_build_env_var_by_name("headless")
 
-    # Only import 3rd-party modules after having installed all the build dependencies:
-    # any of them, or their dependencies, can be updated during that process,
-    # leading to version conflicts
-    minimum_supported_numpy = "1.11.1"
-
     if sys.version_info[:2] >= (3, 6):
-        minimum_supported_numpy = "1.11.3"
+        minimum_supported_numpy = "1.13.3"
     if sys.version_info[:2] >= (3, 7):
         minimum_supported_numpy = "1.14.5"
     if sys.version_info[:2] >= (3, 8):
         minimum_supported_numpy = "1.17.3"
 
-    numpy_version = get_or_install("numpy", minimum_supported_numpy)
-    get_or_install("scikit-build")
-    get_or_install("cmake")
-
-    import skbuild
-    from skbuild import cmaker
+    numpy_version = "numpy>=%s" % minimum_supported_numpy
 
     python_version = cmaker.CMaker.get_python_version()
-    python_lib_path = cmaker.CMaker.get_python_library(python_version).replace('\\', '/')
-    python_include_dir = cmaker.CMaker.get_python_include_dir(python_version).replace('\\', '/')
+    python_lib_path = cmaker.CMaker.get_python_library(python_version).replace(
+        "\\", "/"
+    )
+    python_include_dir = cmaker.CMaker.get_python_include_dir(python_version).replace(
+        "\\", "/"
+    )
 
     if os.path.exists(".git"):
-
         import pip._internal.vcs.git as git
 
         g = git.Git()  # NOTE: pip API's are internal, this has to be refactored
@@ -57,6 +51,10 @@ def main():
             g.run_command(
                 ["submodule", "update", "--init", "--recursive", "opencv_contrib"]
             )
+
+    package_version, build_contrib, build_headless = get_and_set_info(
+        build_contrib, build_headless, is_CI_build
+    )
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     x64 = sys.maxsize > 2 ** 32
@@ -73,12 +71,11 @@ def main():
         package_name = "opencv-python-headless"
 
     long_description = io.open("README.md", encoding="utf-8").read()
-    package_version = get_opencv_version()
 
     packages = ["cv2", "cv2.data"]
 
     package_data = {
-        "cv2": ["*%s" % sysconfig.get_config_vars().get("SO")]
+        "cv2": ["*%s" % sysconfig.get_config_vars().get("SO"), "version.py"]
         + (["*.dll"] if os.name == "nt" else [])
         + ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"],
         "cv2.data": ["*.xml"],
@@ -87,29 +84,36 @@ def main():
     # Files from CMake output to copy to package.
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = {
-
-        'cv2': ([r'bin/opencv_ffmpeg\d{3,4}%s\.dll' % ('_64' if x64 else '')] if os.name == 'nt' else []) +
+        "cv2": (
+            [r"bin/opencv_ffmpeg\d{3,4}%s\.dll" % ("_64" if x64 else "")]
+            if os.name == "nt"
+            else []
+        )
+        +
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
-        ['python/cv2[^/]*%(ext)s' % {'ext': re.escape(sysconfig.get_config_var('SO'))}],
-
-        'cv2.data': [  # OPENCV_OTHER_INSTALL_PATH
-            ('etc' if os.name == 'nt' else 'share/OpenCV') +
-            r'/haarcascades/.*\.xml'
-        ]
+        [
+            "python/cv2[^/]*%(ext)s"
+            % {"ext": re.escape(sysconfig.get_config_var("EXT_SUFFIX"))}
+        ],
+        "cv2.data": [  # OPENCV_OTHER_INSTALL_PATH
+            ("etc" if os.name == "nt" else "share/OpenCV") + r"/haarcascades/.*\.xml"
+        ],
     }
 
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
 
+    ci_cmake_generator = (
+        ["-G", "Visual Studio 14" + (" Win64" if x64 else "")]
+        if os.name == "nt"
+        else ["-G", "Unix Makefiles"]
+    )
+
     cmake_args = (
-        (
-            ["-G", "Visual Studio 14" + (" Win64" if x64 else "")]
-            if os.name == "nt"
-            else ["-G", "Unix Makefiles"]  # don't make CMake try (and fail) Ninja first
-        )
+        (ci_cmake_generator if is_CI_build else [])
         + [
             # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
             "-DPYTHON3_EXECUTABLE=%s" % sys.executable,
@@ -139,41 +143,41 @@ def main():
         )
     )
 
-    # OS-specific components
-    if sys.platform.startswith('linux') and not build_headless:
-        cmake_args.append("-DWITH_QT=4")
-
-    if sys.platform == 'darwin' and not build_headless:
-        cmake_args.append("-DWITH_QT=5")
-        rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
-            (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
-        ]
-
     if build_headless:
         # it seems that cocoa cannot be disabled so on macOS the package is not truly headless
         cmake_args.append("-DWITH_WIN32UI=OFF")
         cmake_args.append("-DWITH_QT=OFF")
-        cmake_args.append(
-            "-DWITH_MSMF=OFF"
-        )  # see: https://github.com/skvark/opencv-python/issues/263
+        cmake_args.append("-DWITH_GTK=OFF")
+        if is_CI_build:
+            cmake_args.append(
+                "-DWITH_MSMF=OFF"
+            )  # see: https://github.com/skvark/opencv-python/issues/263
 
-    if sys.platform.startswith("linux"):
-        cmake_args.append("-DWITH_V4L=ON")
-        cmake_args.append("-DWITH_LAPACK=ON")
-        cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
-
-    if sys.platform.startswith("linux") and not x64:
+    if sys.platform.startswith("linux") and not x64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
 
-    if sys.platform == "darwin":
-        subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
+    # OS-specific components during CI builds
+    if is_CI_build:
+        if sys.platform.startswith("linux") and not build_headless:
+            cmake_args.append("-DWITH_QT=4")
 
-    # Fixes for macOS builds
-    if sys.platform == "darwin":
-        cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9")
+        if sys.platform == "darwin" and not build_headless:
+            if "bdist_wheel" in sys.argv:
+                cmake_args.append("-DWITH_QT=5")
+                rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
+                    (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
+                ]
+                subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
+        if sys.platform.startswith("linux"):
+            cmake_args.append("-DWITH_V4L=ON")
+            cmake_args.append("-DWITH_LAPACK=ON")
+            cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
+
+    # https://github.com/scikit-build/scikit-build/issues/479
     if "CMAKE_ARGS" in os.environ:
         import shlex
+
         cmake_args.extend(shlex.split(os.environ["CMAKE_ARGS"]))
         del shlex
 
@@ -193,9 +197,8 @@ def main():
         packages=packages,
         package_data=package_data,
         maintainer="Olli-Pekka Heinisuo",
-        include_package_data=True,
         ext_modules=EmptyListWithLength(),
-        install_requires="numpy>=%s" % numpy_version,
+        install_requires=numpy_version,
         classifiers=[
             "Development Status :: 5 - Production/Stable",
             "Environment :: Console",
@@ -376,17 +379,24 @@ class RearrangeCMakeOutput(object):
         )
 
 
-def install_packages(*requirements):
-    # No more convenient way until PEP 518 is implemented; setuptools only handles eggs
-    subprocess.check_call([sys.executable, "-m", "pip", "install"] + list(requirements))
+def get_and_set_info(contrib, headless, ci_build):
+    # cv2/version.py should be generated by running find_version.py
+    version = {}
+    here = os.path.abspath(os.path.dirname(__file__))
+    version_file = os.path.join(here, "cv2", "version.py")
 
+    # generate a fresh version.py always when Git repository exists
+    # (in sdists the version.py file already exists)
+    if os.path.exists(".git"):
+        old_args = sys.argv.copy()
+        sys.argv = ["", str(contrib), str(headless), str(ci_build)]
+        runpy.run_path("find_version.py", run_name="__main__")
+        sys.argv = old_args
 
-def get_opencv_version():
-    # cv_version.py should be generated by running find_version.py
-    runpy.run_path("find_version.py")
-    from cv_version import opencv_version
+    with open(version_file) as fp:
+        exec(fp.read(), version)
 
-    return opencv_version
+    return version["opencv_version"], version["contrib"], version["headless"]
 
 
 def get_build_env_var_by_name(flag_name):
@@ -404,25 +414,6 @@ def get_build_env_var_by_name(flag_name):
             pass
 
     return flag_set
-
-
-def get_or_install(name, version=None):
-    """ If a package is already installed, build against it. If not, install """
-    # Do not import 3rd-party modules into the current process
-    import json
-
-    js_packages = json.loads(
-        subprocess.check_output(
-            [sys.executable, "-m", "pip", "list", "--format", "json"]
-        ).decode("ascii")
-    )  # valid names & versions are ASCII as per PEP 440
-    try:
-        [package] = (package for package in js_packages if package["name"] == name)
-    except ValueError:
-        install_packages("%s==%s" % (name, version) if version else name)
-        return version
-    else:
-        return package["version"]
 
 
 # This creates a list which is empty but returns a length of 1.

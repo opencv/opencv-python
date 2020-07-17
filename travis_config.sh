@@ -14,7 +14,7 @@ function bdist_wheel_cmd {
     # copied from multibuild's common_utils.sh
     # add osx deployment target so it doesnt default to 10.6
     local abs_wheelhouse=$1
-    python setup.py bdist_wheel $BDIST_PARAMS
+    CI_BUILD=1 pip wheel --wheel-dir="$PWD/dist" . --verbose $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
     if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
 }
@@ -88,7 +88,7 @@ function pre_build {
     echo "Running for OSX"
 
     local CACHE_STAGE; (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
-
+    export USER=travis
     #after the cache stage, all bottles and Homebrew metadata should be already cached locally
     if [ -n "$CACHE_STAGE" ]; then
         brew update
@@ -110,7 +110,7 @@ function pre_build {
         brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
     else
         brew unlink python@2
-        brew install ffmpeg_opencv
+        brew install -vd ffmpeg_opencv
     fi
 
     if [ -n "$CACHE_STAGE" ]; then

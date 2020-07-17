@@ -141,14 +141,14 @@ build_script:
 - cmd: |
     "%PYTHON%/python.exe" -m pip install --upgrade pip
     "%PYTHON%/python.exe" -m pip install --upgrade setuptools
-    "%PYTHON%/python.exe" setup.py bdist_wheel
+    set "CI_BUILD=True" && "%PYTHON%/python.exe" -m pip wheel --wheel-dir=%cd%\dist . --verbose
 
 before_test:
 - ps: |
 
     cd ${Env:APPVEYOR_BUILD_FOLDER}\tests
     $env:PYTHONWARNINGS = "ignore:::pip._internal.cli.base_command"
-    &"${Env:PYTHON}/python.exe" -m pip install --user (ls "../dist/opencv_*.whl")
+    &"${Env:PYTHON}/python.exe" -m pip install --user --no-warn-script-location (ls "../dist/opencv_*.whl")
     if ($LastExitCode -ne 0) {throw $LastExitCode}
 
 test_script:
@@ -158,7 +158,7 @@ test_script:
     "%PYTHON%/python.exe" -m unittest test
 
 artifacts:
-- path: dist\*.whl
+- path: dist\opencv*.whl
   name: wheels
 
 deploy_script:

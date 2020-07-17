@@ -73,11 +73,11 @@ A: It's easier for users to understand ``opencv-python`` than ``cv2`` and it mak
 ## Documentation for opencv-python
 
 [![AppVeyor CI test status (Windows)](https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows)](https://ci.appveyor.com/project/skvark/opencv-python)
-[![Travis CI test status (Linux and OS X)](https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label=Linux+macOS)](https://travis-ci.org/skvark/opencv-python)
+[![Travis CI test status (Linux and macOS)](https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label=Linux+macOS)](https://travis-ci.org/skvark/opencv-python)
 
 The aim of this repository is to provide means to package each new [OpenCV release](https://github.com/opencv/opencv/releases) for the most used Python versions and platforms.
 
-### Build process
+### CI build process
 
 The project is structured like a normal Python package with a standard ``setup.py`` file.
 The build process for a single entry in the build matrices is as follows (see for example ``appveyor.yml`` file):
@@ -91,43 +91,57 @@ The build process for a single entry in the build matrices is as follows (see fo
    -  Contrib modules are also included as a submodule
 
 2. Find OpenCV version from the sources
-3. Install Python dependencies
 
-   - ``setup.py`` installs the dependencies itself, so you need to run it in an environment
-     where you have the rights to install modules with Pip for the running Python
-
-4. Build OpenCV
+3. Build OpenCV
 
    -  tests are disabled, otherwise build time increases too much
    -  there are 4 build matrix entries for each build combination: with and without contrib modules, with and without GUI (headless)
    -  Linux builds run in manylinux Docker containers (CentOS 5)
+   -  source distributions are separate entries in the build matrix 
 
-5. Rearrange OpenCV's build result, add our custom files and generate wheel
+4. Rearrange OpenCV's build result, add our custom files and generate wheel
 
-6. Linux and macOS wheels are transformed with auditwheel and delocate, correspondingly
+5. Linux and macOS wheels are transformed with auditwheel and delocate, correspondingly
 
-7. Install the generated wheel
-8. Test that Python can import the library and run some sanity checks
-9. Use twine to upload the generated wheel to PyPI (only in release builds)
+6. Install the generated wheel
+7. Test that Python can import the library and run some sanity checks
+8. Use twine to upload the generated wheel to PyPI (only in release builds)
 
-Steps 1--5 are handled by ``setup.py bdist_wheel``.
+Steps 1--4 are handled by ``pip wheel``.
 
-The build can be customized with environment variables.
-In addition to any variables that OpenCV's build accepts, we recognize:
+The build can be customized with environment variables. In addition to any variables that OpenCV's build accepts, we recognize:
 
+- ``CI_BUILD``. Set to ``1`` to emulate the CI environment build behaviour. Used only in CI builds to force certain build flags on in ``setup.py``. Do not use this unless you know what you are doing.
 - ``ENABLE_CONTRIB`` and ``ENABLE_HEADLESS``. Set to ``1`` to build the contrib and/or headless version
-- ``CMAKE_ARGS``. Additional arguments for OpenCV's CMake invocation. You can use this to make a custom build.
+- ``CMAKE_ARGS``. Additional arguments for OpenCV's CMake invocation. You can use this to make a custom build. 
+
+See the next section for more info about manual builds outside the CI environment.
 
 ### Manual builds
 
-If some dependency is not enabled in the pre-built wheels, you can also run the `setup.py` locally to create a custom wheel.
+If some dependency is not enabled in the pre-built wheels, you can also run the build locally to create a custom wheel.
 
 1. Clone this repository: `git clone --recursive https://github.com/skvark/opencv-python.git`
-2. Go to the root of the repository 
-3. Add custom Cmake flags if needed, for example: `export CMAKE_FLAGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"`
-4. Run ``python setup.py bdist_wheel``
-     - Optionally use the `manylinux` images as a build hosts if maximum portability is needed (and run `auditwheel` for the wheel after build)
-5. You'll have the wheel file in the `dist` folder and you can do with that whatever you wish
+2. ``cd opencv-python``
+3. Add custom Cmake flags if needed, for example: `export CMAKE_FLAGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"` (in Windows you need to set environment variables differently depending on Command Line or PowerShell)
+4. Select the version which you wish to build with `ENABLE_CONTRIB` and `ENABLE_HEADLESS`: i.e. `export ENABLE_CONTRIB=1` if you wish to build `opencv-contrib-python`
+5. Run ``pip wheel . --verbose``. NOTE: make sure you have the latest ``pip``, the ``pip wheel`` command replaces the old ``python setup.py bdist_wheel`` command which does not support ``pyproject.toml``.
+     - Optional: on Linux use the `manylinux` images as a build hosts if maximum portability is needed and run `auditwheel` for the wheel after build
+     - Optional: on macOS use ``delocate`` (same as ``auditwheel`` but for macOS)
+6. You'll have the wheel file in the `dist` folder and you can do with that whatever you wish
+
+#### Source distributions
+
+Since OpenCV version 4.3.0, also source distributions are provided in PyPI. This means that if your system is not compatible with any of the wheels in PyPI, ``pip`` will attempt to build OpenCV from sources.
+
+You can also force ``pip`` to build the wheels from the source distribution for example with: 
+
+``pip install --no-binary opencv-python opencv-python``
+``pip install --no-binary :all: opencv-python``
+
+If you need contrib modules or headless version, just change the package name (step 4 in the previous section is not needed). However, any additional CMake flags can be provided via environment variables as described in step 3 of the manual build section. If none are provided, OpenCV's CMake scripts will attempt to find and enable any suitable dependencies and enable them. Headless distributions have hard coded CMake flags which disable all possible GUI dependencies. 
+
+Please note that build tools and ``numpy`` are required for the build to succeed. On slow systems such as Raspberry Pi the full build may take several hours. On a 8-core Ryzen 7 3700X the build takes about 6 minutes. 
 
 ### Licensing
 
@@ -147,7 +161,7 @@ The packages include also other binaries. Full list of licenses can be found fro
 
 ### Versioning
 
-``find_version.py`` script searches for the version information from OpenCV sources and appends also a revision number specific to this repository to the version string.
+``find_version.py`` script searches for the version information from OpenCV sources and appends also a revision number specific to this repository to the version string. It saves the version information to ``version.py`` file under ``cv2`` in addition to some other flags.
 
 ### Releases
 
@@ -177,7 +191,7 @@ Python 3.x releases are provided for officially supported versions (not in EOL).
 
 Currently, builds for following Python versions are provided:
 
-- 3.5
+- 3.5 (EOL in 2020-09-13, builds for 3.5 will not be provided after this)
 - 3.6
 - 3.7
 - 3.8
