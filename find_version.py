@@ -5,6 +5,7 @@ import subprocess
 if __name__ == "__main__":
   contrib = sys.argv[1]
   headless = sys.argv[2]
+  ci_build = sys.argv[2]
 
   opencv_version = ""
   # dig out the version from OpenCV sources
@@ -51,4 +52,5 @@ if __name__ == "__main__":
   with open('cv2/version.py', 'w') as f:
       f.write("opencv_version = \"{}\"\n".format(opencv_version))
       f.write("contrib = {}\n".format(contrib))
-      f.write("headless = {}".format(headless))
+      f.write("headless = {}\n".format(headless))
+      f.write("ci_build = {}".format(ci_build))

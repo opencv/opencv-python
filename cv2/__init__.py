@@ -9,7 +9,16 @@ from .data import *
 # this makes them available
 globals().update(importlib.import_module('cv2.cv2').__dict__)
 
-if sys.platform == 'darwin':
+is_ci_build = False
+
+try:
+    from .version import ci_build
+    is_ci_build = ci_build
+except:
+    pass
+
+# the Qt plugin is included currently only in the pre-built wheels
+if sys.platform == 'darwin' and is_ci_build:
     os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), 'qt', 'plugins'
     )
