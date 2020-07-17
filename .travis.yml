@@ -760,7 +760,7 @@ after_success: |
         pip install --user --upgrade six
 
         if [[ $SDIST == 1 ]]; then
-          twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
+          twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist/opencv*
         else
           twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
         fi
@@ -775,7 +775,7 @@ after_success: |
         /usr/bin/python -m pip install --user -U -I twine
 
         if [[ $SDIST == 1 ]]; then
-          /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist
+          /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist/opencv*
         else
           /usr/bin/python -m upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
         fi
