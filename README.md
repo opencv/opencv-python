@@ -134,12 +134,12 @@ If some dependency is not enabled in the pre-built wheels, you can also run the 
 
 Since OpenCV version 4.3.0, also source distributions are provided in PyPI. This means that if your system is not compatible with any of the wheels in PyPI, ``pip`` will attempt to build OpenCV from sources.
 
-You can also force ``pip`` to build the wheels from the source distribution for example with: 
+You can also force ``pip`` to build the wheels from the source distribution. Some examples: 
 
-``pip install --no-binary opencv-python opencv-python``
-``pip install --no-binary :all: opencv-python``
+- ``pip install --no-binary opencv-python opencv-python``
+- ``pip install --no-binary :all: opencv-python``
 
-If you need contrib modules or headless version, just change the package name (step 4 in the previous section is not needed). However, any additional CMake flags can be provided via environment variables as described in step 3 of the manual build section. If none are provided, OpenCV's CMake scripts will attempt to find and enable any suitable dependencies and enable them. Headless distributions have hard coded CMake flags which disable all possible GUI dependencies. 
+If you need contrib modules or headless version, just change the package name (step 4 in the previous section is not needed). However, any additional CMake flags can be provided via environment variables as described in step 3 of the manual build section. If none are provided, OpenCV's CMake scripts will attempt to find and enable any suitable dependencies. Headless distributions have hard coded CMake flags which disable all possible GUI dependencies. 
 
 Please note that build tools and ``numpy`` are required for the build to succeed. On slow systems such as Raspberry Pi the full build may take several hours. On a 8-core Ryzen 7 3700X the build takes about 6 minutes. 
 
