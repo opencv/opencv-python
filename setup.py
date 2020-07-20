@@ -14,7 +14,7 @@ def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     CI_BUILD = os.environ.get("CI_BUILD", "False")
-    is_CI_build = True if CI_BUILD == "True" else False
+    is_CI_build = True if CI_BUILD == "1" else False
     cmake_source_dir = "opencv"
     minimum_supported_numpy = "1.13.1"
     build_contrib = get_build_env_var_by_name("contrib")
