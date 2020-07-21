@@ -123,7 +123,7 @@ If some dependency is not enabled in the pre-built wheels, you can also run the 
 
 1. Clone this repository: `git clone --recursive https://github.com/skvark/opencv-python.git`
 2. ``cd opencv-python``
-3. Add custom Cmake flags if needed, for example: `export CMAKE_FLAGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"` (in Windows you need to set environment variables differently depending on Command Line or PowerShell)
+3. Add custom Cmake flags if needed, for example: `export CMAKE_ARGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"` (in Windows you need to set environment variables differently depending on Command Line or PowerShell)
 4. Select the version which you wish to build with `ENABLE_CONTRIB` and `ENABLE_HEADLESS`: i.e. `export ENABLE_CONTRIB=1` if you wish to build `opencv-contrib-python`
 5. Run ``pip wheel . --verbose``. NOTE: make sure you have the latest ``pip``, the ``pip wheel`` command replaces the old ``python setup.py bdist_wheel`` command which does not support ``pyproject.toml``.
      - Optional: on Linux use the `manylinux` images as a build hosts if maximum portability is needed and run `auditwheel` for the wheel after build
