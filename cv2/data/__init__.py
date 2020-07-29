@@ -1,3 +1,3 @@
 import os
 
-haarcascades = os.path.join(os.path.dirname(__file__), '')
+haarcascades = os.path.join(os.path.dirname(__file__), "")

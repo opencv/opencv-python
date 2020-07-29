@@ -159,18 +159,21 @@ def main():
     if sys.platform.startswith("linux") and not x64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
 
-    # OS-specific components during CI builds
+    # OS-specific components during CI build_headless
     if is_CI_build:
-        if sys.platform.startswith("linux") and not build_headless:
-            cmake_args.append("-DWITH_QT=4")
 
-        if sys.platform == "darwin" and not build_headless:
-            if "bdist_wheel" in sys.argv:
-                cmake_args.append("-DWITH_QT=5")
+        if not build_headless and "bdist_wheel" in sys.argv:
+            cmake_args.append("-DWITH_QT=5")
+            subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
+
+            if sys.platform.startswith("linux"):
+                rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
+                    (r"lib/qt/plugins/platforms/libqxcb\.so")
+                ]
+            if sys.platform == "darwin":
                 rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
                     (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
                 ]
-                subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
         if sys.platform.startswith("linux"):
             cmake_args.append("-DWITH_V4L=ON")
