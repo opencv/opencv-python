@@ -113,6 +113,7 @@ The build can be customized with environment variables. In addition to any varia
 
 - ``CI_BUILD``. Set to ``1`` to emulate the CI environment build behaviour. Used only in CI builds to force certain build flags on in ``setup.py``. Do not use this unless you know what you are doing.
 - ``ENABLE_CONTRIB`` and ``ENABLE_HEADLESS``. Set to ``1`` to build the contrib and/or headless version
+- ``ENABLE_JAVA``, Set to ``1`` to enable the Java client build.  This is disabled by default.
 - ``CMAKE_ARGS``. Additional arguments for OpenCV's CMake invocation. You can use this to make a custom build. 
 
 See the next section for more info about manual builds outside the CI environment.
