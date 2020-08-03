@@ -156,7 +156,7 @@ def main():
     if sys.platform.startswith("linux") and not x64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
 
-    # OS-specific components during CI build_headless
+    # OS-specific components during CI builds
     if is_CI_build:
 
         if not build_headless and "bdist_wheel" in sys.argv:
