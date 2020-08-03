@@ -10,7 +10,7 @@ index 4c0b3880fc..54da25f151 100644
 +      install(DIRECTORY ${Qt5_DIR}/../../../plugins DESTINATION lib/qt)
 +    endif()
 +    if(UNIX AND NOT APPLE)
-+      install(DIRECTORY /opt/Qt5.13.2/plugins DESTINATION lib/qt)
++      install(DIRECTORY /opt/Qt5.15.0/plugins DESTINATION lib/qt)
 +    endif()
    elseif(HAVE_QT)
      status("    QT:" "YES (ver ${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}.${QT_VERSION_PATCH} ${QT_EDITION})")
