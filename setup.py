@@ -19,6 +19,7 @@ def main():
     minimum_supported_numpy = "1.13.1"
     build_contrib = get_build_env_var_by_name("contrib")
     build_headless = get_build_env_var_by_name("headless")
+    build_java = 'ON' if get_build_env_var_by_name("java") else 'OFF'
 
     if sys.version_info[:2] >= (3, 6):
         minimum_supported_numpy = "1.13.3"
@@ -121,6 +122,8 @@ def main():
             "-DPYTHON3_LIBRARY=%s" % python_lib_path,
             "-DBUILD_opencv_python3=ON",
             "-DBUILD_opencv_python2=OFF",
+            # Disable the Java build by default as it is not needed
+            "-DBUILD_opencv_java=%s" % build_java,
             # When off, adds __init__.py and a few more helper .py's. We use our own helper files with a different structure.
             "-DOPENCV_SKIP_PYTHON_LOADER=ON",
             # Relative dir to install the built module to in the build tree.
