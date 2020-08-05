@@ -787,7 +787,7 @@ after_success: |
     # Save to Azure storage always
 
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      pip install --user azure-cli==2.9.1
+      pip install --user azure-cli==2.0.81
     else
       brew install azure-cli
     fi
