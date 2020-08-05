@@ -787,7 +787,7 @@ after_success: |
     # Save to Azure storage always
 
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      sudo apt-get install -y azure-cli=2.0.81+ds-4
+      pip install --user azure-cli==2.9.1
     else
       brew install azure-cli
     fi
