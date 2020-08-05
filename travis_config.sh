@@ -26,7 +26,7 @@ else
   echo "    > Linux environment "
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.15.0/lib
   export MAKEFLAGS="-j$(grep -E '^processor[[:space:]]*:' /proc/cpuinfo | wc -l)"
-  python patch_auditwheel_whitelist.py
+  /opt/python/cp37-cp37m/bin/python patch_auditwheel_whitelist.py
 fi
 
 if [ -n "$IS_OSX" ]; then
