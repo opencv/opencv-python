@@ -170,6 +170,17 @@ def main():
                 rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
                     (r"lib/qt/plugins/platforms/libqxcb\.so")
                 ]
+
+                # add fonts for Qt5
+                fonts = []
+                for file in os.listdir("/usr/share/fonts/dejavu"):
+                    if file.endswith(".ttf"):
+                        fonts.append(
+                            (r"/usr/share/fonts/dejavu/%s\.ttf" % file.split(".")[0])
+                        )
+
+                rearrange_cmake_output_data["cv2.qt.fonts"] = fonts
+
             if sys.platform == "darwin":
                 rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
                     (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
