@@ -1,7 +1,7 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
+diff --git a/opencv/CMakeLists.txt b/opencv/CMakeLists.txt
 index 4c0b3880fc..dffa0a4caa 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
+--- a/opencv/CMakeLists.txt
++++ b/opencv/CMakeLists.txt
 @@ -1187,6 +1187,13 @@ if(WITH_QT OR HAVE_QT)
    if(HAVE_QT5)
      status("    QT:" "YES (ver ${Qt5Core_VERSION_STRING})")
