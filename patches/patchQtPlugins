@@ -1,6 +1,5 @@
-diff -ruN opencv/CMakeLists.txt opencv_patched/CMakeLists.txt
---- opencv/CMakeLists.txt       2020-08-07 14:09:05.665876400 +0300
-+++ opencv_patched/CMakeLists.txt       2020-08-07 14:05:31.738510600 +0300
+--- opencv/CMakeLists.txt	2020-08-07 11:24:37.662215917 +0000
++++ opencv_patched/CMakeLists.txt	2020-08-07 11:24:25.684215910 +0000
 @@ -1187,6 +1187,13 @@
    if(HAVE_QT5)
      status("    QT:" "YES (ver ${Qt5Core_VERSION_STRING})")
