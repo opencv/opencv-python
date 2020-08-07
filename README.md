@@ -113,6 +113,7 @@ The build can be customized with environment variables. In addition to any varia
 
 - ``CI_BUILD``. Set to ``1`` to emulate the CI environment build behaviour. Used only in CI builds to force certain build flags on in ``setup.py``. Do not use this unless you know what you are doing.
 - ``ENABLE_CONTRIB`` and ``ENABLE_HEADLESS``. Set to ``1`` to build the contrib and/or headless version
+- ``ENABLE_JAVA``, Set to ``1`` to enable the Java client build.  This is disabled by default.
 - ``CMAKE_ARGS``. Additional arguments for OpenCV's CMake invocation. You can use this to make a custom build. 
 
 See the next section for more info about manual builds outside the CI environment.
@@ -123,7 +124,7 @@ If some dependency is not enabled in the pre-built wheels, you can also run the 
 
 1. Clone this repository: `git clone --recursive https://github.com/skvark/opencv-python.git`
 2. ``cd opencv-python``
-3. Add custom Cmake flags if needed, for example: `export CMAKE_FLAGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"` (in Windows you need to set environment variables differently depending on Command Line or PowerShell)
+3. Add custom Cmake flags if needed, for example: `export CMAKE_ARGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"` (in Windows you need to set environment variables differently depending on Command Line or PowerShell)
 4. Select the version which you wish to build with `ENABLE_CONTRIB` and `ENABLE_HEADLESS`: i.e. `export ENABLE_CONTRIB=1` if you wish to build `opencv-contrib-python`
 5. Run ``pip wheel . --verbose``. NOTE: make sure you have the latest ``pip``, the ``pip wheel`` command replaces the old ``python setup.py bdist_wheel`` command which does not support ``pyproject.toml``.
      - Optional: on Linux use the `manylinux` images as a build hosts if maximum portability is needed and run `auditwheel` for the wheel after build
@@ -153,9 +154,7 @@ Third party package licenses are at [LICENSE-3RD-PARTY.txt](https://github.com/s
 
 All wheels ship with [FFmpeg](http://ffmpeg.org) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
 
-Non-headless Linux wheels ship with [Qt 4.8.7](http://doc.qt.io/qt-4.8/lgpl.html) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
-
-Non-headless MacOS wheels ship with [Qt 5](http://doc.qt.io/qt-5/lgpl.html) licensed under the [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html).
+Non-headless Linux and MacOS wheels ship with [Qt 5](http://doc.qt.io/qt-5/lgpl.html) licensed under the [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html).
 
 The packages include also other binaries. Full list of licenses can be found from [LICENSE-3RD-PARTY.txt](https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
 

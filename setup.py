@@ -14,11 +14,12 @@ def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     CI_BUILD = os.environ.get("CI_BUILD", "False")
-    is_CI_build = True if CI_BUILD == "True" else False
+    is_CI_build = True if CI_BUILD == "1" else False
     cmake_source_dir = "opencv"
     minimum_supported_numpy = "1.13.1"
     build_contrib = get_build_env_var_by_name("contrib")
     build_headless = get_build_env_var_by_name("headless")
+    build_java = 'ON' if get_build_env_var_by_name("java") else 'OFF'
 
     if sys.version_info[:2] >= (3, 6):
         minimum_supported_numpy = "1.13.3"
@@ -121,6 +122,8 @@ def main():
             "-DPYTHON3_LIBRARY=%s" % python_lib_path,
             "-DBUILD_opencv_python3=ON",
             "-DBUILD_opencv_python2=OFF",
+            # Disable the Java build by default as it is not needed
+            "-DBUILD_opencv_java=%s" % build_java,
             # When off, adds __init__.py and a few more helper .py's. We use our own helper files with a different structure.
             "-DOPENCV_SKIP_PYTHON_LOADER=ON",
             # Relative dir to install the built module to in the build tree.
@@ -158,16 +161,30 @@ def main():
 
     # OS-specific components during CI builds
     if is_CI_build:
-        if sys.platform.startswith("linux") and not build_headless:
-            cmake_args.append("-DWITH_QT=4")
 
-        if sys.platform == "darwin" and not build_headless:
-            if "bdist_wheel" in sys.argv:
-                cmake_args.append("-DWITH_QT=5")
+        if not build_headless and "bdist_wheel" in sys.argv:
+            cmake_args.append("-DWITH_QT=5")
+            subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
+
+            if sys.platform.startswith("linux"):
+                rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
+                    (r"lib/qt/plugins/platforms/libqxcb\.so")
+                ]
+
+                # add fonts for Qt5
+                fonts = []
+                for file in os.listdir("/usr/share/fonts/dejavu"):
+                    if file.endswith(".ttf"):
+                        fonts.append(
+                            (r"lib/qt/fonts/dejavu/%s\.ttf" % file.split(".")[0])
+                        )
+
+                rearrange_cmake_output_data["cv2.qt.fonts"] = fonts
+
+            if sys.platform == "darwin":
                 rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
                     (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
                 ]
-                subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
         if sys.platform.startswith("linux"):
             cmake_args.append("-DWITH_V4L=ON")

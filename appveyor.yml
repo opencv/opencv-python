@@ -141,7 +141,7 @@ build_script:
 - cmd: |
     "%PYTHON%/python.exe" -m pip install --upgrade pip
     "%PYTHON%/python.exe" -m pip install --upgrade setuptools
-    set "CI_BUILD=True" && "%PYTHON%/python.exe" -m pip wheel --wheel-dir=%cd%\dist . --verbose
+    set "CI_BUILD=1" && "%PYTHON%/python.exe" -m pip wheel --wheel-dir=%cd%\dist . --verbose
 
 before_test:
 - ps: |
