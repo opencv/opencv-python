@@ -1,6 +1,8 @@
---- opencv/CMakeLists.txt	2020-08-07 11:24:37.662215917 +0000
-+++ opencv_patched/CMakeLists.txt	2020-08-07 11:24:25.684215910 +0000
-@@ -1187,6 +1187,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4c0b3880fc..dffa0a4caa 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1187,6 +1187,13 @@ if(WITH_QT OR HAVE_QT)
    if(HAVE_QT5)
      status("    QT:" "YES (ver ${Qt5Core_VERSION_STRING})")
      status("      QT OpenGL support:" HAVE_QT_OPENGL THEN "YES (${Qt5OpenGL_LIBRARIES} ${Qt5OpenGL_VERSION_STRING})" ELSE NO)
