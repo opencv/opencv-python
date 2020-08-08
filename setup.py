@@ -19,7 +19,7 @@ def main():
     minimum_supported_numpy = "1.13.1"
     build_contrib = get_build_env_var_by_name("contrib")
     build_headless = get_build_env_var_by_name("headless")
-    build_java = 'ON' if get_build_env_var_by_name("java") else 'OFF'
+    build_java = "ON" if get_build_env_var_by_name("java") else "OFF"
 
     if sys.version_info[:2] >= (3, 6):
         minimum_supported_numpy = "1.13.3"
@@ -162,7 +162,11 @@ def main():
     # OS-specific components during CI builds
     if is_CI_build:
 
-        if not build_headless and "bdist_wheel" in sys.argv:
+        if (
+            not build_headless
+            and "bdist_wheel" in sys.argv
+            and (sys.platform == "darwin" or sys.platform.startswith("linux"))
+        ):
             cmake_args.append("-DWITH_QT=5")
             subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
