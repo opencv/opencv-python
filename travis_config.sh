@@ -16,7 +16,9 @@ function bdist_wheel_cmd {
     local abs_wheelhouse=$1
     CI_BUILD=1 pip wheel --wheel-dir="$PWD/dist" . --verbose $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
-    /opt/python/cp37-cp37m/bin/python patch_auditwheel_whitelist.py
+    if [ -z "$IS_OSX" ]; then
+      /opt/python/cp37-cp37m/bin/python patch_auditwheel_whitelist.py
+    fi
     if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
 }
 
