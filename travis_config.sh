@@ -14,7 +14,7 @@ function bdist_wheel_cmd {
     # copied from multibuild's common_utils.sh
     # add osx deployment target so it doesnt default to 10.6
     local abs_wheelhouse=$1
-    CI_BUILD=1 pip wheel --wheel-dir="$PWD/dist" . --verbose $BDIST_PARAMS
+    CI_BUILD=1 pip wheel --wheel-dir="$PWD/dist" . $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
     if [ -z "$IS_OSX" ]; then
       /opt/python/cp37-cp37m/bin/python patch_auditwheel_whitelist.py
