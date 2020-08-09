@@ -119,6 +119,7 @@ jobs:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.13.3
       workspaces:
         use: brew_cache
     - os: osx
@@ -159,6 +160,7 @@ jobs:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.13.3
       workspaces:
         use: brew_cache
     - os: osx
@@ -199,6 +201,7 @@ jobs:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.13.3
       workspaces:
         use: brew_cache
     - os: osx
@@ -239,6 +242,7 @@ jobs:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.13.3
       workspaces:
         use: brew_cache
     - os: osx
@@ -293,7 +297,7 @@ jobs:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - TEST_DEPENDS=numpy==1.11.3
+        - TEST_DEPENDS=numpy==1.13.3
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -305,7 +309,7 @@ jobs:
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - TEST_DEPENDS=numpy==1.11.3
+        - TEST_DEPENDS=numpy==1.13.3
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -389,7 +393,7 @@ jobs:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - TEST_DEPENDS=numpy==1.11.3
+        - TEST_DEPENDS=numpy==1.13.3
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -401,7 +405,7 @@ jobs:
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
-        - TEST_DEPENDS=numpy==1.11.3
+        - TEST_DEPENDS=numpy==1.13.3
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -483,7 +487,7 @@ jobs:
       services: docker
       env:
         - MB_PYTHON_VERSION=3.6
-        - TEST_DEPENDS=numpy==1.11.3
+        - TEST_DEPENDS=numpy==1.13.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
       cache:
@@ -495,7 +499,7 @@ jobs:
       env:
         - MB_PYTHON_VERSION=3.6
         - PLAT=i686
-        - TEST_DEPENDS=numpy==1.11.3
+        - TEST_DEPENDS=numpy==1.13.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - USE_CCACHE=0
@@ -580,7 +584,7 @@ jobs:
       services: docker
       env:
         - MB_PYTHON_VERSION=3.6
-        - TEST_DEPENDS=numpy==1.11.3
+        - TEST_DEPENDS=numpy==1.13.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
       cache:
@@ -592,7 +596,7 @@ jobs:
       env:
         - MB_PYTHON_VERSION=3.6
         - PLAT=i686
-        - TEST_DEPENDS=numpy==1.11.3
+        - TEST_DEPENDS=numpy==1.13.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - USE_CCACHE=0
