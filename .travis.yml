@@ -762,11 +762,11 @@ after_success: |
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         if [[ $SDIST == 1 ]]; then
           pip install twine
-          twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist/opencv*
+          twine upload -u ${PYPI_USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist/opencv*
         else
           pip install --user twine
           pip install --user --upgrade six
-          twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
+          twine upload -u ${PYPI_USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
         fi
 
       fi
@@ -779,9 +779,9 @@ after_success: |
         /usr/bin/python -m pip install --user -U -I twine
 
         if [[ $SDIST == 1 ]]; then
-          /usr/bin/python -m twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist/opencv*
+          /usr/bin/python -m twine upload -u ${PYPI_USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/dist/opencv*
         else
-          /usr/bin/python -m twine upload -u ${USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
+          /usr/bin/python -m twine upload -u ${PYPI_USER} -p ${PASS} --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/opencv*
         fi
 
       fi
