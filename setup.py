@@ -220,6 +220,7 @@ def main():
         maintainer="Olli-Pekka Heinisuo",
         ext_modules=EmptyListWithLength(),
         install_requires=numpy_version,
+        python_requires=">=3.5",
         classifiers=[
             "Development Status :: 5 - Production/Stable",
             "Environment :: Console",
