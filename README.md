@@ -44,7 +44,7 @@ A: No, the packages are special wheel binary packages and they already contain s
 
 **Q: Pip install fails with ``ModuleNotFoundError: No module named 'skbuild'``?**
 
-Since ``opencv-python`` version 3.4.0.\*, ``manylinux1`` wheels were replaced by ``manylinux2014`` wheels. If your pip is too old, it will try to use the new source distribution introduced in 3.4.0.38 to manually build OpenCV because it does not know how to install ``manylinux2014`` wheels. However, source build will also fail because of too old ``pip`` because it does not understand build dependencies in ``pyproject.toml``. To use the new ``manylinux2014`` pre-built wheels (or to build from source), your ``pip`` version must be >= 19.3. Please upgrade ``pip`` with ``pip install --upgrade pip``.
+Since ``opencv-python`` version 4.3.0.\*, ``manylinux1`` wheels were replaced by ``manylinux2014`` wheels. If your pip is too old, it will try to use the new source distribution introduced in 3.4.0.38 to manually build OpenCV because it does not know how to install ``manylinux2014`` wheels. However, source build will also fail because of too old ``pip`` because it does not understand build dependencies in ``pyproject.toml``. To use the new ``manylinux2014`` pre-built wheels (or to build from source), your ``pip`` version must be >= 19.3. Please upgrade ``pip`` with ``pip install --upgrade pip``.
 
 **Q: Pip install fails with ``Could not find a version that satisfies the requirement ...``?**
 
