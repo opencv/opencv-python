@@ -42,7 +42,11 @@ Frequently Asked Questions
 
 A: No, the packages are special wheel binary packages and they already contain statically built OpenCV binaries.
 
-**Q: Pip fails with ``Could not find a version that satisfies the requirement ...``?**
+**Q: Pip install fails with ``ModuleNotFoundError: No module named 'skbuild'``?**
+
+Since ``opencv-python`` version 3.4.0.\*, ``manylinux1`` wheels were replaced by ``manylinux2014`` wheels. If your pip is too old, it will try to use the new source distribution introduced in 3.4.0.38 to manually build OpenCV because it does not know how to install ``manylinux2014`` wheels. However, source build will also fail because of too old ``pip`` because it does not understand build dependencies in ``pyproject.toml``. To use the new ``manylinux2014`` pre-built wheels (or to build from source), your ``pip`` version must be >= 19.3. Please upgrade ``pip`` with ``pip install --upgrade pip``.
+
+**Q: Pip install fails with ``Could not find a version that satisfies the requirement ...``?**
 
 A: Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip``. Note that the wheel (especially manylinux) format does not currently support properly ARM architecture so there are no packages for ARM based platforms in PyPI. However, ``opencv-python`` packages for Raspberry Pi can be found from https://www.piwheels.org/.
 
