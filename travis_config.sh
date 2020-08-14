@@ -92,6 +92,7 @@ function pre_build {
     echo "Running for OSX"
 
     local CACHE_STAGE; (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
+    export HOMEBREW_NO_AUTO_UPDATE=1
 
     #after the cache stage, all bottles and Homebrew metadata should be already cached locally
     if [ -n "$CACHE_STAGE" ]; then
@@ -104,7 +105,8 @@ function pre_build {
     if [ -n "$CACHE_STAGE" ]; then
         echo "Qt5 has bottle, no caching needed"
     else
-        brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/079ce55db79acc87b91bec950249595b1584e119/Formula/qt.rb
+        brew extract qt --version=5.13.2
+        brew install qt@5.13.2
         export PATH="/usr/local/opt/qt/bin:$PATH"
     fi
 
