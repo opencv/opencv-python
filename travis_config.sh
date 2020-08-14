@@ -14,7 +14,7 @@ function bdist_wheel_cmd {
     # copied from multibuild's common_utils.sh
     # add osx deployment target so it doesnt default to 10.6
     local abs_wheelhouse=$1
-    CI_BUILD=1 pip wheel --wheel-dir="$PWD/dist" . $BDIST_PARAMS
+    CI_BUILD=1 pip wheel --verbose --wheel-dir="$PWD/dist" . $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
     if [ -z "$IS_OSX" ]; then
       /opt/python/cp37-cp37m/bin/python patch_auditwheel_whitelist.py
@@ -102,9 +102,9 @@ function pre_build {
 
     echo 'Installing qt5'
     if [ -n "$CACHE_STAGE" ]; then
-        brew_install_and_cache_within_time_limit qt5 || { [ $? -gt 1 ] && return 2 || return 0; }
+        echo "Qt5 has bottle, no caching needed"
     else
-        brew install qt5
+        brew install qt@5.13
         export PATH="/usr/local/opt/qt/bin:$PATH"
     fi
 
@@ -114,7 +114,7 @@ function pre_build {
         brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
     else
         brew unlink python@2
-        brew install -vd ffmpeg_opencv
+        brew install ffmpeg_opencv
     fi
 
     if [ -n "$CACHE_STAGE" ]; then
