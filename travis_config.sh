@@ -104,7 +104,7 @@ function pre_build {
     if [ -n "$CACHE_STAGE" ]; then
         echo "Qt5 has bottle, no caching needed"
     else
-        brew install qt@5.13
+        brew install qt@5.13.2
         export PATH="/usr/local/opt/qt/bin:$PATH"
     fi
 
