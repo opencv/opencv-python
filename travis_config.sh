@@ -115,8 +115,8 @@ function pre_build {
     if [ -n "$CACHE_STAGE" ]; then
         echo "Qt5 has bottle, no caching needed"
     else
-        brew uninstall --force qt@5.15.0
-        brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/079ce55db79acc87b91bec950249595b1584e119/Formula/qt.rb
+        brew switch qt 5.13.2
+        brew pin qt
         export PATH="/usr/local/opt/qt/bin:$PATH"
     fi
 
