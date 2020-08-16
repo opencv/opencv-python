@@ -101,14 +101,6 @@ function pre_build {
         brew_add_local_bottles
     fi
 
-    echo 'Installing qt5'
-    if [ -n "$CACHE_STAGE" ]; then
-        echo "Qt5 has bottle, no caching needed"
-    else
-        brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/079ce55db79acc87b91bec950249595b1584e119/Formula/qt.rb
-        export PATH="/usr/local/opt/qt/bin:$PATH"
-    fi
-
     echo 'Installing FFmpeg'
 
     if [ -n "$CACHE_STAGE" ]; then
@@ -116,6 +108,16 @@ function pre_build {
     else
         brew unlink python@2
         brew install ffmpeg_opencv
+    fi
+
+    echo 'Installing qt5'
+    
+    if [ -n "$CACHE_STAGE" ]; then
+        echo "Qt5 has bottle, no caching needed"
+    else
+        brew unlink qt
+        brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/079ce55db79acc87b91bec950249595b1584e119/Formula/qt.rb
+        export PATH="/usr/local/opt/qt/bin:$PATH"
     fi
 
     if [ -n "$CACHE_STAGE" ]; then
