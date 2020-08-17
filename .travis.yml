@@ -316,20 +316,6 @@ jobs:
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
-    - os: linux
-      arch: arm64
-      language: generic
-      dist: xenial
-      services: docker
-      env:
-        - MB_PYTHON_VERSION=3.8
-        - PLAT=aarch64
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=0
-        - TEST_DEPENDS=numpy==1.17.3
-        - USE_CCACHE=0
-      cache:
-        directories: $HOME/.ccache
 
     # headless builds for Linux
     - os: linux

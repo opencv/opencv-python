@@ -77,7 +77,7 @@ A: It's easier for users to understand ``opencv-python`` than ``cv2`` and it mak
 ## Documentation for opencv-python
 
 [![AppVeyor CI test status (Windows)](https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows)](https://ci.appveyor.com/project/skvark/opencv-python)
-[![Travis CI test status (Linux and macOS)](https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label=Linux+macOS)](https://travis-ci.com/skvark/opencv-python.svg?branch=master)
+[![Travis CI test status (Linux and macOS)](https://img.shields.io/travis/skvark/opencv-python.svg?maxAge=3600&label=Linux+macOS)](https://travis-ci.com/github/skvark/opencv-python/)
 
 The aim of this repository is to provide means to package each new [OpenCV release](https://github.com/opencv/opencv/releases) for the most used Python versions and platforms.
 
