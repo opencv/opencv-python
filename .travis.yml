@@ -107,15 +107,6 @@ jobs:
       language: generic
       osx_image: xcode9.4
       env:
-        - MB_PYTHON_VERSION=3.5
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=0
-      workspaces:
-        use: brew_cache
-    - os: osx
-      language: generic
-      osx_image: xcode9.4
-      env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
@@ -144,15 +135,6 @@ jobs:
         use: brew_cache
 
     # headless builds for MacOS
-    - os: osx
-      language: generic
-      osx_image: xcode9.4
-      env:
-        - MB_PYTHON_VERSION=3.5
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=1
-      workspaces:
-        use: brew_cache
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -189,15 +171,6 @@ jobs:
       language: generic
       osx_image: xcode9.4
       env:
-        - MB_PYTHON_VERSION=3.5
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=0
-      workspaces:
-        use: brew_cache
-    - os: osx
-      language: generic
-      osx_image: xcode9.4
-      env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
@@ -226,15 +199,6 @@ jobs:
         use: brew_cache
 
     # headless contrib builds for MacOS
-    - os: osx
-      language: generic
-      osx_image: xcode9.4
-      env:
-        - MB_PYTHON_VERSION=3.5
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=1
-      workspaces:
-        use: brew_cache
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -272,28 +236,6 @@ jobs:
       dist: xenial
       services: docker
       env:
-        - MB_PYTHON_VERSION=3.5
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=0
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      language: generic
-      dist: xenial
-      services: docker
-      env:
-        - MB_PYTHON_VERSION=3.5
-        - PLAT=i686
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=0
-        - USE_CCACHE=0
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      language: generic
-      dist: xenial
-      services: docker
-      env:
         - MB_PYTHON_VERSION=3.6
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
@@ -346,6 +288,19 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.17.3
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.17.3
+        - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
     - os: linux
@@ -363,28 +318,6 @@ jobs:
         directories: $HOME/.ccache
 
     # headless builds for Linux
-    - os: linux
-      language: generic
-      dist: xenial
-      services: docker
-      env:
-        - MB_PYTHON_VERSION=3.5
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=1
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      language: generic
-      dist: xenial
-      services: docker
-      env:
-        - MB_PYTHON_VERSION=3.5
-        - PLAT=i686
-        - ENABLE_CONTRIB=0
-        - ENABLE_HEADLESS=1
-        - USE_CCACHE=0
-      cache:
-        directories: $HOME/.ccache
     - os: linux
       language: generic
       dist: xenial
@@ -464,28 +397,6 @@ jobs:
       dist: xenial
       services: docker
       env:
-        - MB_PYTHON_VERSION=3.5
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=0
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      language: generic
-      dist: xenial
-      services: docker
-      env:
-        - MB_PYTHON_VERSION=3.5
-        - PLAT=i686
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=0
-        - USE_CCACHE=0
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      language: generic
-      dist: xenial
-      services: docker
-      env:
         - MB_PYTHON_VERSION=3.6
         - TEST_DEPENDS=numpy==1.13.3
         - ENABLE_CONTRIB=1
@@ -556,28 +467,6 @@ jobs:
 
 
     # headless contrib builds for Linux
-    - os: linux
-      language: generic
-      dist: xenial
-      services: docker
-      env:
-        - MB_PYTHON_VERSION=3.5
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=1
-      cache:
-        directories: $HOME/.ccache
-    - os: linux
-      language: generic
-      dist: xenial
-      services: docker
-      env:
-        - MB_PYTHON_VERSION=3.5
-        - PLAT=i686
-        - ENABLE_CONTRIB=1
-        - ENABLE_HEADLESS=1
-        - USE_CCACHE=0
-      cache:
-        directories: $HOME/.ccache
     - os: linux
       language: generic
       dist: xenial
