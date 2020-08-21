@@ -377,11 +377,11 @@ jobs:
         - PLAT=aarch64
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - TEST_DEPENDS=numpy==1.17.3
+        - TEST_DEPENDS=numpy==1.19.0
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
-        
+
     # headless builds for Linux
     - os: linux
       language: generic
