@@ -6,6 +6,7 @@ import runpy
 import subprocess
 import re
 import sysconfig
+import platform
 import skbuild
 from skbuild import cmaker
 
@@ -23,6 +24,8 @@ def main():
 
     if sys.version_info[:2] >= (3, 6):
         minimum_supported_numpy = "1.13.3"
+    if sys.version_info[:2] >= (3, 6) and platform.machine() == "aarch64":
+        minimum_supported_numpy = "1.19.0"
     if sys.version_info[:2] >= (3, 7):
         minimum_supported_numpy = "1.14.5"
     if sys.version_info[:2] >= (3, 8):
