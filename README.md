@@ -2,28 +2,31 @@
 
 ## OpenCV on Wheels
 
-**Unofficial** pre-built OpenCV packages for Python.
+**Unofficial** pre-built CPU-only OpenCV packages for Python.
+
+Check the manual build section if you wish to compile the bindings from source to enable additional modules such as CUDA. 
 
 ### Installation and Usage
 
 1. If you have previous/other manually installed (= not installed via ``pip``) version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
-2. Select the correct package for your environment:
+2. Make sure that your `pip` version is at minimum 19.3: `pip install --upgrade pip`. Check version with `pip -V`. For example Linux distributions ship usually with very old `pip` versions which cause a lot of unexpected problems expecially with the `manylinux` format.
+3. Select the correct package for your environment:
 
-    There are four different packages and you should **select only one of them**. Do not install multiple different packages in the same environment. There is no plugin architecture: all the packages use the same namespace (`cv2`). If you installed multiple different packages in the same environment, uninstall them all with ``pip uninstall`` and reinstall only one package.
+    There are four different packages (see options 1, 2, 3 and 4 below) and you should **SELECT ONLY ONE OF THEM**. Do not install multiple different packages in the same environment. There is no plugin architecture: all the packages use the same namespace (`cv2`). If you installed multiple different packages in the same environment, uninstall them all with ``pip uninstall`` and reinstall only one package.
 
     **a.** Packages for standard desktop environments (Windows, macOS, almost any GNU/Linux distribution)
 
-    - run ``pip install opencv-python`` if you need only main modules
-    - run ``pip install opencv-contrib-python`` if you need both main and contrib modules (check extra modules listing from [OpenCV documentation](https://docs.opencv.org/master/))
+    - Option 1 - Main modules package: ``pip install opencv-python``
+    - Option 2 - Full package (contains both main modules and contrib/extra modules): ``pip install opencv-contrib-python`` (check contrib/extra modules listing from [OpenCV documentation](https://docs.opencv.org/master/))
 
-    **b.** Packages for server (headless) environments
+    **b.** Packages for server (headless) environments (such as Docker, cloud environments etc.)
 
-    These packages do not contain any GUI functionality. They are smaller and suitable for more restricted environments.
+    These packages are smaller than the two other packages above because they do not contain any GUI functionality (not compiled with Qt / other GUI components). This means that the packages avoid a heavy dependency chain to X11 libraries and you will have for example smaller Docker images as a result. You should always use these packages if you do not use `cv2.imshow` et al. or you are using some other package than OpenCV to create your GUI.
 
-    - run ``pip install opencv-python-headless`` if you need only main modules
-    - run ``pip install opencv-contrib-python-headless`` if you need both main and contrib modules (check extra modules listing from [OpenCV documentation](https://docs.opencv.org/master/))
+    - Option 3 - Headless main modules package: ``pip install opencv-python-headless``
+    - Option 4 - Headless full package (contains both main modules and contrib/extra modules): ``pip install opencv-contrib-python-headless`` (check contrib/extra modules listing from [OpenCV documentation](https://docs.opencv.org/master/))
 
-3. Import the package:
+4. Import the package:
 
     ``import cv2``
 
