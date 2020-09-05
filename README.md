@@ -9,7 +9,7 @@ Check the manual build section if you wish to compile the bindings from source t
 ### Installation and Usage
 
 1. If you have previous/other manually installed (= not installed via ``pip``) version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
-2. Make sure that your `pip` version is at minimum 19.3: `pip install --upgrade pip`. Check version with `pip -V`. For example Linux distributions ship usually with very old `pip` versions which cause a lot of unexpected problems expecially with the `manylinux` format.
+2. Make sure that your `pip` version is up-to-date (19.3 is the minimum supported version): `pip install --upgrade pip`. Check version with `pip -V`. For example Linux distributions ship usually with very old `pip` versions which cause a lot of unexpected problems especially with the `manylinux` format.
 3. Select the correct package for your environment:
 
     There are four different packages (see options 1, 2, 3 and 4 below) and you should **SELECT ONLY ONE OF THEM**. Do not install multiple different packages in the same environment. There is no plugin architecture: all the packages use the same namespace (`cv2`). If you installed multiple different packages in the same environment, uninstall them all with ``pip uninstall`` and reinstall only one package.
@@ -19,9 +19,9 @@ Check the manual build section if you wish to compile the bindings from source t
     - Option 1 - Main modules package: ``pip install opencv-python``
     - Option 2 - Full package (contains both main modules and contrib/extra modules): ``pip install opencv-contrib-python`` (check contrib/extra modules listing from [OpenCV documentation](https://docs.opencv.org/master/))
 
-    **b.** Packages for server (headless) environments (such as Docker, cloud environments etc.)
+    **b.** Packages for server (headless) environments (such as Docker, cloud environments etc.), no GUI library dependencies
 
-    These packages are smaller than the two other packages above because they do not contain any GUI functionality (not compiled with Qt / other GUI components). This means that the packages avoid a heavy dependency chain to X11 libraries and you will have for example smaller Docker images as a result. You should always use these packages if you do not use `cv2.imshow` et al. or you are using some other package than OpenCV to create your GUI.
+    These packages are smaller than the two other packages above because they do not contain any GUI functionality (not compiled with Qt / other GUI components). This means that the packages avoid a heavy dependency chain to X11 libraries and you will have for example smaller Docker images as a result. You should always use these packages if you do not use `cv2.imshow` et al. or you are using some other package (such as PyQt) than OpenCV to create your GUI.
 
     - Option 3 - Headless main modules package: ``pip install opencv-python-headless``
     - Option 4 - Headless full package (contains both main modules and contrib/extra modules): ``pip install opencv-contrib-python-headless`` (check contrib/extra modules listing from [OpenCV documentation](https://docs.opencv.org/master/))
@@ -131,16 +131,18 @@ If some dependency is not enabled in the pre-built wheels, you can also run the 
 
 1. Clone this repository: `git clone --recursive https://github.com/skvark/opencv-python.git`
 2. ``cd opencv-python``
+    - you can use `git` to checkout some other version of OpenCV in the `opencv` and `opencv_contrib` submodules if needed
 3. Add custom Cmake flags if needed, for example: `export CMAKE_ARGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"` (in Windows you need to set environment variables differently depending on Command Line or PowerShell)
-4. Select the version which you wish to build with `ENABLE_CONTRIB` and `ENABLE_HEADLESS`: i.e. `export ENABLE_CONTRIB=1` if you wish to build `opencv-contrib-python`
-5. Run ``pip wheel . --verbose``. NOTE: make sure you have the latest ``pip``, the ``pip wheel`` command replaces the old ``python setup.py bdist_wheel`` command which does not support ``pyproject.toml``.
-     - Optional: on Linux use the `manylinux` images as a build hosts if maximum portability is needed and run `auditwheel` for the wheel after build
-     - Optional: on macOS use ``delocate`` (same as ``auditwheel`` but for macOS)
+4. Select the package flavor which you wish to build with `ENABLE_CONTRIB` and `ENABLE_HEADLESS`: i.e. `export ENABLE_CONTRIB=1` if you wish to build `opencv-contrib-python`
+5. Run ``pip wheel . --verbose``. NOTE: make sure you have the latest ``pip`` version, the ``pip wheel`` command replaces the old ``python setup.py bdist_wheel`` command which does not support ``pyproject.toml``.
+    - this might take anything from 5 minutes to over 2 hours depending on your hardware
 6. You'll have the wheel file in the `dist` folder and you can do with that whatever you wish
+    - Optional: on Linux use some of the `manylinux` images as a build hosts if maximum portability is needed and run `auditwheel` for the wheel after build
+    - Optional: on macOS use ``delocate`` (same as ``auditwheel`` but for macOS) for better portability
 
 #### Source distributions
 
-Since OpenCV version 4.3.0, also source distributions are provided in PyPI. This means that if your system is not compatible with any of the wheels in PyPI, ``pip`` will attempt to build OpenCV from sources.
+Since OpenCV version 4.3.0, also source distributions are provided in PyPI. This means that if your system is not compatible with any of the wheels in PyPI, ``pip`` will attempt to build OpenCV from sources. If you need a OpenCV version which is not available in PyPI as a source distribution, please follow the manual build guidance above instead of this one.
 
 You can also force ``pip`` to build the wheels from the source distribution. Some examples: 
 
@@ -149,7 +151,7 @@ You can also force ``pip`` to build the wheels from the source distribution. Som
 
 If you need contrib modules or headless version, just change the package name (step 4 in the previous section is not needed). However, any additional CMake flags can be provided via environment variables as described in step 3 of the manual build section. If none are provided, OpenCV's CMake scripts will attempt to find and enable any suitable dependencies. Headless distributions have hard coded CMake flags which disable all possible GUI dependencies. 
 
-Please note that build tools and ``numpy`` are required for the build to succeed. On slow systems such as Raspberry Pi the full build may take several hours. On a 8-core Ryzen 7 3700X the build takes about 6 minutes. 
+On slow systems such as Raspberry Pi the full build may take several hours. On a 8-core Ryzen 7 3700X the build takes about 6 minutes.
 
 ### Licensing
 
@@ -187,17 +189,14 @@ These artifacts can't be and will not be uploaded to PyPI.
 
 ### Manylinux wheels
 
-Linux wheels are built using [manylinux](https://github.com/pypa/python-manylinux-demo). These wheels should work out of the box for most of the distros (which use GNU C standard library) out there since they are built against an old version of glibc.
+Linux wheels are built using [manylinux2014](https://github.com/pypa/manylinux). These wheels should work out of the box for most of the distros (which use GNU C standard library) out there since they are built against an old version of glibc.
 
-The default ``manylinux`` images have been extended with some OpenCV dependencies. See [Docker folder](https://github.com/skvark/opencv-python/tree/master/docker) for more info.
+The default ``manylinux2014`` images have been extended with some OpenCV dependencies. See [Docker folder](https://github.com/skvark/opencv-python/tree/master/docker) for more info.
 
 ### Supported Python versions
 
-Python 3.x releases are provided for officially supported versions (not in EOL).
+Python 3.x compatible pre-built wheels are provided for the officially supported Python versions (not in EOL):
 
-Currently, builds for following Python versions are provided:
-
-- 3.5 (EOL in 2020-09-13, builds for 3.5 will not be provided after this)
 - 3.6
 - 3.7
 - 3.8
