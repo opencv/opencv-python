@@ -18,12 +18,12 @@ ENV PATH "$QTDIR/bin:$PATH"
 
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \
-    curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1c.tar.gz && \
-    tar -xf OpenSSL_1_1_1c.tar.gz && \
-    cd openssl-OpenSSL_1_1_1c && \
+    curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1g.tar.gz && \
+    tar -xf OpenSSL_1_1_1g.tar.gz && \
+    cd openssl-OpenSSL_1_1_1g && \
     # in i686, ./config detects x64 in i686 container without linux32
     # when run from "docker build"
-    linux32 ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib -DOPENSSL_USE_NODELETE=0 && \
+    linux32 ./config --prefix="$HOME/ffmpeg_build" no-pinshared shared zlib && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     #skip installing documentation
     make install_sw && \
