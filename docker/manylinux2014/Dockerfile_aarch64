@@ -18,10 +18,10 @@ ENV PATH "$QTDIR/bin:$PATH"
 
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \
-    curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1c.tar.gz && \
-    tar -xf OpenSSL_1_1_1c.tar.gz && \
-    cd openssl-OpenSSL_1_1_1c && \
-    ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" shared zlib && \
+    curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1g.tar.gz && \
+    tar -xf OpenSSL_1_1_1g.tar.gz && \
+    cd openssl-OpenSSL_1_1_1g && \
+    ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" no-pinshared shared zlib && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     # skip installing documentation
     make install_sw && \
@@ -60,6 +60,23 @@ RUN cd ~/ffmpeg_sources && \
     echo "/root/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
     ldconfig && \
     rm -rf ~/ffmpeg_sources
+
+RUN curl -O -L https://github.com/ccache/ccache/releases/download/v3.7.9/ccache-3.7.9.tar.gz && \
+    tar -xf ccache-3.7.9.tar.gz && \
+    cd ccache-3.7.9 && \
+    linux32 ./configure && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install
+
+RUN curl -O -L https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0.tar.gz && \
+    tar -xf cmake-3.17.0.tar.gz && \
+    cd cmake-3.17.0 && \
+    export MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) && \
+    ./configure --system-curl && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf cmake-3.17.0*
 
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/root/ffmpeg_build/lib/pkgconfig
 ENV LDFLAGS -L/root/ffmpeg_build/lib
