@@ -6,7 +6,7 @@
 
 Check the manual build section if you wish to compile the bindings from source to enable additional modules such as CUDA. 
 
-### Installation and Usage
+### Installation and Usages
 
 1. If you have previous/other manually installed (= not installed via ``pip``) version of OpenCV installed (e.g. cv2 module in the root of Python's site-packages), remove it before installation to avoid conflicts.
 2. Make sure that your `pip` version is up-to-date (19.3 is the minimum supported version): `pip install --upgrade pip`. Check version with `pip -V`. For example Linux distributions ship usually with very old `pip` versions which cause a lot of unexpected problems especially with the `manylinux` format.
