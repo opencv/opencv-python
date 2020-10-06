@@ -133,6 +133,16 @@ jobs:
         - TEST_DEPENDS=numpy==1.17.3
       workspaces:
         use: brew_cache
+    - os: osx
+      language: generic
+      osx_image: xcode9.4
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.3
+      workspaces:
+        use: brew_cache
 
     # headless builds for MacOS
     - os: osx
@@ -163,6 +173,16 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.17.3
+      workspaces:
+        use: brew_cache
+    - os: osx
+      language: generic
+      osx_image: xcode9.4
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.3
       workspaces:
         use: brew_cache
 
@@ -197,6 +217,16 @@ jobs:
         - TEST_DEPENDS=numpy==1.17.3
       workspaces:
         use: brew_cache
+    - os: osx
+      language: generic
+      osx_image: xcode9.4
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.3
+      workspaces:
+        use: brew_cache
 
     # headless contrib builds for MacOS
     - os: osx
@@ -227,6 +257,16 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.17.3
+      workspaces:
+        use: brew_cache
+    - os: osx
+      language: generic
+      osx_image: xcode9.4
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.3
       workspaces:
         use: brew_cache
 
@@ -308,11 +348,23 @@ jobs:
       dist: xenial
       services: docker
       env:
-        - MB_PYTHON_VERSION=3.8
+        - MB_PYTHON_VERSION=3.9
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.3
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
         - PLAT=i686
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
-        - TEST_DEPENDS=numpy==1.17.3
+        - TEST_DEPENDS=numpy==1.19.3
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -390,6 +442,30 @@ jobs:
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
+    - os: linux
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.3
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - PLAT=i686
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.3
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
 
     # contrib builds for Linux
     - os: linux
@@ -459,6 +535,30 @@ jobs:
         - MB_PYTHON_VERSION=3.8
         - PLAT=i686
         - TEST_DEPENDS=numpy==1.17.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - TEST_DEPENDS=numpy==1.19.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - PLAT=i686
+        - TEST_DEPENDS=numpy==1.19.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - USE_CCACHE=0
@@ -534,6 +634,30 @@ jobs:
         - MB_PYTHON_VERSION=3.8
         - PLAT=i686
         - TEST_DEPENDS=numpy==1.17.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - TEST_DEPENDS=numpy==1.19.3
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - PLAT=i686
+        - TEST_DEPENDS=numpy==1.19.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - USE_CCACHE=0
