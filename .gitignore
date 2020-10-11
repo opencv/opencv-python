@@ -67,4 +67,5 @@ target/
 # Build temporary files
 /contrib.enabled
 /cv_version.py
+/cv2/version.py
 _skbuild/
