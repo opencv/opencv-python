@@ -352,7 +352,6 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.19.3
-        - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
     - os: linux
