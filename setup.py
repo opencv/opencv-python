@@ -27,6 +27,8 @@ def main():
         minimum_supported_numpy = "1.14.5"
     if sys.version_info[:2] >= (3, 8):
         minimum_supported_numpy = "1.17.3"
+    if sys.version_info[:2] >= (3, 9):
+        minimum_supported_numpy = "1.19.3"
 
     numpy_version = "numpy>=%s" % minimum_supported_numpy
 
