@@ -137,6 +137,16 @@ environment:
 matrix:
     fast_finish: true
 
+install:
+  - ps: |
+      if (-not (Test-Path $env:PYTHON)) {
+        curl -o install_python.ps1 https://raw.githubusercontent.com/matthew-brett/multibuild/devel/install_python.ps1
+        .\install_python.ps1
+      }
+  - ps: if (-not (Test-Path $env:PYTHON)) { throw "No $env:PYTHON" }
+  - "set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - python --version
+
 build_script:
 - cmd: |
     "%PYTHON%/python.exe" -m pip install --upgrade pip
