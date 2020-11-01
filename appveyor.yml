@@ -6,131 +6,131 @@ environment:
     secure: 0bXSOVjf9x8L7nErTivu92TF1FwNosTjFJQPmxp8Dys=
 
   matrix:
-    - PYTHON: "C:\Python36"
+    - PYTHON: "C:\\Python36"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python36-x64"
+    - PYTHON: "C:\\Python36-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python37"
+    - PYTHON: "C:\\Python37"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python37-x64"
+    - PYTHON: "C:\\Python37-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python38"
+    - PYTHON: "C:\\Python38"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python38-x64"
+    - PYTHON: "C:\\Python38-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python39"
+    - PYTHON: "C:\\Python39"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python39-x64"
+    - PYTHON: "C:\\Python39-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python36"
+    - PYTHON: "C:\\Python36"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python36-x64"
+    - PYTHON: "C:\\Python36-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python37"
+    - PYTHON: "C:\\Python37"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python37-x64"
+    - PYTHON: "C:\\Python37-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python38"
+    - PYTHON: "C:\\Python38"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python38-x64"
+    - PYTHON: "C:\\Python38-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python39"
+    - PYTHON: "C:\\Python39"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python39-x64"
+    - PYTHON: "C:\\Python39-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 0
 
-    - PYTHON: "C:\Python36"
+    - PYTHON: "C:\\Python36"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python36-x64"
+    - PYTHON: "C:\\Python36-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python37"
+    - PYTHON: "C:\\Python37"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python37-x64"
+    - PYTHON: "C:\\Python37-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python38"
+    - PYTHON: "C:\\Python38"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python38-x64"
+    - PYTHON: "C:\\Python38-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python39"
+    - PYTHON: "C:\\Python39"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python39-x64"
+    - PYTHON: "C:\\Python39-x64"
       ENABLE_CONTRIB: 0
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python36"
+    - PYTHON: "C:\\Python36"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python36-x64"
+    - PYTHON: "C:\\Python36-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python37"
+    - PYTHON: "C:\\Python37"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python37-x64"
+    - PYTHON: "C:\\Python37-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python38"
+    - PYTHON: "C:\\Python38"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python38-x64"
+    - PYTHON: "C:\\Python38-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python39"
+    - PYTHON: "C:\\Python39"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
-    - PYTHON: "C:\Python39-x64"
+    - PYTHON: "C:\\Python39-x64"
       ENABLE_CONTRIB: 1
       ENABLE_HEADLESS: 1
 
@@ -149,23 +149,23 @@ install:
 
 build_script:
 - cmd: |
-    "%PYTHON%\python.exe" -m pip install --upgrade pip
-    "%PYTHON%\python.exe" -m pip install --upgrade setuptools
-    set "CI_BUILD=1" && "%PYTHON%\python.exe" -m pip wheel --wheel-dir=%cd%\dist . --verbose
+    "%PYTHON%\\python.exe" -m pip install --upgrade pip
+    "%PYTHON%\\python.exe" -m pip install --upgrade setuptools
+    set "CI_BUILD=1" && "%PYTHON%\\python.exe" -m pip wheel --wheel-dir=%cd%\dist . --verbose
 
 before_test:
 - ps: |
 
     cd ${Env:APPVEYOR_BUILD_FOLDER}\tests
     $env:PYTHONWARNINGS = "ignore:::pip._internal.cli.base_command"
-    &"${Env:PYTHON}\python.exe" -m pip install --user --no-warn-script-location (ls "../dist/opencv_*.whl")
+    &"${Env:PYTHON}\\python.exe" -m pip install --user --no-warn-script-location (ls "../dist/opencv_*.whl")
     if ($LastExitCode -ne 0) {throw $LastExitCode}
 
 test_script:
 - cmd: |
 
     cd %APPVEYOR_BUILD_FOLDER%\tests
-    "%PYTHON%\python.exe" -m unittest test
+    "%PYTHON%\\python.exe" -m unittest test
 
 artifacts:
 - path: dist\opencv*.whl
@@ -193,8 +193,8 @@ deploy_script:
         }
       }
 
-      &"${Env:PYTHON}\python.exe" -m pip install twine
-      &"${Env:PYTHON}\python.exe" -m twine upload -u ${Env:USER} -p ${Env:PASS} --skip-existing dist/opencv*
+      &"${Env:PYTHON}\\python.exe" -m pip install twine
+      &"${Env:PYTHON}\\python.exe" -m twine upload -u ${Env:USER} -p ${Env:PASS} --skip-existing dist/opencv*
     }
     else {
       echo "Tag not set, deployment skipped."
