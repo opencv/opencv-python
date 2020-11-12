@@ -375,6 +375,7 @@ jobs:
       env:
         - MB_PYTHON_VERSION=3.8
         - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.19.0
