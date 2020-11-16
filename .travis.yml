@@ -418,7 +418,7 @@ jobs:
       dist: xenial
       services: docker
       env:
-        - MB_PYTHON_VERSION=3.8
+        - MB_PYTHON_VERSION=3.9
         - PLAT=aarch64
         - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
         - ENABLE_CONTRIB=0
