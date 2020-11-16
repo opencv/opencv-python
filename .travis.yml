@@ -296,6 +296,21 @@ jobs:
       cache:
         directories: $HOME/.ccache
     - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
       language: generic
       dist: xenial
       services: docker
@@ -316,6 +331,21 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.0
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -344,6 +374,21 @@ jobs:
       cache:
         directories: $HOME/.ccache
     - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
       language: generic
       dist: xenial
       services: docker
@@ -364,6 +409,21 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.19.3
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.0
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -394,6 +454,21 @@ jobs:
       cache:
         directories: $HOME/.ccache
     - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
       language: generic
       dist: xenial
       services: docker
@@ -414,6 +489,21 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.0
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -442,6 +532,21 @@ jobs:
       cache:
         directories: $HOME/.ccache
     - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
       language: generic
       dist: xenial
       services: docker
@@ -462,6 +567,21 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.19.3
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=0
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.0
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -492,6 +612,21 @@ jobs:
       cache:
         directories: $HOME/.ccache
     - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
       language: generic
       dist: xenial
       services: docker
@@ -512,6 +647,21 @@ jobs:
         - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.0
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -540,6 +690,21 @@ jobs:
       cache:
         directories: $HOME/.ccache
     - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
       language: generic
       dist: xenial
       services: docker
@@ -560,6 +725,21 @@ jobs:
         - TEST_DEPENDS=numpy==1.19.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=0
+        - TEST_DEPENDS=numpy==1.19.0
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -591,6 +771,21 @@ jobs:
       cache:
         directories: $HOME/.ccache
     - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.6
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
       language: generic
       dist: xenial
       services: docker
@@ -611,6 +806,21 @@ jobs:
         - TEST_DEPENDS=numpy==1.14.5
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.7
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.0
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
@@ -639,6 +849,21 @@ jobs:
       cache:
         directories: $HOME/.ccache
     - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.8
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.0
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
       language: generic
       dist: xenial
       services: docker
@@ -659,6 +884,21 @@ jobs:
         - TEST_DEPENDS=numpy==1.19.3
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
+        - USE_CCACHE=0
+      cache:
+        directories: $HOME/.ccache
+    - os: linux
+      arch: arm64
+      language: generic
+      dist: xenial
+      services: docker
+      env:
+        - MB_PYTHON_VERSION=3.9
+        - PLAT=aarch64
+        - DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+        - ENABLE_CONTRIB=1
+        - ENABLE_HEADLESS=1
+        - TEST_DEPENDS=numpy==1.19.0
         - USE_CCACHE=0
       cache:
         directories: $HOME/.ccache
