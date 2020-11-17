@@ -17,20 +17,22 @@ def main():
     CI_BUILD = os.environ.get("CI_BUILD", "False")
     is_CI_build = True if CI_BUILD == "1" else False
     cmake_source_dir = "opencv"
-    minimum_supported_numpy = "1.13.1"
+    minimum_supported_numpy = "1.13.3"
     build_contrib = get_build_env_var_by_name("contrib")
     build_headless = get_build_env_var_by_name("headless")
     build_java = "ON" if get_build_env_var_by_name("java") else "OFF"
 
     if sys.version_info[:2] >= (3, 6):
         minimum_supported_numpy = "1.13.3"
-    if sys.version_info[:2] >= (3, 6) and platform.machine() == "aarch64":
-        minimum_supported_numpy = "1.19.0"
     if sys.version_info[:2] >= (3, 7):
         minimum_supported_numpy = "1.14.5"
     if sys.version_info[:2] >= (3, 8):
         minimum_supported_numpy = "1.17.3"
     if sys.version_info[:2] >= (3, 9):
+        minimum_supported_numpy = "1.19.3"
+
+    # arm64 is a special case
+    if sys.version_info[:2] >= (3, 6) and platform.machine() == "aarch64":
         minimum_supported_numpy = "1.19.3"
 
     numpy_version = "numpy>=%s" % minimum_supported_numpy
