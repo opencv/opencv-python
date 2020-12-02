@@ -32,32 +32,6 @@ jobs:
   exclude:
     - language: ruby
   include:
-    - os: osx
-      env:
-        - MB_PYTHON_VERSION=3.8
-      language: generic
-      osx_image: xcode9.4
-      stage: s1
-      workspaces:
-        create:
-          name: brew_cache
-          paths:
-            # https://stackoverflow.com/questions/39930171/cache-brew-builds-with-travis-ci
-            - $HOME/Library/Caches/Homebrew
-            - /usr/local/Homebrew/
-            # used in OSX custom build script dealing with local bottle caching
-            - $HOME/local_bottle_metadata
-      #workspaces share within the same build, cache shares between builds
-      cache:
-        directories:
-          # `cache: ccache: true` has no effect if `language:` is not `c` or `cpp`
-          - $HOME/.ccache
-          # https://stackoverflow.com/questions/39930171/cache-brew-builds-with-travis-ci
-          - $HOME/Library/Caches/Homebrew
-          - /usr/local/Homebrew/
-          # used in OSX custom build script dealing with local bottle caching
-          - $HOME/local_bottle_metadata
-
     # source distributions
     - os: linux
       stage: s1
@@ -111,8 +85,7 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.13.3
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -121,8 +94,7 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -131,8 +103,7 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.17.3
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -141,8 +112,7 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.19.3
-      workspaces:
-        use: brew_cache
+
 
     # headless builds for MacOS
     - os: osx
@@ -153,8 +123,7 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.13.3
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -163,8 +132,7 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -173,8 +141,7 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.17.3
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -183,8 +150,7 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.19.3
-      workspaces:
-        use: brew_cache
+
 
     # Contrib builds for MacOS
     - os: osx
@@ -195,8 +161,7 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.13.3
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -205,8 +170,7 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -215,8 +179,7 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.17.3
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -225,8 +188,7 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.19.3
-      workspaces:
-        use: brew_cache
+
 
     # headless contrib builds for MacOS
     - os: osx
@@ -237,8 +199,7 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.13.3
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -247,8 +208,7 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -257,8 +217,7 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.17.3
-      workspaces:
-        use: brew_cache
+
     - os: osx
       language: generic
       osx_image: xcode9.4
@@ -267,8 +226,7 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.19.3
-      workspaces:
-        use: brew_cache
+
 
     # default builds for Linux
     - os: linux
@@ -925,24 +883,6 @@ before_install: |
       echo $ENABLE_CONTRIB > contrib.enabled
       echo $ENABLE_HEADLESS > headless.enabled
 
-      if [ -n "$IS_OSX" ]; then
-        export PATH="/usr/local/sbin:$PATH"
-        TAPS="$(brew --repository)/Library/Taps"
-        if [ -e "$TAPS/caskroom/homebrew-cask" -a -e "$TAPS/homebrew/homebrew-cask" ]; then
-            rm -rf "$TAPS/caskroom/homebrew-cask"
-        fi
-        find "$TAPS" -type d -name .git -exec \
-                bash -xec '
-                    cd $(dirname '\''{}'\'') || echo "status: $?"
-                    git clean -fxd || echo "status: $?"
-                    sleep 1 || echo "status: $?"
-                    git status || echo "status: $?"' \; || echo "status: $?"
-        brew_cache_cleanup
-      fi
-      echo "end"
-      # Not interested in travis internal scripts' output
-    fi
-
     set +x
 
 install: |
@@ -974,21 +914,6 @@ script: |
     #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
     trap ERR
     test "$rc" -eq 0
-
-before_cache: |
-    # Cleanup dirs to be cached
-    set -e; set -x
-    if [ -n "$IS_OSX" ]; then
-
-      # When Taps is cached, this dir causes "Error: file exists" on `brew update`
-      if [ -e "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask" ]; then
-        rm -rf "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/homebrew-cask"
-      fi
-
-      brew_cache_cleanup
-
-    fi
-    set +x; set +e
 
 after_success: |
     # Upload wheels to pypi if tag is set

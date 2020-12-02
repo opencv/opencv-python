@@ -49,10 +49,6 @@ A: No, the packages are special wheel binary packages and they already contain s
 
 Since ``opencv-python`` version 4.3.0.\*, ``manylinux1`` wheels were replaced by ``manylinux2014`` wheels. If your pip is too old, it will try to use the new source distribution introduced in 4.3.0.38 to manually build OpenCV because it does not know how to install ``manylinux2014`` wheels. However, source build will also fail because of too old ``pip`` because it does not understand build dependencies in ``pyproject.toml``. To use the new ``manylinux2014`` pre-built wheels (or to build from source), your ``pip`` version must be >= 19.3. Please upgrade ``pip`` with ``pip install --upgrade pip``.
 
-**Q: Pip install fails with ``Could not find a version that satisfies the requirement ...``?**
-
-A: Most likely the issue is related to too old pip and can be fixed by running ``pip install --upgrade pip``. Note that the wheel (especially manylinux) format does not currently support properly ARM architecture so there are no packages for ARM based platforms in PyPI. However, ``opencv-python`` packages for Raspberry Pi can be found from https://www.piwheels.org/.
-
 **Q: Import fails on Windows: ``ImportError: DLL load failed: The specified module could not be found.``?**
 
 A: If the import fails on Windows, make sure you have [Visual C++ redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145) installed. If you are using older Windows version than Windows 10 and latest system updates are not installed, [Universal C Runtime](https://support.microsoft.com/en-us/help/2999226/update-for-universal-c-runtime-in-windows) might be also required.
