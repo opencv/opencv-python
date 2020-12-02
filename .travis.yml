@@ -883,6 +883,10 @@ before_install: |
       echo $ENABLE_CONTRIB > contrib.enabled
       echo $ENABLE_HEADLESS > headless.enabled
 
+      echo "end"
+      # Not interested in travis internal scripts' output
+    fi
+
     set +x
 
 install: |
