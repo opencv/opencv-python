@@ -140,6 +140,24 @@ If some dependency is not enabled in the pre-built wheels, you can also run the 
     - Optional: on Linux use some of the `manylinux` images as a build hosts if maximum portability is needed and run `auditwheel` for the wheel after build
     - Optional: on macOS use ``delocate`` (same as ``auditwheel`` but for macOS) for better portability
 
+#### Manual debug builds
+
+In order to build `opencv-python` in an unoptimized debug build, you need to side-step the normal process a bit.
+
+1. Install the packages `scikit-build` and `numpy` via pip.
+2. Run the command `python setup.py bdist_wheel --build-type=Debug`.
+3. Install the generated wheel file in the `dist/` folder with `pip install dist/wheelname.whl`.
+
+If you would like the build produce all compiler commands, then the following combination of flags and environment variables has been tested to work on Linux:
+```
+export CMAKE_ARGS='-DCMAKE_VERBOSE_MAKEFILE=ON'
+export VERBOSE=1
+
+python3 setup.py bdist_wheel --build-type=Debug
+```
+
+See this issue for more discussion: https://github.com/skvark/opencv-python/issues/424
+
 #### Source distributions
 
 Since OpenCV version 4.3.0, also source distributions are provided in PyPI. This means that if your system is not compatible with any of the wheels in PyPI, ``pip`` will attempt to build OpenCV from sources. If you need a OpenCV version which is not available in PyPI as a source distribution, please follow the manual build guidance above instead of this one.
