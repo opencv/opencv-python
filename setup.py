@@ -172,7 +172,7 @@ def main():
         if (
             not build_headless
             and "bdist_wheel" in sys.argv
-            and (sys.platform == "darwin" or sys.platform.startswith("linux"))
+            and sys.platform.startswith("linux")
         ):
             cmake_args.append("-DWITH_QT=5")
             subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)

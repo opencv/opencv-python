@@ -115,15 +115,15 @@ function pre_build {
         brew install ffmpeg_opencv
     fi
 
-    echo 'Installing qt5'
+    # echo 'Installing qt5'
     
-    if [ -n "$CACHE_STAGE" ]; then
-        echo "Qt5 has bottle, no caching needed"
-    else
-        brew switch qt 5.13.2
-        brew pin qt
-        export PATH="/usr/local/opt/qt/bin:$PATH"
-    fi
+    # if [ -n "$CACHE_STAGE" ]; then
+    #    echo "Qt5 has bottle, no caching needed"
+    # else
+    #    brew switch qt 5.13.2
+    #    brew pin qt
+    #    export PATH="/usr/local/opt/qt/bin:$PATH"
+    # fi
 
     if [ -n "$CACHE_STAGE" ]; then
         brew_go_bootstrap_mode 0

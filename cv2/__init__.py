@@ -19,9 +19,7 @@ except:
     pass
 
 # the Qt plugin is included currently only in the pre-built wheels
-if (
-    sys.platform == "darwin" or sys.platform.startswith("linux")
-) and ci_and_not_headless:
+if sys.platform.startswith("linux") and ci_and_not_headless:
     os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "qt", "plugins"
     )
