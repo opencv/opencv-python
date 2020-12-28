@@ -971,18 +971,20 @@ after_success: |
 
     # Save to Azure storage always
 
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-    else
-      brew install azure-cli
-    fi
+    if [[ $TRAVIS_CPU_ARCH != "arm64" ]]; then
+      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      else
+        brew install azure-cli
+      fi
 
-    az storage container create -n ${TRAVIS_COMMIT} --public-access blob
+      az storage container create -n ${TRAVIS_COMMIT} --public-access blob
 
-    if [[ $SDIST == 1 ]]; then
-      az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/dist --pattern *.gz
-    else
-      az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern opencv*.whl
+      if [[ $SDIST == 1 ]]; then
+        az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/dist --pattern *.gz
+      else
+        az storage blob upload-batch -d ${TRAVIS_COMMIT} -s ${TRAVIS_BUILD_DIR}/wheelhouse --pattern opencv*.whl
+      fi
     fi
 
     set +x
