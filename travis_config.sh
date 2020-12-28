@@ -111,6 +111,7 @@ function pre_build {
         brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
     else
         brew unlink python@2
+        generate_ffmpeg_formula
         brew install ffmpeg_opencv
     fi
 
