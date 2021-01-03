@@ -171,13 +171,13 @@ On slow systems such as Raspberry Pi the full build may take several hours. On a
 
 Opencv-python package (scripts in this repository) is available under MIT license.
 
-OpenCV itself is available under [Apache 2](https://github.com/opencv/opencv/blob/master/LICENSE) license.
+OpenCV itself is available under [3-clause BSD License](https://github.com/opencv/opencv/blob/master/LICENSE).
 
 Third party package licenses are at [LICENSE-3RD-PARTY.txt](https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
 
 All wheels ship with [FFmpeg](http://ffmpeg.org) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
 
-Non-headless Linux and MacOS wheels ship with [Qt 5](http://doc.qt.io/qt-5/lgpl.html) licensed under the [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html).
+Non-headless Linux wheels ship with [Qt 5](http://doc.qt.io/qt-5/lgpl.html) licensed under the [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html).
 
 The packages include also other binaries. Full list of licenses can be found from [LICENSE-3RD-PARTY.txt](https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
 
