@@ -176,7 +176,7 @@ On slow systems such as Raspberry Pi the full build may take several hours. On a
 
 Opencv-python package (scripts in this repository) is available under MIT license.
 
-OpenCV itself is available under [Apache 2](https://github.com/opencv/opencv/blob/master/LICENSE) license.
+OpenCV itself is available under [3-clause BSD License](https://github.com/opencv/opencv/blob/master/LICENSE).
 
 Third party package licenses are at [LICENSE-3RD-PARTY.txt](https://github.com/opencv/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
 

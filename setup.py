@@ -99,7 +99,7 @@ def main():
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = {
         "cv2": (
-            [r"bin/opencv_videoio_ffmpeg\d{3}%s\.dll" % ("_64" if x64 else "")]
+            [r"bin/opencv_ffmpeg\d{3,4}%s\.dll" % ("_64" if x64 else "")]
             if os.name == "nt"
             else []
         )
@@ -120,7 +120,7 @@ def main():
             r"python/cv2/.*config.*.py"
         ],
         "cv2.data": [  # OPENCV_OTHER_INSTALL_PATH
-            ("etc" if os.name == "nt" else "share/opencv4") + r"/haarcascades/.*\.xml"
+            ("etc" if os.name == "nt" else "share/OpenCV") + r"/haarcascades/.*\.xml"
         ],
         "cv2.gapi": [
             "python/cv2" + r"/gapi/.*\.py"
