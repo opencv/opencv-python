@@ -3,10 +3,10 @@ name: Build PYPI wheels for opencv-python
 on:
   push:
     branches:
-      - main
+      - all
   pull_request:
     branches:
-      - main
+      - master
   release:
     # Only use the types keyword to narrow down the activity types that will trigger your workflow.
     types: [published, created, edited]
