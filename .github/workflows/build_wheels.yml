@@ -86,7 +86,7 @@ jobs:
           source multibuild/travis_steps.sh
           # This sets -x
 
-          source travis_multibuild_customize.sh
+          # source travis_multibuild_customize.sh
           echo $ENABLE_CONTRIB > contrib.enabled
           echo $ENABLE_HEADLESS > headless.enabled
 
