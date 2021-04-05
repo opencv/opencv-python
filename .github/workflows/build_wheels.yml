@@ -93,9 +93,6 @@ jobs:
         fi
 
         set +x
-        build_index_wheel $PROJECT_SPEC  # download source from pypi
-        # build_wheel $REPO_DIR $PLAT  # versioneer does not work with submodules
-        install_run $PLAT
     - name: build
       run: |
           # Build and package
