@@ -1,0 +1,146 @@
+name: Build PYPI wheels for opencv-python
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  release:
+    # Only use the types keyword to narrow down the activity types that will trigger your workflow.
+    types: [published, created, edited]
+
+
+jobs:
+  build:
+    container:
+      image: quay.io/skvark/manylinux2014_x86_64
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest] #, macos-latest]
+        python-version: [3.6] #, 3.7, 3.8, 3.9]
+        platform: [x64]
+
+    env:
+      REPO_DIR: opencv
+      BUILD_COMMIT: master
+      PROJECT_SPEC: opencv
+      UNICODE_WIDTH: 32
+      PLAT: x86_64
+      MB_PYTHON_VERSION: ${{ matrix.python-version }}
+      TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
+      MB_ML_VER: 2014
+      NP_BUILD_DEP: numpy==1.11.1
+      NP_TEST_DEP: numpy
+      TRAVIS_BUILD_DIR: ${{ github.workspace }}
+      CONFIG_PATH: travis_config.sh
+      USE_CCACHE: 1
+      UNICODE_WIDTH: 32
+      SDIST: 0
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Update submodules
+      run: |
+        git submodule update --remote
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Setup Environment variables
+      run: |
+        if [ "macos-latest" == "${{ matrix.os }}" ]; then echo "TRAVIS_OS_NAME=osx" >> $GITHUB_ENV; else echo "TRAVIS_OS_NAME=${{ matrix.os }}" >> $GITHUB_ENV; fi
+        if [ "schedule" == "${{ github.event_name }}" ]; then echo "TRAVIS_EVENT_TYPE=cron" >> $GITHUB_ENV; else echo "TRAVIS_EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV; fi
+        if [ "schedule" == "${{ github.event_name }}" ]; then echo "BUILD_COMMIT=master" >> $GITHUB_ENV; else echo "BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV; fi
+        echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
+        echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
+
+    - name: before install
+      run: |
+        set -e
+
+        if [[ $SDIST == 0 ]]; then
+          # Check out and prepare the source
+          # Multibuild doesn't have releases, so --depth would break eventually (see
+          # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
+          git submodule update --init multibuild
+
+          source multibuild/common_utils.sh
+
+          # https://github.com/matthew-brett/multibuild/issues/116
+          if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
+
+          source multibuild/travis_steps.sh
+          # This sets -x
+
+          source travis_multibuild_customize.sh
+          echo $ENABLE_CONTRIB > contrib.enabled
+          echo $ENABLE_HEADLESS > headless.enabled
+
+          echo "end"
+          # Not interested in travis internal scripts' output
+        fi
+
+        set +x
+        build_index_wheel $PROJECT_SPEC  # download source from pypi
+        # build_wheel $REPO_DIR $PLAT  # versioneer does not work with submodules
+        install_run $PLAT
+    - name: build
+      run: |
+          # Build and package
+          set -x
+
+          if [[ $SDIST == 1 ]]; then
+            python -m pip install --upgrade pip
+            python -m pip install scikit-build
+            python setup.py sdist
+          else
+            build_wheel $REPO_DIR $PLAT
+          fi
+
+          set +x
+
+    - name: install and test
+      run: |
+          # Install and run tests
+          set -x
+          if [[ $SDIST == 1 ]]; then
+            echo "skipping tests because of sdist"
+          else
+            install_run $PLAT && rc=$? || rc=$?
+          fi
+
+          set +x
+
+          #otherwise, Travis logic terminates prematurely
+          #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
+          trap ERR
+          test "$rc" -eq 0
+
+    # - name: Upload wheels
+    #   env:
+    #     # PYPI repository
+    #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+    #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+    #     # PYPITEST repository
+    #     # TWINE_USERNAME: ${{ secrets.PYPITEST_USERNAME }}
+    #     # TWINE_PASSWORD: ${{ secrets.PYPITEST_PASSWORD }}
+    #     # TWINE_REPOSITORY_URL: 'https://test.pypi.org/legacy/'
+    #   run: |
+    #     twine upload --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/*
+    #     # Upload wheels to PYPITEST
+    #     #twine upload --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/*
