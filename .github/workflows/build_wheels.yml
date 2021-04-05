@@ -32,7 +32,6 @@ jobs:
       REPO_DIR: opencv
       BUILD_COMMIT: master
       PROJECT_SPEC: opencv
-      UNICODE_WIDTH: 32
       PLAT: x86_64
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
