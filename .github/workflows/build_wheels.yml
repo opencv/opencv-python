@@ -97,6 +97,8 @@ jobs:
         # Build and package
         set -x
 
+        ls
+        cd opencv-python
         if [[ $SDIST == 1 ]]; then
           python -m pip install --upgrade pip
           python -m pip install scikit-build
