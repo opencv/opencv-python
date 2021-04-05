@@ -93,37 +93,34 @@ jobs:
         fi
 
         set +x
-    - name: build
-      run: |
-          # Build and package
-          set -x
 
-          if [[ $SDIST == 1 ]]; then
-            python -m pip install --upgrade pip
-            python -m pip install scikit-build
-            python setup.py sdist
-          else
-            build_wheel $REPO_DIR $PLAT
-          fi
+        # Build and package
+        set -x
 
-          set +x
+        if [[ $SDIST == 1 ]]; then
+          python -m pip install --upgrade pip
+          python -m pip install scikit-build
+          python setup.py sdist
+        else
+          build_wheel $REPO_DIR $PLAT
+        fi
 
-    - name: install and test
-      run: |
-          # Install and run tests
-          set -x
-          if [[ $SDIST == 1 ]]; then
-            echo "skipping tests because of sdist"
-          else
-            install_run $PLAT && rc=$? || rc=$?
-          fi
+        set +x
 
-          set +x
+        # Install and run tests
+        set -x
+        if [[ $SDIST == 1 ]]; then
+          echo "skipping tests because of sdist"
+        else
+          install_run $PLAT && rc=$? || rc=$?
+        fi
 
-          #otherwise, Travis logic terminates prematurely
-          #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
-          trap ERR
-          test "$rc" -eq 0
+        set +x
+
+        #otherwise, Travis logic terminates prematurely
+        #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
+        trap ERR
+        test "$rc" -eq 0
 
     # - name: Upload wheels
     #   env:
