@@ -14,8 +14,6 @@ on:
 
 jobs:
   build:
-    container:
-      image: quay.io/skvark/manylinux2014_x86_64
     runs-on: ${{ matrix.os }}
     defaults:
       run:
