@@ -27,9 +27,9 @@ jobs:
         platform: [x64]
 
     env:
-      REPO_DIR: opencv
+      REPO_DIR: .
       BUILD_COMMIT: master
-      PROJECT_SPEC: opencv
+      PROJECT_SPEC: opencv-python
       PLAT: x86_64
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
@@ -98,7 +98,6 @@ jobs:
         set -x
 
         ls
-        cd opencv-python
         if [[ $SDIST == 1 ]]; then
           python -m pip install --upgrade pip
           python -m pip install scikit-build
