@@ -38,6 +38,7 @@ jobs:
       NP_TEST_DEP: numpy
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
+      DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       SDIST: 0
