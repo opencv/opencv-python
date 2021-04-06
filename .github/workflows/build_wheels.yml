@@ -34,7 +34,6 @@ jobs:
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
       MB_ML_VER: 2014
-      NP_BUILD_DEP: numpy==1.11.1
       NP_TEST_DEP: numpy
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
