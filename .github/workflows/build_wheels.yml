@@ -32,6 +32,23 @@ jobs:
           - os: ubuntu-latest
             python-version: 3.8
             build_sdist: 1
+            with_contrib: 0
+            without_gui: 0
+          - os: ubuntu-latest
+            python-version: 3.8
+            build_sdist: 1
+            with_contrib: 0
+            without_gui: 1
+          - os: ubuntu-latest
+            python-version: 3.8
+            build_sdist: 1
+            with_contrib: 1
+            without_gui: 0
+          - os: ubuntu-latest
+            python-version: 3.8
+            build_sdist: 1
+            with_contrib: 1
+            without_gui: 1
 
     env:
       REPO_DIR: .
@@ -47,7 +64,7 @@ jobs:
       DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
-      SDIST: ${{ matrix.build_sdist }}
+      SDIST: ${{ matrix.build_sdist || 0}}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
 
