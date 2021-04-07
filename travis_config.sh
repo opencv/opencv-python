@@ -113,7 +113,7 @@ function pre_build {
         brew update
         generate_ffmpeg_formula
         brew_add_local_bottles
-        brew unlink python@2
+        # brew unlink python@2
         brew install ffmpeg_opencv
     # fi
 
