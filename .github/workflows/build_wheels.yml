@@ -32,23 +32,6 @@ jobs:
           - os: ubuntu-latest
             python-version: 3.8
             build_sdist: 1
-            with_contrib: 0
-            without_gui: 0
-          - os: ubuntu-latest
-            python-version: 3.8
-            build_sdist: 1
-            with_contrib: 1
-            without_gui: 0
-          - os: ubuntu-latest
-            python-version: 3.8
-            build_sdist: 1
-            with_contrib: 0
-            without_gui: 1
-          - os: ubuntu-latest
-            python-version: 3.8
-            build_sdist: 1
-            with_contrib: 1
-            without_gui: 1
 
     env:
       REPO_DIR: .
