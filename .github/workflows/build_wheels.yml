@@ -117,6 +117,7 @@ jobs:
         set -x
         if [[ $SDIST == 1 ]]; then
           echo "skipping tests because of sdist"
+          rc=0
         else
           install_run $PLAT && rc=$? || rc=$?
         fi
