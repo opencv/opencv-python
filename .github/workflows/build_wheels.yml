@@ -22,33 +22,33 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        os: [macos-latest] # ubuntu-latest,
+        python-version: [3.8] # [3.6, 3.7, 3.8, 3.9]
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
-        include:
-          - os: ubuntu-latest
-            python-version: 3.8
-            build_sdist: 1
-            with_contrib: 0
-            without_gui: 0
-          - os: ubuntu-latest
-            python-version: 3.8
-            build_sdist: 1
-            with_contrib: 0
-            without_gui: 1
-          - os: ubuntu-latest
-            python-version: 3.8
-            build_sdist: 1
-            with_contrib: 1
-            without_gui: 0
-          - os: ubuntu-latest
-            python-version: 3.8
-            build_sdist: 1
-            with_contrib: 1
-            without_gui: 1
+        # include:
+        #   - os: ubuntu-latest
+        #     python-version: 3.8
+        #     build_sdist: 1
+        #     with_contrib: 0
+        #     without_gui: 0
+        #   - os: ubuntu-latest
+        #     python-version: 3.8
+        #     build_sdist: 1
+        #     with_contrib: 0
+        #     without_gui: 1
+        #   - os: ubuntu-latest
+        #     python-version: 3.8
+        #     build_sdist: 1
+        #     with_contrib: 1
+        #     without_gui: 0
+        #   - os: ubuntu-latest
+        #     python-version: 3.8
+        #     build_sdist: 1
+        #     with_contrib: 1
+        #     without_gui: 1
 
     env:
       REPO_DIR: .
