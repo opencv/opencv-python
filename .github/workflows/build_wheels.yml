@@ -70,7 +70,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Setup Environment variables
-      if: ${{ matrix.os == 'ubuntu-latest' }} || ${{ matrix.os == 'macos-latest' }}
+      if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
       run: |
         if [ "macos-latest" == "${{ matrix.os }}" ]; then echo "TRAVIS_OS_NAME=osx" >> $GITHUB_ENV; else echo "TRAVIS_OS_NAME=${{ matrix.os }}" >> $GITHUB_ENV; fi
         if [ "schedule" == "${{ github.event_name }}" ]; then echo "TRAVIS_EVENT_TYPE=cron" >> $GITHUB_ENV; else echo "TRAVIS_EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV; fi
@@ -79,7 +79,7 @@ jobs:
         echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
         
     - name: before install
-      if: ${{ matrix.os == 'ubuntu-latest' }} || ${{ matrix.os == 'macos-latest' }}
+      if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
       run: |
         set -e
         if [[ $SDIST == 0 ]]; then
