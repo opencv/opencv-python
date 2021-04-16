@@ -22,12 +22,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest] # ubuntu-latest,
+        os: [windows-latest, ubuntu-latest, macos-latest] # ubuntu-latest,
         python-version: [3.6] # [3.6, 3.7, 3.8, 3.9]
-        platform: [x64] # [x32, x64]
+        platform: [x32, x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
+        exclude:
+          - os: macos-latest
+            platform: x32
+          - os: ubuntu-latest
+            platform: x32
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -42,15 +47,18 @@ jobs:
     - name: Update submodules
       run: |
         git submodule update --remote
+        
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
         
     - name: Setup MSBuild.exe
+      if: ${{ matrix.os == 'windows-latest' }}
       uses: warrenbuckley/Setup-MSBuild@v1
 
     - name: build script
+      if: ${{ matrix.os == 'windows-latest' }}
       run: |
         python --version
         python -m pip install --upgrade pip
@@ -59,19 +67,23 @@ jobs:
       shell: cmd
 
     - name: before test
+      if: ${{ matrix.os == 'windows-latest' }}
       run: |
         cd ${{ github.workspace }}/tests
         $env:PYTHONWARNINGS = "ignore:::pip._internal.cli.base_command"
         &python -m pip install --user --no-warn-script-location (ls "../dist/opencv_*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
+
     - name: run test
+      if: ${{ matrix.os == 'windows-latest' }}
       run: |
         cd ${{ github.workspace }}/tests
         python -m unittest test
       shell: cmd
 
     - name: saving artifacts
+      if: ${{ matrix.os == 'windows-latest' }}
       uses: actions/upload-artifact@v2
       with:
-        name: wheels-${{ matrix.python-version }}-${{ matrix.platform }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
+        name: ${{ matrix.os }}-wheels-${{ matrix.python-version }}-${{ matrix.platform }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: dist\opencv*.whl
