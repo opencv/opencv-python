@@ -22,8 +22,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest] # ubuntu-latest,
-        python-version: [3.6] # [3.6, 3.7, 3.8, 3.9]
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
         platform: [x32, x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -154,7 +154,58 @@ jobs:
       shell: cmd
 
     - name: saving artifacts
+      if: ${{ matrix.os == 'windows-latest' }}
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.os }}-wheels-${{ matrix.python-version }}-${{ matrix.platform }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: dist\opencv*.whl
+
+    - name: saving artifacts
+      if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.os }}-wheels-${{ matrix.python-version }}-${{ matrix.platform }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
+        path: ./wheelhouse/opencv*.whl
+
+
+    # - name: Upload wheels ${{ matrix.os }}
+    #   if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+    #   env:
+    #     # PYPI repository
+    #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+    #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+    #     # PYPITEST repository
+    #     # TWINE_USERNAME: ${{ secrets.PYPITEST_USERNAME }}
+    #     # TWINE_PASSWORD: ${{ secrets.PYPITEST_PASSWORD }}
+    #     # TWINE_REPOSITORY_URL: 'https://test.pypi.org/legacy/'
+    #   run: |
+    #     twine upload --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/*
+    #     # Upload wheels to PYPITEST
+    #     #twine upload --skip-existing ${TRAVIS_BUILD_DIR}/wheelhouse/*
+
+    # - name: Upload wheels ${{ matrix.os }}
+    #   if: ${{ matrix.os == 'windows-latest' && startsWith(github.ref, 'refs/tags/')}}
+    #   env:
+    #     USER: fXgF9uyy6sT0JoVOR7BoqA==
+    #     PASS: 0bXSOVjf9x8L7nErTivu92TF1FwNosTjFJQPmxp8Dys=
+    #   run: |
+    #     cd ${{ github.workspace }}
+    #     if (${Env:ENABLE_CONTRIB} -eq 0) {
+    #       if (${Env:ENABLE_HEADLESS} -eq 0) {
+    #         echo "This is a default build. Deployment will be done to PyPI entry opencv-python."
+    #       }
+    #       else {
+    #         echo "This is a headless build. Deployment will be done to PyPI entry opencv-python-headless."
+    #       }
+    #     }
+    #     else {
+    #       if (${Env:ENABLE_HEADLESS} -eq 0) {
+    #         echo "This is a contrib build. Deployment will be done to PyPI entry opencv-contrib-python."
+    #       }
+    #       else {
+    #         echo "This is a headless contrib build. Deployment will be done to PyPI entry opencv-contrib-python-headless."
+    #       }
+    #     }
+    #     &python -m pip install twine
+    #     &python -m twine upload -u ${Env:USER} -p ${Env:PASS} --skip-existing dist/opencv*
+    #   shell: powershell
