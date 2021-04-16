@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        shell: powershell
+        shell: bash
 
     strategy:
       fail-fast: false
@@ -73,6 +73,7 @@ jobs:
         $env:PYTHONWARNINGS = "ignore:::pip._internal.cli.base_command"
         &python -m pip install --user --no-warn-script-location (ls "../dist/opencv_*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
+      shell: powershell
 
     - name: run test
       if: ${{ matrix.os == 'windows-latest' }}
