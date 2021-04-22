@@ -93,7 +93,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
-        platform: [x64]
+        platform: [x86, x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
@@ -103,7 +103,6 @@ jobs:
       REPO_DIR: .
       BUILD_COMMIT: master
       PROJECT_SPEC: opencv-python
-      PLAT: x86_64
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
       MB_ML_VER: 2014
@@ -139,6 +138,8 @@ jobs:
         if [ "macos-latest" == "${{ matrix.os }}" ]; then echo "TRAVIS_OS_NAME=osx" >> $GITHUB_ENV; else echo "TRAVIS_OS_NAME=${{ matrix.os }}" >> $GITHUB_ENV; fi
         if [ "schedule" == "${{ github.event_name }}" ]; then echo "TRAVIS_EVENT_TYPE=cron" >> $GITHUB_ENV; else echo "TRAVIS_EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV; fi
         if [ "schedule" == "${{ github.event_name }}" ]; then echo "BUILD_COMMIT=master" >> $GITHUB_ENV; else echo "BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV; fi
+        if [ "x64" == "${{ matrix.platform }}" ]; then echo "PLAT=x86_64" >> $GITHUB_ENV; fi
+        if [ "x86" == "${{ matrix.platform }}" ]; then echo "PLAT=i686" >> $GITHUB_ENV; fi
         echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
         echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
 
