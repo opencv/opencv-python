@@ -44,7 +44,7 @@ jobs:
     - name: Update submodules
       run: |
         git submodule update --remote
-        
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -127,7 +127,7 @@ jobs:
     - name: Update submodules
       run: |
         git submodule update --remote
-        
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -141,7 +141,7 @@ jobs:
         if [ "schedule" == "${{ github.event_name }}" ]; then echo "BUILD_COMMIT=master" >> $GITHUB_ENV; else echo "BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV; fi
         echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
         echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
-        
+
     - name: before install
       run: |
         set -e
@@ -192,9 +192,89 @@ jobs:
         name: wheels
         path: wheelhouse/opencv*.whl
 
+
+  build_sdist:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.8]
+        platform: [x64]
+        with_contrib: [0, 1]
+        without_gui: [0]
+        build_sdist: [1]
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      REPO_DIR: .
+      BUILD_COMMIT: master
+      PROJECT_SPEC: opencv-python
+      PLAT: x86_64
+      MB_PYTHON_VERSION: ${{ matrix.python-version }}
+      TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
+      MB_ML_VER: 2014
+      NP_TEST_DEP: numpy
+      TRAVIS_BUILD_DIR: ${{ github.workspace }}
+      CONFIG_PATH: travis_config.sh
+      DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
+      USE_CCACHE: 1
+      UNICODE_WIDTH: 32
+      SDIST: ${{ matrix.build_sdist || 0}}
+      ENABLE_HEADLESS: ${{ matrix.without_gui || 0 }}
+      ENABLE_CONTRIB: ${{ matrix.with_contrib || 0}}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Update submodules
+      run: |
+        git submodule update --remote
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.platform }}
+
+    - name: Setup Environment variables
+      run: |
+        if [ "macos-latest" == "${{ matrix.os }}" ]; then echo "TRAVIS_OS_NAME=osx" >> $GITHUB_ENV; else echo "TRAVIS_OS_NAME=${{ matrix.os }}" >> $GITHUB_ENV; fi
+        if [ "schedule" == "${{ github.event_name }}" ]; then echo "TRAVIS_EVENT_TYPE=cron" >> $GITHUB_ENV; else echo "TRAVIS_EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV; fi
+        if [ "schedule" == "${{ github.event_name }}" ]; then echo "BUILD_COMMIT=master" >> $GITHUB_ENV; else echo "BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV; fi
+        echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
+        echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
+
+    - name: before install
+      run: |
+        set -e
+        # Build and package
+        set -x
+          python -m pip install --upgrade pip
+          python -m pip install scikit-build
+          python setup.py sdist
+        set +x
+        # Install and run tests
+        set -x
+        echo "skipping tests because of sdist"
+    - name: saving artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheels
+        path: dist/opencv*.tar.gz
+
+
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [build, build-windows-x86_64]
+    needs: [build, build-windows-x86_64, build_sdist]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -206,7 +286,6 @@ jobs:
           path: wheelhouse/
 
       - name: Upload wheels ${{ matrix.os }}
-        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }} && startsWith(github.ref, 'refs/tags/')
         env:
           # PYPI repository credentials
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
