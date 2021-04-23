@@ -207,7 +207,7 @@ jobs:
         python-version: [3.8]
         platform: [x64]
         with_contrib: [0, 1]
-        without_gui: [0]
+        without_gui: [0, 1]
         build_sdist: [1]
 
     env:
@@ -273,10 +273,11 @@ jobs:
         path: dist/opencv*.tar.gz
 
 
-  release:
+  release_opencv_python:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [build, build-windows-x86_64, build_sdist]
     runs-on: ubuntu-latest
+    environment: opencv-python-release
     defaults:
       run:
         shell: bash
@@ -289,8 +290,77 @@ jobs:
       - name: Upload wheels ${{ matrix.os }}
         env:
           # PYPI repository credentials
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_USERNAME: ${{ secrets.OPENCV_PYTHON_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.OPENCV_PYTHON_PASSWORD }}
         run: |
           python -m pip install twine
-          python -m twine upload -u ${Env:TWINE_USERNAME} -p ${Env:TWINE_PASSWORD} --skip-existing wheelhouse/opencv*
+          python -m twine upload -u ${Env:TWINE_USERNAME} -p ${Env:TWINE_PASSWORD} --skip-existing wheelhouse/opencv_python-*
+
+  release_opencv_contrib_python:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, build-windows-x86_64, build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-python-release
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+          path: wheelhouse/
+
+      - name: Upload wheels ${{ matrix.os }}
+        env:
+          # PYPI repository credentials
+          TWINE_USERNAME: ${{ secrets.OPENCV_CONTRIB_PYTHON_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.OPENCV_CONTRIB_PYTHON_PASSWORD }}
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${Env:TWINE_USERNAME} -p ${Env:TWINE_PASSWORD} --skip-existing wheelhouse/opencv_contrib_python-*
+
+  release_opencv_python_headless:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, build-windows-x86_64, build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-python-release
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+          path: wheelhouse/
+
+      - name: Upload wheels ${{ matrix.os }}
+        env:
+          # PYPI repository credentials
+          TWINE_USERNAME: ${{ secrets.OPENCV_PYTHON_HEADLESS_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.OPENCV_PYTHON_HEADLESS_PASSWORD }}
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${Env:TWINE_USERNAME} -p ${Env:TWINE_PASSWORD} --skip-existing wheelhouse/opencv_python_headless-*
+
+  release_opencv_contrib_python_headless:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, build-windows-x86_64, build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-python-release
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+          path: wheelhouse/
+
+      - name: Upload wheels ${{ matrix.os }}
+        env:
+          # PYPI repository credentials
+          TWINE_USERNAME: ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_PASSWORD }}
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${Env:TWINE_USERNAME} -p ${Env:TWINE_PASSWORD} --skip-existing wheelhouse/opencv_contrib_python_headless-*
