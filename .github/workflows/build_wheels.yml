@@ -3,7 +3,7 @@ name: Build PYPI wheels for opencv-python
 on:
   push:
     branches:
-      - all
+      - master
   pull_request:
     branches:
       - master
@@ -271,6 +271,29 @@ jobs:
       with:
         name: wheels
         path: dist/opencv*.tar.gz
+
+  test_release_opencv_python_all:
+    if: ${{github.event.pull_request.types}}
+    needs: [build, build-windows-x86_64, build_sdist]
+    runs-on: ubuntu-latest
+    environment: test-opencv-python-release
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+          path: wheelhouse/
+
+      - name: Upload wheels ${{ matrix.os }}
+        env:
+          # PYPI repository credentials
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          python -m pip install twine
+          python -m twine upload --repository testpypi -u ${Env:TWINE_USERNAME} -p ${Env:TWINE_PASSWORD} --skip-existing wheelhouse/opencv_*
 
 
   release_opencv_python:
