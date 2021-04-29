@@ -1,9 +1,6 @@
 name: Build PYPI wheels for opencv-python
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
@@ -273,7 +270,6 @@ jobs:
         path: dist/opencv*.tar.gz
 
   test_release_opencv_python_all:
-    if: ${{github.event.pull_request.types}}
     needs: [build, build-windows-x86_64, build_sdist]
     runs-on: ubuntu-latest
     environment: test-opencv-python-release
