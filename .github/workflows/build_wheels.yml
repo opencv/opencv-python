@@ -62,7 +62,6 @@ jobs:
     - name: before test
       run: |
         cd ${{ github.workspace }}/tests
-        $env:PYTHONWARNINGS = "ignore:::pip._internal.cli.base_command"
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
       shell: powershell
@@ -126,6 +125,7 @@ jobs:
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
+      if: ${{ 'macos-latest' == matrix.os }}
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
@@ -143,47 +143,22 @@ jobs:
     - name: before install
       run: |
         set -e
-        if [[ $SDIST == 0 ]]; then
-          # Check out and prepare the source
-          # Multibuild doesn't have releases, so --depth would break eventually (see
-          # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
-          git submodule update --init multibuild
-          source multibuild/common_utils.sh
-          # https://github.com/matthew-brett/multibuild/issues/116
-          if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
-          source multibuild/travis_steps.sh
-          # This sets -x
-          # source travis_multibuild_customize.sh
-          echo $ENABLE_CONTRIB > contrib.enabled
-          echo $ENABLE_HEADLESS > headless.enabled
-          echo "end"
-          # Not interested in travis internal scripts' output
-        fi
-        set +x
-        # Build and package
+        # Check out and prepare the source
+        # Multibuild doesn't have releases, so --depth would break eventually (see
+        # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
+        git submodule update --init multibuild
+        source multibuild/common_utils.sh
+        # https://github.com/matthew-brett/multibuild/issues/116
+        if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
+        source multibuild/travis_steps.sh
+        # This sets -x
+        # source travis_multibuild_customize.sh
+        echo $ENABLE_CONTRIB > contrib.enabled
+        echo $ENABLE_HEADLESS > headless.enabled
         set -x
-        ls
-        if [[ $SDIST == 1 ]]; then
-          python -m pip install --upgrade pip
-          python -m pip install scikit-build
-          python setup.py sdist
-        else
-          build_wheel $REPO_DIR $PLAT
-        fi
+        build_wheel $REPO_DIR $PLAT
+        install_run $PLAT
         set +x
-        # Install and run tests
-        set -x
-        if [[ $SDIST == 1 ]]; then
-          echo "skipping tests because of sdist"
-          rc=0
-        else
-          install_run $PLAT && rc=$? || rc=$?
-        fi
-        set +x
-        #otherwise, Travis logic terminates prematurely
-        #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
-        trap ERR
-        test "$rc" -eq 0
     - name: saving artifacts
       uses: actions/upload-artifact@v2
       with:
@@ -287,8 +262,12 @@ jobs:
           # PYPI repository credentials
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TEST_ENV_VAR: test
         run: |
           python -m pip install twine
+          echo ${{ secrets.OPENCV_PYTHON_USERNAME }}
+          echo ${Env:TWINE_USERNAME}
+          echo ${Env:TEST_ENV_VAR}
           python -m twine upload --repository testpypi -u ${Env:TWINE_USERNAME} -p ${Env:TWINE_PASSWORD} --skip-existing wheelhouse/opencv_*
 
 
