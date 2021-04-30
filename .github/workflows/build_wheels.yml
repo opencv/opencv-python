@@ -1,0 +1,279 @@
+name: Build PYPI wheels for opencv-python
+
+on:
+  pull_request:
+    branches:
+      - master
+  release:
+    types: [published, edited]
+
+
+jobs:
+  build-windows-x86_64:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: powershell
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        platform: [x86, x64]
+        with_contrib: [0, 1]
+        without_gui: [0, 1]
+        build_sdist: [0]
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      SDIST: ${{ matrix.build_sdist || 0}}
+      ENABLE_HEADLESS: ${{ matrix.without_gui }}
+      ENABLE_CONTRIB: ${{ matrix.with_contrib }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Update submodules
+      run: |
+        git submodule update --remote
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.platform }}
+
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+
+    - name: build script
+      run: |
+        python --version
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        set "CI_BUILD=1" && python -m pip wheel --wheel-dir=%cd%\wheelhouse . --verbose
+      shell: cmd
+
+    - name: before test
+      run: |
+        cd ${{ github.workspace }}/tests
+        &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
+        if ($LastExitCode -ne 0) {throw $LastExitCode}
+      shell: powershell
+
+    - name: run test
+      run: |
+        cd ${{ github.workspace }}/tests
+        python -m unittest test
+      shell: cmd
+
+    - name: saving artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheels
+        path: wheelhouse/opencv*.whl
+
+  build:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        platform: [x64]
+        with_contrib: [0, 1]
+        without_gui: [0, 1]
+        build_sdist: [0]
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      REPO_DIR: .
+      BUILD_COMMIT: master
+      PROJECT_SPEC: opencv-python
+      MB_PYTHON_VERSION: ${{ matrix.python-version }}
+      TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
+      MB_ML_VER: 2014
+      NP_TEST_DEP: numpy
+      TRAVIS_BUILD_DIR: ${{ github.workspace }}
+      CONFIG_PATH: travis_config.sh
+      DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
+      USE_CCACHE: 1
+      UNICODE_WIDTH: 32
+      SDIST: ${{ matrix.build_sdist || 0}}
+      ENABLE_HEADLESS: ${{ matrix.without_gui }}
+      ENABLE_CONTRIB: ${{ matrix.with_contrib }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Update submodules
+      run: |
+        git submodule update --remote
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      if: ${{ 'macos-latest' == matrix.os }}
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.platform }}
+
+    - name: Setup Environment variables
+      run: |
+        if [ "macos-latest" == "${{ matrix.os }}" ]; then echo "TRAVIS_OS_NAME=osx" >> $GITHUB_ENV; else echo "TRAVIS_OS_NAME=${{ matrix.os }}" >> $GITHUB_ENV; fi
+        if [ "schedule" == "${{ github.event_name }}" ]; then echo "TRAVIS_EVENT_TYPE=cron" >> $GITHUB_ENV; else echo "TRAVIS_EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV; fi
+        if [ "schedule" == "${{ github.event_name }}" ]; then echo "BUILD_COMMIT=master" >> $GITHUB_ENV; else echo "BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV; fi
+        if [ "x64" == "${{ matrix.platform }}" ]; then echo "PLAT=x86_64" >> $GITHUB_ENV; fi
+        if [ "x86" == "${{ matrix.platform }}" ]; then echo "PLAT=i686" >> $GITHUB_ENV; fi
+        echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
+        echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
+
+    - name: before install
+      run: |
+        set -e
+        # Check out and prepare the source
+        # Multibuild doesn't have releases, so --depth would break eventually (see
+        # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
+        git submodule update --init multibuild
+        source multibuild/common_utils.sh
+        # https://github.com/matthew-brett/multibuild/issues/116
+        if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
+        source multibuild/travis_steps.sh
+        # This sets -x
+        # source travis_multibuild_customize.sh
+        echo $ENABLE_CONTRIB > contrib.enabled
+        echo $ENABLE_HEADLESS > headless.enabled
+        set -x
+        build_wheel $REPO_DIR $PLAT
+        install_run $PLAT
+        set +x
+    - name: saving artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheels
+        path: wheelhouse/opencv*.whl
+
+
+  build_sdist:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.8]
+        platform: [x64]
+        with_contrib: [0, 1]
+        without_gui: [0, 1]
+        build_sdist: [1]
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      REPO_DIR: .
+      BUILD_COMMIT: master
+      PROJECT_SPEC: opencv-python
+      PLAT: x86_64
+      MB_PYTHON_VERSION: ${{ matrix.python-version }}
+      TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
+      MB_ML_VER: 2014
+      NP_TEST_DEP: numpy
+      TRAVIS_BUILD_DIR: ${{ github.workspace }}
+      CONFIG_PATH: travis_config.sh
+      DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
+      USE_CCACHE: 1
+      UNICODE_WIDTH: 32
+      SDIST: ${{ matrix.build_sdist || 0}}
+      ENABLE_HEADLESS: ${{ matrix.without_gui || 0 }}
+      ENABLE_CONTRIB: ${{ matrix.with_contrib || 0}}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Update submodules
+      run: |
+        git submodule update --remote
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.platform }}
+
+    - name: Setup Environment variables
+      run: |
+        if [ "macos-latest" == "${{ matrix.os }}" ]; then echo "TRAVIS_OS_NAME=osx" >> $GITHUB_ENV; else echo "TRAVIS_OS_NAME=${{ matrix.os }}" >> $GITHUB_ENV; fi
+        if [ "schedule" == "${{ github.event_name }}" ]; then echo "TRAVIS_EVENT_TYPE=cron" >> $GITHUB_ENV; else echo "TRAVIS_EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV; fi
+        if [ "schedule" == "${{ github.event_name }}" ]; then echo "BUILD_COMMIT=master" >> $GITHUB_ENV; else echo "BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV; fi
+        echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
+        echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
+
+    - name: before install
+      run: |
+        set -e
+        # Build and package
+        set -x
+          python -m pip install --upgrade pip
+          python -m pip install scikit-build
+          python setup.py sdist
+        set +x
+        # Install and run tests
+        set -x
+        echo "skipping tests because of sdist"
+    - name: saving artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheels
+        path: dist/opencv*.tar.gz
+
+  release_opencv_python:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, build-windows-x86_64, build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-python-release
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+          path: wheelhouse/
+      - name: Upload wheels for opencv_python
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_PASSWORD }} --skip-existing wheelhouse/opencv_python-*
+
+      - name: Upload wheels for opencv_contrib_python
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python-*
+
+      - name: Upload wheels for opencv_python_headless
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_PASSWORD }} --skip-existing wheelhouse/opencv_python_headless-*
+
+      - name: Upload wheels for opencv_contrib_python_headless
+
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python_headless-*
