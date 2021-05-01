@@ -95,28 +95,31 @@ function pre_build {
   if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
 
-    local CACHE_STAGE; (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
+    local CACHE_STAGE;# (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
+    CACHE_STAGE=
     export HOMEBREW_NO_AUTO_UPDATE=1
 
     #after the cache stage, all bottles and Homebrew metadata should be already cached locally
-    if [ -n "$CACHE_STAGE" ]; then
-        brew update
-        generate_ffmpeg_formula
-        brew_add_local_bottles
-    fi
+    # if [ -n "$CACHE_STAGE" ]; then
+    #     brew update
+    #     generate_ffmpeg_formula
+    #     brew_add_local_bottles
+    # fi
 
     echo 'Installing FFmpeg'
 
-    if [ -n "$CACHE_STAGE" ]; then
-        brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
-    else
-        brew unlink python@2
+    # if [ -n "$CACHE_STAGE" ]; then
+    #     brew_install_and_cache_within_time_limit ffmpeg_opencv || { [ $? -gt 1 ] && return 2 || return 0; }
+    # else
+        brew update
         generate_ffmpeg_formula
-        brew install ffmpeg_opencv
-    fi
+        brew_add_local_bottles
+        # brew unlink python@2
+        brew install --build-bottle ffmpeg_opencv
+    # fi
 
     # echo 'Installing qt5'
-    
+
     # if [ -n "$CACHE_STAGE" ]; then
     #    echo "Qt5 has bottle, no caching needed"
     # else
