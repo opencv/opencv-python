@@ -2,9 +2,9 @@
 
 ## OpenCV on Wheels
 
-**Unofficial** pre-built CPU-only OpenCV packages for Python.
+Pre-built CPU-only OpenCV packages for Python.
 
-Check the manual build section if you wish to compile the bindings from source to enable additional modules such as CUDA. 
+Check the manual build section if you wish to compile the bindings from source to enable additional modules such as CUDA.
 
 ### Installation and Usage
 
@@ -30,7 +30,7 @@ Check the manual build section if you wish to compile the bindings from source t
 
     ``import cv2``
 
-    All packages contain haarcascade files. ``cv2.data.haarcascades`` can be used as a shortcut to the data folder. For example:
+    All packages contain Haar cascade files. ``cv2.data.haarcascades`` can be used as a shortcut to the data folder. For example:
 
     ``cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")``
 
@@ -57,13 +57,17 @@ Windows N and KN editions do not include Media Feature Pack which is required by
 
 If you have Windows Server 2012+, media DLLs are probably missing too; please install the Feature called "Media Foundation" in the Server Manager. Beware, some posts advise to install "Windows Server Essentials Media Pack", but this one requires the "Windows Server Essentials Experience" role, and this role will deeply affect your Windows Server configuration (by enforcing active directory integration etc.); so just installing the "Media Foundation" should be a safer choice.
 
-If the above does not help, check if you are using Anaconda. Old Anaconda versions have a bug which causes the error, see [this issue](https://github.com/skvark/opencv-python/issues/36) for a manual fix.
+If the above does not help, check if you are using Anaconda. Old Anaconda versions have a bug which causes the error, see [this issue](https://github.com/opencv/opencv-python/issues/36) for a manual fix.
 
 If you still encounter the error after you have checked all the previous solutions, download [Dependencies](https://github.com/lucasg/Dependencies) and open the ``cv2.pyd`` (located usually at ``C:\Users\username\AppData\Local\Programs\Python\PythonXX\Lib\site-packages\cv2``) file with it to debug missing DLL issues.
 
 **Q: I have some other import errors?**
 
 A: Make sure you have removed old manual installations of OpenCV Python bindings (cv2.so or cv2.pyd in site-packages).
+
+**Q: Function foo() or method bar() returns wrong result, throws exception or crashes interpriter. What should I do?**
+
+A: The repository contains only OpenCV-Python package build scripts, but not OpenCV itself. Python bindings for OpenCV are developed in official OpenCV repository and it's the best place to report issues. Also please check {OpenCV wiki](https://github.com/opencv/opencv/wiki) and [the fficial OpenCV forum](https://forum.opencv.org/) before file new bugs.
 
 **Q: Why the packages do not include non-free algorithms?**
 
@@ -100,7 +104,7 @@ The build process for a single entry in the build matrices is as follows (see fo
    -  tests are disabled, otherwise build time increases too much
    -  there are 4 build matrix entries for each build combination: with and without contrib modules, with and without GUI (headless)
    -  Linux builds run in manylinux Docker containers (CentOS 5)
-   -  source distributions are separate entries in the build matrix 
+   -  source distributions are separate entries in the build matrix
 
 4. Rearrange OpenCV's build result, add our custom files and generate wheel
 
@@ -117,7 +121,7 @@ The build can be customized with environment variables. In addition to any varia
 - ``CI_BUILD``. Set to ``1`` to emulate the CI environment build behaviour. Used only in CI builds to force certain build flags on in ``setup.py``. Do not use this unless you know what you are doing.
 - ``ENABLE_CONTRIB`` and ``ENABLE_HEADLESS``. Set to ``1`` to build the contrib and/or headless version
 - ``ENABLE_JAVA``, Set to ``1`` to enable the Java client build.  This is disabled by default.
-- ``CMAKE_ARGS``. Additional arguments for OpenCV's CMake invocation. You can use this to make a custom build. 
+- ``CMAKE_ARGS``. Additional arguments for OpenCV's CMake invocation. You can use this to make a custom build.
 
 See the next section for more info about manual builds outside the CI environment.
 
@@ -125,7 +129,7 @@ See the next section for more info about manual builds outside the CI environmen
 
 If some dependency is not enabled in the pre-built wheels, you can also run the build locally to create a custom wheel.
 
-1. Clone this repository: `git clone --recursive https://github.com/skvark/opencv-python.git`
+1. Clone this repository: `git clone --recursive https://github.com/opencv/opencv-python.git`
 2. ``cd opencv-python``
     - you can use `git` to checkout some other version of OpenCV in the `opencv` and `opencv_contrib` submodules if needed
 3. Add custom Cmake flags if needed, for example: `export CMAKE_ARGS="-DSOME_FLAG=ON -DSOME_OTHER_FLAG=OFF"` (in Windows you need to set environment variables differently depending on Command Line or PowerShell)
@@ -152,18 +156,18 @@ export VERBOSE=1
 python3 setup.py bdist_wheel --build-type=Debug
 ```
 
-See this issue for more discussion: https://github.com/skvark/opencv-python/issues/424
+See this issue for more discussion: https://github.com/opencv/opencv-python/issues/424
 
 #### Source distributions
 
 Since OpenCV version 4.3.0, also source distributions are provided in PyPI. This means that if your system is not compatible with any of the wheels in PyPI, ``pip`` will attempt to build OpenCV from sources. If you need a OpenCV version which is not available in PyPI as a source distribution, please follow the manual build guidance above instead of this one.
 
-You can also force ``pip`` to build the wheels from the source distribution. Some examples: 
+You can also force ``pip`` to build the wheels from the source distribution. Some examples:
 
 - ``pip install --no-binary opencv-python opencv-python``
 - ``pip install --no-binary :all: opencv-python``
 
-If you need contrib modules or headless version, just change the package name (step 4 in the previous section is not needed). However, any additional CMake flags can be provided via environment variables as described in step 3 of the manual build section. If none are provided, OpenCV's CMake scripts will attempt to find and enable any suitable dependencies. Headless distributions have hard coded CMake flags which disable all possible GUI dependencies. 
+If you need contrib modules or headless version, just change the package name (step 4 in the previous section is not needed). However, any additional CMake flags can be provided via environment variables as described in step 3 of the manual build section. If none are provided, OpenCV's CMake scripts will attempt to find and enable any suitable dependencies. Headless distributions have hard coded CMake flags which disable all possible GUI dependencies.
 
 On slow systems such as Raspberry Pi the full build may take several hours. On a 8-core Ryzen 7 3700X the build takes about 6 minutes.
 
@@ -173,13 +177,13 @@ Opencv-python package (scripts in this repository) is available under MIT licens
 
 OpenCV itself is available under [Apache 2](https://github.com/opencv/opencv/blob/master/LICENSE) license.
 
-Third party package licenses are at [LICENSE-3RD-PARTY.txt](https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
+Third party package licenses are at [LICENSE-3RD-PARTY.txt](https://github.com/opencv/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
 
 All wheels ship with [FFmpeg](http://ffmpeg.org) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
 
 Non-headless Linux and MacOS wheels ship with [Qt 5](http://doc.qt.io/qt-5/lgpl.html) licensed under the [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html).
 
-The packages include also other binaries. Full list of licenses can be found from [LICENSE-3RD-PARTY.txt](https://github.com/skvark/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
+The packages include also other binaries. Full list of licenses can be found from [LICENSE-3RD-PARTY.txt](https://github.com/opencv/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
 
 ### Versioning
 
