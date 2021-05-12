@@ -255,7 +255,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [jetson]
+        os: [ARM64]
         python-version: [3.6, 3.7, 3.8, 3.9]
         platform: [x64]
         with_contrib: [0, 1]
@@ -295,7 +295,7 @@ jobs:
 
     - name: Setup Environment variables
       run: |
-        if [ "jetson" == "${{ matrix.os }}" ]; then echo "PLAT=aarch64" >> $GITHUB_ENV; fi
+        if [ "ARM64" == "${{ matrix.os }}" ]; then echo "PLAT=aarch64" >> $GITHUB_ENV; fi
         echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
         echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
 
