@@ -7,3 +7,6 @@
 [submodule "multibuild"]
 	path = multibuild
 	url = https://github.com/matthew-brett/multibuild.git
+[submodule "opencv_extra"]
+	path = opencv_extra
+	url = https://github.com/opencv/opencv_extra.git
