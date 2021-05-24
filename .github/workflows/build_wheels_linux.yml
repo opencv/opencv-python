@@ -77,7 +77,7 @@ jobs:
         echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
         echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
 
-    - name: before install
+    - name: build
       run: |
         set -e
         # Check out and prepare the source
@@ -94,6 +94,29 @@ jobs:
         echo $ENABLE_HEADLESS > headless.enabled
         set -x
         build_wheel $REPO_DIR $PLAT
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: install and test
+      run: |
+        set -e
+        # Check out and prepare the source
+        # Multibuild doesn't have releases, so --depth would break eventually (see
+        # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
+        git submodule update --init multibuild
+        source multibuild/common_utils.sh
+        # https://github.com/matthew-brett/multibuild/issues/116
+        if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
+        source multibuild/travis_steps.sh
+        # This sets -x
+        # source travis_multibuild_customize.sh
+        echo $ENABLE_CONTRIB > contrib.enabled
+        echo $ENABLE_HEADLESS > headless.enabled
+        set -x
         install_run $PLAT
         set +x
 
