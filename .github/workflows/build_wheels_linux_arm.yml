@@ -1,6 +1,9 @@
 name: Build PYPI wheels for opencv-python on Linux ARM
 
 on:
+  push:
+    branches:
+      - asen/check_3.4_wo_submodules
   pull_request:
     branches:
       - 3.4
@@ -53,8 +56,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        submodules: true
+        submodules: false
         fetch-depth: 0
+
+    - name: Update multibuild submodule
+      run: git submodule update --init --recursive multibuild
+
+    - name: Update submodules
+      if: github.event_name == 'pull_request'
+      run: git submodule update --remote
 
     - name: Setup Environment variables
       run: |

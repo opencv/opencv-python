@@ -1,6 +1,9 @@
-name: Build PYPI wheels for opencv-python on Linux x86_64
+name: Build PYPI wheels fgithub.event_name == 'release'or opencv-python on Linux x86_64
 
 on:
+  push:
+    branches:
+      - asen/check_3.4_wo_submodules
   pull_request:
     branches:
       - 3.4
@@ -47,12 +50,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        submodules: true
+        submodules: false
         fetch-depth: 0
 
+    - name: Update multibuild submodule
+      run: git submodule update --init --recursive multibuild
+
     - name: Update submodules
-      run: |
-        git submodule update --remote
+      if: github.event_name == 'pull_request'
+      run: git submodule update --remote
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -137,10 +143,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        submodules: true
+        submodules: false
         fetch-depth: 0
 
+    - name: Update multibuild submodule
+      run: git submodule update --init --recursive multibuild
+
     - name: Update submodules
+      if: github.event_name == 'pull_request'
       run: |
         git submodule update --remote
 
