@@ -1,4 +1,4 @@
-name: Build PYPI wheels fgithub.event_name == 'release'or opencv-python on Linux x86_64
+name: Build PYPI wheels for opencv-python on Linux x86_64
 
 on:
   push:
