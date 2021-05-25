@@ -51,8 +51,8 @@ jobs:
         fetch-depth: 0
 
     - name: Update submodules
-      run: |
-        git submodule update --remote
+      if: github.event_name == 'pull_request'
+      run: git submodule update --remote
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2

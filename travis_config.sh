@@ -148,6 +148,9 @@ function run_tests {
 
     PYTHON=python$PYTHON_VERSION
 
+    cd ../tests
+    $PYTHON get_build_info.py
+
     if [ -n "$IS_OSX" ]; then
       echo "Running for OS X"
       cd ../opencv/
