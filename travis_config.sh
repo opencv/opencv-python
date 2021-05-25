@@ -148,12 +148,13 @@ function run_tests {
 
     PYTHON=python$PYTHON_VERSION
 
-    cd ../tests
-    $PYTHON get_build_info.py
-
     if [ -n "$IS_OSX" ]; then
       echo "Running for OS X"
-      cd ../opencv/
+
+      cd ../tests
+      $PYTHON get_build_info.py
+
+      cd ../opencv
       export OPENCV_TEST_DATA_PATH=../opencv_extra/testdata
     else
       echo "Running for linux"
@@ -161,6 +162,9 @@ function run_tests {
       if [ $PYTHON == "python3.6" ]; then
         $PYTHON -m pip install -U numpy==1.19.4
       fi
+      cd /io/tests
+      $PYTHON get_build_info.py
+
       cd /io/opencv
       export OPENCV_TEST_DATA_PATH=/io/opencv_extra/testdata
     fi
