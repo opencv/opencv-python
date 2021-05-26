@@ -39,7 +39,7 @@ jobs:
       DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
-      SDIST: ${{ matrix.build_sdist || 0}}
+      SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
 
@@ -139,7 +139,7 @@ jobs:
       DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
-      SDIST: ${{ matrix.build_sdist || 0}}
+      SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui || 0 }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib || 0 }}
 
