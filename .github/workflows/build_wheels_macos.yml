@@ -39,7 +39,7 @@ jobs:
       DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
-      SDIST: ${{ matrix.build_sdist || 0}}
+      SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
 
@@ -51,8 +51,8 @@ jobs:
         fetch-depth: 0
 
     - name: Update submodules
-      run: |
-        git submodule update --remote
+      if: github.event_name == 'pull_request'
+      run: git submodule update --remote
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2

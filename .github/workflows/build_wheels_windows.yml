@@ -27,9 +27,10 @@ jobs:
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      SDIST: ${{ matrix.build_sdist || 0}}
+      SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
+      OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
 
     steps:
     - name: Checkout
@@ -39,8 +40,8 @@ jobs:
         fetch-depth: 0
 
     - name: Update submodules
-      run: |
-        git submodule update --remote
+      if: github.event_name == 'pull_request'
+      run: git submodule update --remote
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -64,12 +65,13 @@ jobs:
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
+        python get_build_info.py
       shell: powershell
 
     - name: run test
       run: |
-        cd ${{ github.workspace }}/tests
-        python -m unittest test
+        cd ${{ github.workspace }}/opencv
+        python modules\python\test\test.py -v --repo .
       shell: cmd
 
     - name: saving artifacts

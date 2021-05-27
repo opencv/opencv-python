@@ -41,7 +41,7 @@ jobs:
       DOCKER_TEST_IMAGE: multibuild/xenial_arm64v8
       USE_CCACHE: 0
       UNICODE_WIDTH: 32
-      SDIST: ${{ matrix.build_sdist || 0}}
+      SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
 
