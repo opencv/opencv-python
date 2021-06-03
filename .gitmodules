@@ -1,9 +1,15 @@
 [submodule "opencv"]
 	path = opencv
 	url = https://github.com/opencv/opencv.git
+        branch = 3.4
 [submodule "opencv_contrib"]
 	path = opencv_contrib
 	url = https://github.com/opencv/opencv_contrib.git
+        branch = 3.4
 [submodule "multibuild"]
 	path = multibuild
 	url = https://github.com/matthew-brett/multibuild.git
+[submodule "opencv_extra"]
+	path = opencv_extra
+	url = https://github.com/opencv/opencv_extra.git
+        branch = 3.4
