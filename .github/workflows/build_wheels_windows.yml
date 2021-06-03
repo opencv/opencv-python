@@ -36,7 +36,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        submodules: true
+        submodules: false
         fetch-depth: 0
 
     - name: Update submodules
@@ -62,6 +62,7 @@ jobs:
 
     - name: before test
       run: |
+        git submodule update --init --recursive
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}

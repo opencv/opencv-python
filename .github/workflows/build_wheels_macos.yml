@@ -33,7 +33,7 @@ jobs:
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
       MB_ML_VER: 2014
-      NP_TEST_DEP: numpy
+      NP_TEST_DEP: numpy==1.19.4
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
       DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
@@ -47,7 +47,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        submodules: true
+        submodules: false
         fetch-depth: 0
 
     - name: Update submodules
@@ -88,6 +88,7 @@ jobs:
         echo $ENABLE_HEADLESS > headless.enabled
         set -x
         build_wheel $REPO_DIR $PLAT
+        git submodule update --init --recursive
         install_run $PLAT
         set +x
 

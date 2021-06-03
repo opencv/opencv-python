@@ -34,7 +34,7 @@ jobs:
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
       PLAT: aarch64
       MB_ML_VER: 2014
-      NP_TEST_DEP: numpy
+      NP_TEST_DEP: numpy==1.19.4
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
       DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
@@ -53,7 +53,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        submodules: true
+        submodules: false
         fetch-depth: 0
 
     - name: Setup Environment variables
@@ -62,50 +62,11 @@ jobs:
         echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
         echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
 
-    - name: before install
-      run: |
-        set -e
-        if [[ $SDIST == 0 ]]; then
-          # Check out and prepare the source
-          # Multibuild doesn't have releases, so --depth would break eventually (see
-          # https://superuser.com/questions/1240216/server-does-not-allow-request-for-unadvertised)
-          git submodule update --init multibuild
-          source multibuild/common_utils.sh
-          # https://github.com/matthew-brett/multibuild/issues/116
-          if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS=" "; fi
-          source multibuild/travis_steps.sh
-          # This sets -x
-          # source travis_multibuild_customize.sh
-          echo $ENABLE_CONTRIB > contrib.enabled
-          echo $ENABLE_HEADLESS > headless.enabled
-          echo "end"
-          # Not interested in travis internal scripts' output
-        fi
-        set +x
-        # Build and package
-        set -x
-        ls
-        if [[ $SDIST == 1 ]]; then
-          python -m pip install --upgrade pip
-          python -m pip install scikit-build
-          python setup.py sdist
-        else
-          build_wheel $REPO_DIR $PLAT
-        fi
-        set +x
-        # Install and run tests
-        set -x
-        if [[ $SDIST == 1 ]]; then
-          echo "skipping tests because of sdist"
-          rc=0
-        else
-          install_run $PLAT && rc=$? || rc=$?
-        fi
-        set +x
-        #otherwise, Travis logic terminates prematurely
-        #https://travis-ci.community/t/shell-session-update-command-not-found-in-build-log-causes-build-to-fail-if-trap-err-is-set/817
-        trap ERR
-        test "$rc" -eq 0
+    - name: build
+      run: source scripts/build.sh
+
+    - name: install and test
+      run: source scripts/install.sh
 
     - name: saving artifacts
       uses: actions/upload-artifact@v2
