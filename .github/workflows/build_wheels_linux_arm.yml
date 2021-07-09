@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - '.github/workflows/build_wheels_linux.yml'
+      - '.github/workflows/build_wheels_windows*'
+      - '.github/workflows/build_wheels_macos*'
   release:
     types: [published, edited]
 
