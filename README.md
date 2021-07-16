@@ -79,15 +79,16 @@ A: It's easier for users to understand ``opencv-python`` than ``cv2`` and it mak
 
 ## Documentation for opencv-python
 
-[![AppVeyor CI test status (Windows)](https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows)](https://ci.appveyor.com/project/skvark/opencv-python)
-[![Travis CI test status (Linux and macOS)](https://img.shields.io/travis/com/skvark/opencv-python/master?label=Linux%20%26%20macOS)](https://travis-ci.com/github/skvark/opencv-python/)
+[![Windows Buld Status](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml)
+[![(Linux Build status)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_linux.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_linux.yml)
+[![(Mac OS Build status)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_macos.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_macos.yml)
 
 The aim of this repository is to provide means to package each new [OpenCV release](https://github.com/opencv/opencv/releases) for the most used Python versions and platforms.
 
 ### CI build process
 
 The project is structured like a normal Python package with a standard ``setup.py`` file.
-The build process for a single entry in the build matrices is as follows (see for example ``appveyor.yml`` file):
+The build process for a single entry in the build matrices is as follows (see for example `.github/workflows/build_wheels_linux.yml` file):
 
 0. In Linux and MacOS build: get OpenCV's optional C dependencies that we compile against
 
@@ -181,7 +182,7 @@ Third party package licenses are at [LICENSE-3RD-PARTY.txt](https://github.com/o
 
 All wheels ship with [FFmpeg](http://ffmpeg.org) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
 
-Non-headless Linux and MacOS wheels ship with [Qt 5](http://doc.qt.io/qt-5/lgpl.html) licensed under the [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html).
+Non-headless Linux wheels ship with [Qt 5](http://doc.qt.io/qt-5/lgpl.html) licensed under the [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html).
 
 The packages include also other binaries. Full list of licenses can be found from [LICENSE-3RD-PARTY.txt](https://github.com/opencv/opencv-python/blob/master/LICENSE-3RD-PARTY.txt).
 
