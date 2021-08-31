@@ -216,10 +216,10 @@ The default ``manylinux2014`` images have been extended with some OpenCV depende
 
 Python 3.x compatible pre-built wheels are provided for the officially supported Python versions (not in EOL):
 
-- 3.6
-- 3.7
-- 3.8
-- 3.9
+1. 3.6
+2. 3.7
+3. 3.8
+4. 3.9
 
 ### Backward compatibility
 
