@@ -27,6 +27,13 @@ function bdist_wheel_cmd {
 }
 
 if [ -n "$IS_OSX" ]; then
+  brew install lapack
+else
+  yum install -y atlas-devel blas-devel lapack-devel
+  cp /usr/include/lapacke/lapacke*.h /usr/include/
+fi
+
+if [ -n "$IS_OSX" ]; then
   echo "    > OSX environment "
   export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 else
