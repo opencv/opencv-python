@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ARM64]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
