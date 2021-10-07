@@ -93,6 +93,15 @@ function pre_build {
   set -e -o pipefail
 
   if [ -n "$IS_OSX" ]; then
+    brew install lapack
+  else
+    # epel-release need for aarch64 to get openblas packages
+    yum install -y lapack-devel epel-release && yum install -y openblas-devel
+    cp /usr/include/lapacke/lapacke*.h /usr/include/
+    curl https://raw.githubusercontent.com/xianyi/OpenBLAS/v0.3.3/cblas.h -o /usr/include/cblas.h
+  fi
+
+  if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
 
     local CACHE_STAGE;# (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
