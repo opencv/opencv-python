@@ -22,12 +22,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        os: [macos-10.15, macos-11]
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
+        exclude:
+          - os: macos-10.15
+            python-version: '3.10'
+          - os: macos-11
+            python-version: '3.6'
+          - os: macos-11
+            python-version: '3.7'
+          - os: macos-11
+            python-version: '3.8'
+          - os: macos-11
+            python-version: '3.9'
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -38,9 +49,11 @@ jobs:
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
       MB_ML_VER: 2014
       NP_TEST_DEP: numpy==1.19.4
+      NP_TEST_DEP_3_10: numpy==1.21.2
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
+      TRAVIS_OS_NAME: osx
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/skvark/manylinux2014_${PLAT}
+      DOCKER_IMAGE: quay.io/asenyaev/manylinux2014_${PLAT}
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
@@ -58,22 +71,13 @@ jobs:
       if: github.event_name == 'pull_request'
       run: git submodule update --remote
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      if: ${{ 'macos-latest' == matrix.os }}
-      with:
-        python-version: ${{ matrix.python-version }}
-        architecture: ${{ matrix.platform }}
-
     - name: Setup Environment variables
       run: |
-        if [ "macos-latest" == "${{ matrix.os }}" ]; then echo "TRAVIS_OS_NAME=osx" >> $GITHUB_ENV; else echo "TRAVIS_OS_NAME=${{ matrix.os }}" >> $GITHUB_ENV; fi
         if [ "schedule" == "${{ github.event_name }}" ]; then echo "TRAVIS_EVENT_TYPE=cron" >> $GITHUB_ENV; else echo "TRAVIS_EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV; fi
         if [ "schedule" == "${{ github.event_name }}" ]; then echo "BUILD_COMMIT=master" >> $GITHUB_ENV; else echo "BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV; fi
         if [ "x64" == "${{ matrix.platform }}" ]; then echo "PLAT=x86_64" >> $GITHUB_ENV; fi
         if [ "x86" == "${{ matrix.platform }}" ]; then echo "PLAT=i686" >> $GITHUB_ENV; fi
-        echo "BUILD_DEPENDS=$(echo $NP_BUILD_DEP)" >> $GITHUB_ENV;
-        echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV;
+        if [ "3.10" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_3_10)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
 
     - name: before install
       run: |

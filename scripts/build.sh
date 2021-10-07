@@ -15,4 +15,3 @@ echo $ENABLE_CONTRIB > contrib.enabled
 echo $ENABLE_HEADLESS > headless.enabled
 set -x
 build_wheel $REPO_DIR $PLAT
-rm wheelhouse/numpy*
