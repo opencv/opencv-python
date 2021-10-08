@@ -35,7 +35,7 @@ def main():
 
     # linux arm64 is a special case
     if sys.platform.startswith("linux") and sys.version_info[:2] >= (3, 6) and platform.machine() == "aarch64":
-        minimum_supported_numpy = "1.21.2"
+        minimum_supported_numpy = "1.19.3"
 
     # macos arm64 is a special case
     if sys.platform == "darwin" and sys.version_info[:2] >= (3, 6) and platform.machine() == "arm64":
