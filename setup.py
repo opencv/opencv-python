@@ -29,7 +29,7 @@ def main():
     if sys.version_info[:2] >= (3, 8):
         minimum_supported_numpy = "1.17.3"
     if sys.version_info[:2] >= (3, 9):
-        minimum_supported_numpy = "1.21.2"
+        minimum_supported_numpy = "1.19.3"
     if sys.version_info[:2] >= (3, 10):
         minimum_supported_numpy = "1.21.2"
 
@@ -39,7 +39,7 @@ def main():
 
     # macos arm64 is a special case
     if sys.platform == "darwin" and sys.version_info[:2] >= (3, 6) and platform.machine() == "arm64":
-        minimum_supported_numpy = "1.21.2"
+        minimum_supported_numpy = "1.21.0"
 
     numpy_version = "numpy>=%s" % minimum_supported_numpy
 

@@ -64,7 +64,7 @@ jobs:
     - name: Setup Environment variables
       run: |
         if [ "ARM64" == "${{ matrix.os }}" ]; then echo "PLAT=aarch64" >> $GITHUB_ENV; fi
-        if [ "3.6" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; fi
+        if [ "3.10" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
 
     - name: build
       run: source scripts/build.sh
