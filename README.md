@@ -65,7 +65,7 @@ If you still encounter the error after you have checked all the previous solutio
 
 A: Make sure you have removed old manual installations of OpenCV Python bindings (cv2.so or cv2.pyd in site-packages).
 
-**Q: Function foo() or method bar() returns wrong result, throws exception or crashes interpriter. What should I do?**
+**Q: Function foo() or method bar() returns wrong result, throws exception or crashes interpreter. What should I do?**
 
 A: The repository contains only OpenCV-Python package build scripts, but not OpenCV itself. Python bindings for OpenCV are developed in official OpenCV repository and it's the best place to report issues. Also please check {OpenCV wiki](https://github.com/opencv/opencv/wiki) and [the official OpenCV forum](https://forum.opencv.org/) before file new bugs.
 
