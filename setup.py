@@ -30,6 +30,8 @@ def main():
         minimum_supported_numpy = "1.17.3"
     if sys.version_info[:2] >= (3, 9):
         minimum_supported_numpy = "1.19.3"
+    if sys.version_info[:2] >= (3, 10):
+        minimum_supported_numpy = "1.21.2"
 
     # linux arm64 is a special case
     if sys.platform.startswith("linux") and sys.version_info[:2] >= (3, 6) and platform.machine() == "aarch64":

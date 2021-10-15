@@ -30,8 +30,8 @@ RUN mkdir ~/ffmpeg_sources && \
     rm -rf ~/openssl_build
 
 RUN cd ~/ffmpeg_sources && \
-    curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/2.14.01/nasm-2.14.01.tar.bz2 && \
-    tar -xf nasm-2.14.01.tar.bz2 && cd nasm-2.14.01 && ./autogen.sh && \
+    curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/2.15.04/nasm-2.15.04.tar.bz2 && \
+    tar -xf nasm-2.15.04.tar.bz2 && cd nasm-2.15.04 && ./autogen.sh && \
     linux32 ./configure && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install
@@ -52,9 +52,9 @@ RUN cd ~/ffmpeg_sources && \
     make install
 
 RUN cd ~/ffmpeg_sources && \
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
-    tar -xf ffmpeg-snapshot.tar.bz2 && \
-    cd ffmpeg && \
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.3.2.tar.bz2 && \
+    tar -xf ffmpeg-4.3.2.tar.bz2 && \
+    cd ffmpeg-4.3.2 && \
     PATH=~/bin:$PATH && \
     PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" linux32 ./configure --prefix="$HOME/ffmpeg_build" --extra-cflags="-I$HOME/ffmpeg_build/include" --extra-ldflags="-L$HOME/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --bindir="$HOME/bin" && \
     make -j$(getconf _NPROCESSORS_ONLN) && \

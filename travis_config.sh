@@ -20,7 +20,10 @@ function bdist_wheel_cmd {
       TOOLS_PATH=/opt/_internal/tools
       /opt/python/cp37-cp37m/bin/python -m venv $TOOLS_PATH
       source $TOOLS_PATH/bin/activate
-      python patch_auditwheel_whitelist.py
+      python$PYTHON_VERSION -m pip install auditwheel==3.2.0
+      python$PYTHON_VERSION patch_auditwheel_whitelist.py
+      # to avoid issues with numpy wheels
+      rm /io/wheelhouse/numpy*
       deactivate
     fi
     if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
