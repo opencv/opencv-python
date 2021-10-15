@@ -108,11 +108,31 @@ def main():
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
         [
-            "python/cv2[^/]*%(ext)s"
-            % {"ext": re.escape(sysconfig.get_config_var("EXT_SUFFIX"))}
+            "python/cv2/python-%s.%s/cv2[^/]*%s"
+            % (sys.version_info[0], sys.version_info[1], re.escape(sysconfig.get_config_var("EXT_SUFFIX")))
+        ]
+        +
+        [
+            r"python/cv2/__init__.py"
+        ]
+        +
+        [
+            r"python/cv2/.*config.*.py"
         ],
         "cv2.data": [  # OPENCV_OTHER_INSTALL_PATH
             ("etc" if os.name == "nt" else "share/opencv4") + r"/haarcascades/.*\.xml"
+        ],
+        "cv2.gapi": [
+            "python/cv2" + r"/gapi/.*\.py"
+        ],
+        "cv2.mat_wrapper": [
+            "python/cv2" + r"/mat_wrapper/.*\.py"
+        ],
+        "cv2.misc": [
+            "python/cv2" + r"/misc/.*\.py"
+        ],
+        "cv2.utils": [
+            "python/cv2" + r"/utils/.*\.py"
         ],
     }
 
@@ -137,8 +157,6 @@ def main():
             "-DBUILD_opencv_python2=OFF",
             # Disable the Java build by default as it is not needed
             "-DBUILD_opencv_java=%s" % build_java,
-            # When off, adds __init__.py and a few more helper .py's. We use our own helper files with a different structure.
-            "-DOPENCV_SKIP_PYTHON_LOADER=ON",
             # Relative dir to install the built module to in the build tree.
             # The default is generated from sysconfig, we'd rather have a constant for simplicity
             "-DOPENCV_PYTHON3_INSTALL_PATH=python",
@@ -357,6 +375,22 @@ class RearrangeCMakeOutput(object):
         final_install_relpaths = []
 
         print("Copying files from CMake output")
+
+        with open('%spython/cv2/__init__.py'
+         % cmake_install_dir, 'r') as opencv_init:
+            opencv_init_data = ""
+            for line in opencv_init:
+                opencv_init_replacement = line.replace('importlib.import_module("cv2")', 'importlib.import_module("cv2.cv2")')
+                opencv_init_data = opencv_init_data + opencv_init_replacement
+        with open('%spython/cv2/__init__.py'
+        % cmake_install_dir, 'w') as opencv_python_init:
+            opencv_python_init.write(opencv_init_data)
+
+        with open('scripts/__init__.py', 'r') as custom_init:
+            custom_init_data = custom_init.read()
+        with open('%spython/cv2/config-%s.%s.py'
+        % (cmake_install_dir, sys.version_info[0], sys.version_info[1]), 'a') as opencv_init_config:
+            opencv_init_config.write(custom_init_data)
 
         for package_name, relpaths_re in cls.package_paths_re.items():
             package_dest_reldir = package_name.replace(".", os.path.sep)
