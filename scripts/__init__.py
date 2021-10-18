@@ -1,5 +1,6 @@
-from .cv2 import *
-from .data import *
+PYTHON_EXTENSIONS_PATHS = [
+    LOADER_DIR
+] + PYTHON_EXTENSIONS_PATHS
 
 ci_and_not_headless = False
 
