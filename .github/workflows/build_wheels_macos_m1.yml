@@ -20,13 +20,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [macOS-M1]
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ['3.7', '3.8', '3.9', '3.10']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
 
     env:
+      CI_BUILD: 1
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
@@ -50,16 +51,20 @@ jobs:
         echo $ENABLE_HEADLESS > headless.enabled
         export MACOSX_DEPLOYMENT_TARGET=11.0
         arch -arm64 python${{ matrix.python-version }} -m pip wheel --wheel-dir=wheelhouse . --verbose
+        delocate-wheel ${{ github.workspace }}/wheelhouse/opencv*
+
     - name: before test
       run: |
         git submodule update --init --recursive
         arch -arm64 python${{ matrix.python-version }} -m pip install --user --no-cache --force-reinstall wheelhouse/opencv*.whl
         cd ${{ github.workspace }}/tests
         arch -arm64 python${{ matrix.python-version }} get_build_info.py
+
     - name: run test
       run: |
         cd ${{ github.workspace }}/opencv
         arch -arm64 python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
+
     - name: saving artifacts
       uses: actions/upload-artifact@v2
       with:

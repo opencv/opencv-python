@@ -65,9 +65,9 @@ If you still encounter the error after you have checked all the previous solutio
 
 A: Make sure you have removed old manual installations of OpenCV Python bindings (cv2.so or cv2.pyd in site-packages).
 
-**Q: Function foo() or method bar() returns wrong result, throws exception or crashes interpriter. What should I do?**
+**Q: Function foo() or method bar() returns wrong result, throws exception or crashes interpreter. What should I do?**
 
-A: The repository contains only OpenCV-Python package build scripts, but not OpenCV itself. Python bindings for OpenCV are developed in official OpenCV repository and it's the best place to report issues. Also please check {OpenCV wiki](https://github.com/opencv/opencv/wiki) and [the fficial OpenCV forum](https://forum.opencv.org/) before file new bugs.
+A: The repository contains only OpenCV-Python package build scripts, but not OpenCV itself. Python bindings for OpenCV are developed in official OpenCV repository and it's the best place to report issues. Also please check {OpenCV wiki](https://github.com/opencv/opencv/wiki) and [the official OpenCV forum](https://forum.opencv.org/) before file new bugs.
 
 **Q: Why the packages do not include non-free algorithms?**
 
@@ -79,15 +79,16 @@ A: It's easier for users to understand ``opencv-python`` than ``cv2`` and it mak
 
 ## Documentation for opencv-python
 
-[![AppVeyor CI test status (Windows)](https://img.shields.io/appveyor/ci/skvark/opencv-python.svg?maxAge=3600&label=Windows)](https://ci.appveyor.com/project/skvark/opencv-python)
-[![Travis CI test status (Linux and macOS)](https://img.shields.io/travis/com/skvark/opencv-python/master?label=Linux%20%26%20macOS)](https://travis-ci.com/github/skvark/opencv-python/)
+[![Windows Buld Status](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml)
+[![(Linux Build status)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_linux.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_linux.yml)
+[![(Mac OS Build status)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_macos.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_macos.yml)
 
 The aim of this repository is to provide means to package each new [OpenCV release](https://github.com/opencv/opencv/releases) for the most used Python versions and platforms.
 
 ### CI build process
 
 The project is structured like a normal Python package with a standard ``setup.py`` file.
-The build process for a single entry in the build matrices is as follows (see for example ``appveyor.yml`` file):
+The build process for a single entry in the build matrices is as follows (see for example `.github/workflows/build_wheels_linux.yml` file):
 
 0. In Linux and MacOS build: get OpenCV's optional C dependencies that we compile against
 
