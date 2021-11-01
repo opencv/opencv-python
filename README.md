@@ -220,6 +220,7 @@ Python 3.x compatible pre-built wheels are provided for the officially supported
 - 3.7
 - 3.8
 - 3.9
+- 3.10
 
 ### Backward compatibility
 
