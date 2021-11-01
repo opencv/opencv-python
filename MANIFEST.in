@@ -9,3 +9,4 @@ recursive-include docker *
 recursive-include opencv *
 recursive-include opencv_contrib *
 recursive-include patches *
+recursive-include scripts *.py
