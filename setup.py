@@ -378,7 +378,8 @@ class RearrangeCMakeOutput(object):
         print("Copying files from CMake output")
 
         # add lines from the old __init__.py file to the config file
-        with open('scripts/__init__.py', 'r') as custom_init:
+        with open('%s/scripts/__init__.py'
+        % os.path.split(os.path.abspath(__file__))[0], 'r') as custom_init:
             custom_init_data = custom_init.read()
         with open('%spython/cv2/config-%s.%s.py'
         % (cmake_install_dir, sys.version_info[0], sys.version_info[1]), 'w') as opencv_init_config:
