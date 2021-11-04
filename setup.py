@@ -71,16 +71,16 @@ def main():
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     x64 = sys.maxsize > 2 ** 32
 
-    package_name = "opencv-python"
+    package_name = "st-opencv-python"
 
     if build_contrib and not build_headless:
-        package_name = "opencv-contrib-python"
+        package_name = "st-opencv-contrib-python"
 
     if build_contrib and build_headless:
-        package_name = "opencv-contrib-python-headless"
+        package_name = "st-opencv-contrib-python-headless"
 
     if build_headless and not build_contrib:
-        package_name = "opencv-python-headless"
+        package_name = "st-opencv-python-headless"
 
     long_description = io.open("README.md", encoding="utf-8").read()
 
