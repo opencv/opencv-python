@@ -3,7 +3,7 @@
 	url = https://github.com/opencv/opencv.git
 [submodule "opencv_contrib"]
 	path = opencv_contrib
-	url = https://github.com/opencv/opencv_contrib.git
+	url = https://github.com/scantrust/opencv_contrib.git
 [submodule "multibuild"]
 	path = multibuild
 	url = https://github.com/matthew-brett/multibuild.git
