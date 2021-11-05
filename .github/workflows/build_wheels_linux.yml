@@ -10,6 +10,7 @@ on:
       - '.github/workflows/build_wheels_macos*'
   release:
     types: [published, edited]
+  workflow_dispatch:
 
 
 jobs:
@@ -174,7 +175,7 @@ jobs:
       - name: Upload all wheels
         run: |
           python -m pip install twine
-          python -m twine upload --repository testpypi -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} --skip-existing wheelhouse/opencv_* wheelhouse/opencv-*
+          python -m twine upload --repository ${{ secrets.PIPY_REP_URL }} -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} --skip-existing wheelhouse/opencv_* wheelhouse/opencv-*
 
   release_opencv_python:
     if: github.event_name == 'release' && !github.event.release.prerelease
