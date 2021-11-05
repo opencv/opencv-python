@@ -31,7 +31,7 @@ if __name__ == "__main__":
     git_hash = (
         subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
         .splitlines()[0]
-        .decode()
+        .decode()[:6]
     )
     # this outputs the annotated tag if we are exactly on a tag, otherwise <tag>-<n>-g<shortened sha-1>
     try:
