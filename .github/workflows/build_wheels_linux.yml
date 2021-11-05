@@ -26,8 +26,8 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
         platform: [x64]
-        with_contrib: [0, 1]
-        without_gui: [0, 1]
+        with_contrib: [1] # [0, 1]
+        without_gui: [1]  # [0, 1]
         build_sdist: [0]
 
     env:
@@ -92,8 +92,8 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.8]
         platform: [x64]
-        with_contrib: [0, 1]
-        without_gui: [0, 1]
+        with_contrib: [1] # [0, 1]
+        without_gui: [1]  # [0, 1]
         build_sdist: [1]
 
     env:
