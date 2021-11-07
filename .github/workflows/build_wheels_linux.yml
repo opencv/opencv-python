@@ -69,15 +69,21 @@ jobs:
 
     - name: build
       run: source scripts/build.sh
+      
+    - name: saving artifacts (1/2)
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheels
+        path: wheelhouse/st-opencv*.whl
 
     - name: install and test
       run: source scripts/install.sh
 
-    - name: saving artifacts
+    - name: saving artifacts (2/2)
       uses: actions/upload-artifact@v2
       with:
         name: wheels
-        path: wheelhouse/opencv*.whl
+        path: wheelhouse/st-opencv*.whl
 
 
   build_sdist:
