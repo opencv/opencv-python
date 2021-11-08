@@ -12,7 +12,7 @@ function build_wheel {
 
 function bdist_wheel_cmd {
     # copied from multibuild's common_utils.sh
-    # add osx deployment target so it doesnt default to 10.6
+    # add osx deployment target so it doesn't default to 10.6
     local abs_wheelhouse=$1
     CI_BUILD=1 pip wheel --verbose --wheel-dir="$PWD/dist" . $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse

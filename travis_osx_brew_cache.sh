@@ -249,7 +249,7 @@ function _brew_install_and_cache_within_time_limit {
     for dep in $DEPS; do
         #TIME_LIMIT only has to be met if we'll be actually building the main project this iteration, i.e. after the "root" module installation
         #While we don't know that yet, we can make better use of Travis-given time with a laxer limit
-        #We still can't overrun TIME_HARD_LIMIT as that would't leave time to save the cache
+        #We still can't overrun TIME_HARD_LIMIT as that wouldn't leave time to save the cache
         _brew_install_and_cache_within_time_limit "$dep" $(((TIME_LIMIT+TIME_HARD_LIMIT)/2)) "$TIME_HARD_LIMIT" "$TIME_START" || return $?
     done
 
