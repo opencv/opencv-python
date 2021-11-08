@@ -74,7 +74,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: wheels
-        path: wheelhouse/st-opencv*.whl
+        path: wheelhouse/st_opencv*.whl
 
     - name: install and test
       run: source scripts/install.sh
@@ -83,7 +83,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: wheels
-        path: wheelhouse/st-opencv*.whl
+        path: wheelhouse/st_opencv*.whl
 
 
   build_sdist:
