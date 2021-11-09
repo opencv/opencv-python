@@ -381,7 +381,8 @@ class RearrangeCMakeOutput(object):
         with open("%spython/cv2/__init__.py"
         % cmake_install_dir, 'r') as opencv_init:
             opencv_init_lines = opencv_init.readlines()
-            extra_imports = 'from .cv2 import *\nglobals().update(importlib.import_module("cv2.cv2").__dict__)'
+            extra_imports = ('\nfrom .cv2 import *\nfrom .cv2 import _registerMatType\nfrom . import mat_wrapper\nfrom . import gapi'
+                             '\nfrom . import misc\nfrom . import utils\nfrom . import data\n')
             free_line_after_imports = 6
             opencv_init_lines.insert(free_line_after_imports, extra_imports)
             opencv_init_data = ""
