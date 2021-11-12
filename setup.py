@@ -378,8 +378,7 @@ class RearrangeCMakeOutput(object):
         print("Copying files from CMake output")
 
         # lines for a proper work using pylint and an autocomplete in IDE
-        with open("%spython/cv2/__init__.py"
-        % cmake_install_dir, 'r') as opencv_init:
+        with open(os.path.join(cmake_install_dir, "python", "cv2", "__init__.py"), 'r') as opencv_init:
             opencv_init_lines = opencv_init.readlines()
             extra_imports = ('\nfrom .cv2 import *\nfrom .cv2 import _registerMatType\nfrom . import mat_wrapper\nfrom . import gapi'
                              '\nfrom . import misc\nfrom . import utils\nfrom . import data\n')
@@ -390,8 +389,7 @@ class RearrangeCMakeOutput(object):
                 opencv_init_replacement = line.replace('importlib.import_module("cv2")', 'importlib.import_module("cv2.cv2")')
                 opencv_init_data = opencv_init_data + opencv_init_replacement
 
-        with open("%spython/cv2/__init__.py"
-        % cmake_install_dir, 'w') as opencv_final_init:
+        with open(os.path.join(cmake_install_dir, "python", "cv2", "__init__.py"), 'w') as opencv_final_init:
             opencv_final_init.write(opencv_init_data)
 
         # add lines from the old __init__.py file to the config file
