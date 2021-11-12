@@ -79,7 +79,7 @@ A: It's easier for users to understand ``opencv-python`` than ``cv2`` and it mak
 
 ## Documentation for opencv-python
 
-[![Windows Buld Status](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml)
+[![Windows Build Status](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml)
 [![(Linux Build status)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_linux.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_linux.yml)
 [![(Mac OS Build status)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_macos.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_macos.yml)
 
@@ -220,6 +220,7 @@ Python 3.x compatible pre-built wheels are provided for the officially supported
 - 3.7
 - 3.8
 - 3.9
+- 3.10
 
 ### Backward compatibility
 
