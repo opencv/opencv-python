@@ -1,3 +1,6 @@
+import os
+import sys
+
 PYTHON_EXTENSIONS_PATHS = [
     LOADER_DIR
 ] + PYTHON_EXTENSIONS_PATHS
@@ -8,7 +11,7 @@ try:
     from .version import ci_build, headless
 
     ci_and_not_headless = ci_build and not headless
-except:
+except ImportError:
     pass
 
 # the Qt plugin is included currently only in the pre-built wheels
