@@ -1,10 +1,13 @@
-PYTHON_EXTENSIONS_PATHS = [
-    LOADER_DIR
-] + PYTHON_EXTENSIONS_PATHS
+import os
+
+BINARIES_PATHS = [
+    os.path.join(os.path.join(LOADER_DIR, '../'), 'opencv_python.libs')
+] + BINARIES_PATHS
 
 ci_and_not_headless = False
 
 try:
+    from . import data
     from .version import ci_build, headless
 
     ci_and_not_headless = ci_build and not headless
