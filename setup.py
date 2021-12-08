@@ -366,15 +366,19 @@ class RearrangeCMakeOutput(object):
 
         print("Copying files from CMake output")
 
-        # rewrite the path to libs in case of docker builds write it's own in config.py
-        # also defines extra environment for not headless packages
+        # lines for a proper work using an autocomplete in IDE
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', 'init-override.py'), 'r') as init_override:
+            init_override_data = init_override.read()
+        with open(os.path.join(cmake_install_dir, "python", "cv2", "__init__.py"), 'a') as opencv_init:
+            opencv_init.write(init_override_data)
+
+        # append extra environment for not headless packages
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', 'config-override.py'), 'r') as config_override:
             config_override_data = config_override.read()
-        with open(os.path.join(cmake_install_dir, 'python', 'cv2', 'config.py'), 'w') as opencv_config:
+        with open(os.path.join(cmake_install_dir, 'python', 'cv2', 'config.py'), 'a') as opencv_config:
             opencv_config.write(config_override_data)
 
         for package_name, relpaths_re in cls.package_paths_re.items():
-            print(package_name, relpaths_re)
             if package_name != os.path.join("cv2", "python-%s.%s"  % (sys.version_info[0], sys.version_info[1])):
                 package_dest_reldir = package_name.replace(".", os.path.sep)
             else:
@@ -407,7 +411,6 @@ class RearrangeCMakeOutput(object):
         print("Copying files from non-default sourcetree locations")
 
         for package_name, paths in cls.files_outside_package.items():
-            print(package_name, paths)
             if package_name != os.path.join("cv2", "python-%s.%s"  % (sys.version_info[0], sys.version_info[1])):
                 package_dest_reldir = package_name.replace(".", os.path.sep)
             else:
