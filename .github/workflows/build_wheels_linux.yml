@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.6']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -37,13 +37,12 @@ jobs:
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
       MB_ML_VER: 2014
-      NP_TEST_DEP: numpy==1.19.4
-      NP_TEST_DEP_LATEST: numpy==1.21.2
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
       DOCKER_IMAGE: quay.io/asenyaev/manylinux2014_${PLAT}
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
+      PLAT: x86_64
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
@@ -59,25 +58,108 @@ jobs:
       if: github.event_name == 'pull_request'
       run: git submodule update --remote
 
-    - name: Setup Environment variables
-      run: |
-        if [ "schedule" == "${{ github.event_name }}" ]; then echo "TRAVIS_EVENT_TYPE=cron" >> $GITHUB_ENV; else echo "TRAVIS_EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV; fi
-        if [ "schedule" == "${{ github.event_name }}" ]; then echo "BUILD_COMMIT=master" >> $GITHUB_ENV; else echo "BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV; fi
-        if [ "x64" == "${{ matrix.platform }}" ]; then echo "PLAT=x86_64" >> $GITHUB_ENV; fi
-        if [ "3.10" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
-
-    - name: build
+    - name: Build a package
       run: source scripts/build.sh
 
-    - name: install and test
-      run: source scripts/install.sh
-
-    - name: saving artifacts
+    - name: Saving all wheels
       uses: actions/upload-artifact@v2
       with:
         name: wheels
         path: wheelhouse/opencv*.whl
 
+    - name: Saving opencv-python wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-python-wheels
+        path: wheelhouse/opencv_python-*.whl
+
+    - name: Saving opencv-python-headless wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-python-headless-wheels
+        path: wheelhouse/opencv_python_headless-*.whl
+
+    - name: Saving opencv-contrib-python wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-contrib-python-wheels
+        path: wheelhouse/opencv_contrib_python-*.whl
+
+    - name: Saving opencv-contrib-python-headless wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-contrib-python-headless-wheels
+        path: wheelhouse/opencv_contrib_python_headless-*.whl
+
+  test:
+    needs: [build]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        platform: [x64]
+        with_contrib: [0, 1]
+        without_gui: [0, 1]
+        build_sdist: [0]
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      MB_PYTHON_VERSION: ${{ matrix.python-version }}
+      NP_TEST_DEP: numpy==1.19.4
+      NP_TEST_DEP_LATEST: numpy==1.21.2
+      CONFIG_PATH: travis_config.sh
+      PLAT: x86_64
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: false
+        fetch-depth: 0
+
+    - name: Setup Environment variables
+      run: if [ "3.10" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
+
+    - name: Download opencv-python wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-python-wheels
+        path: wheelhouse/
+
+    - name: Download opencv-python-headless wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-python-headless-wheels
+        path: wheelhouse/
+
+    - name: Download opencv-contrib-python wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-contrib-python-wheels
+        path: wheelhouse/
+
+    - name: Download opencv-contrib-python-headless wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-contrib-python-headless-wheels
+        path: wheelhouse/
+
+    - name: Package installation and run tests
+      run: source scripts/install.sh
 
   build_sdist:
     runs-on: ${{ matrix.os }}
@@ -131,12 +213,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
 
-    - name: Setup Environment variables
-      run: |
-        if [ "schedule" == "${{ github.event_name }}" ]; then echo "TRAVIS_EVENT_TYPE=cron" >> $GITHUB_ENV; else echo "TRAVIS_EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV; fi
-        if [ "schedule" == "${{ github.event_name }}" ]; then echo "BUILD_COMMIT=master" >> $GITHUB_ENV; else echo "BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV; fi
-
-    - name: before install
+    - name: Build a package
       run: |
         set -e
         # Build and package
@@ -157,7 +234,7 @@ jobs:
 
   test_release_opencv_python:
     if: github.event_name == 'release' && github.event.release.prerelease
-    needs: [build, build_sdist]
+    needs: [build, build_sdist, test]
     runs-on: ubuntu-latest
     environment: test-opencv-python-release
     defaults:
@@ -176,7 +253,7 @@ jobs:
 
   release_opencv_python:
     if: github.event_name == 'release' && !github.event.release.prerelease
-    needs: [build, build_sdist]
+    needs: [build, build_sdist, test]
     runs-on: ubuntu-latest
     environment: opencv-python-release
     defaults:

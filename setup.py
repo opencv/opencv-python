@@ -97,8 +97,8 @@ def main():
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
         [
-            "python/cv2/python-%s.%s/cv2[^/]*%s"
-            % (sys.version_info[0], sys.version_info[1], re.escape(sysconfig.get_config_var("EXT_SUFFIX")))
+            r"python/cv2/python-%s/cv2.*"
+            % (sys.version_info[0])
         ]
         +
         [
@@ -147,6 +147,7 @@ def main():
             "-DBUILD_TESTS=OFF",
             "-DBUILD_PERF_TESTS=OFF",
             "-DBUILD_DOCS=OFF",
+            "-DPYTHON3_LIMITED_API=ON",
         ]
         + (
             # If it is not defined 'linker flags: /machine:X86' on Windows x64
@@ -357,7 +358,7 @@ class RearrangeCMakeOutput(object):
         # lines for a proper work using pylint and an autocomplete in IDE
         with open(os.path.join(cmake_install_dir, "python", "cv2", "__init__.py"), 'r') as opencv_init:
             opencv_init_lines = opencv_init.readlines()
-            extra_imports = ('\nfrom .cv2 import *\nfrom . import data\n')
+            extra_imports = ('\nfrom .cv2 import *\nfrom . import data\nfrom . import version\n')
             free_line_after_imports = 5
             opencv_init_lines.insert(free_line_after_imports, extra_imports)
 
