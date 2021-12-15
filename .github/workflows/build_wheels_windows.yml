@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.6']
         platform: [x86, x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -55,38 +55,184 @@ jobs:
     - name: Setup MSBuild.exe
       uses: warrenbuckley/Setup-MSBuild@v1
 
-    - name: build script
+    - name: Build a package
       run: |
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        set "CI_BUILD=1" && python -m pip wheel --wheel-dir=%cd%\wheelhouse . --verbose
+        python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
+        set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp36 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
 
-    - name: before test
+    - name: Saving all wheels
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheels
+        path: wheelhouse/opencv*.whl
+
+    - name: Saving opencv-python x86 wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 && matrix.platform == 'x86' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-python-wheels-x86
+        path: wheelhouse/opencv_python-*.whl
+
+    - name: Saving opencv-python x64 wheels  
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 && matrix.platform == 'x64' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-python-wheels-x64
+        path: wheelhouse/opencv_python-*.whl
+
+    - name: Saving opencv-python-headless x86 wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 && matrix.platform == 'x86' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-python-headless-wheels-x86
+        path: wheelhouse/opencv_python_headless-*.whl
+
+    - name: Saving opencv-python-headless x64 wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 && matrix.platform == 'x64' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-python-headless-wheels-x64
+        path: wheelhouse/opencv_python_headless-*.whl
+
+    - name: Saving opencv-contrib-python x86 wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 && matrix.platform == 'x86' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-contrib-python-wheels-x86
+        path: wheelhouse/opencv_contrib_python-*.whl
+
+    - name: Saving opencv-contrib-python x64 wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 && matrix.platform == 'x64' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-contrib-python-wheels-x64
+        path: wheelhouse/opencv_contrib_python-*.whl
+
+    - name: Saving opencv-contrib-python-headless x86 wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 && matrix.platform == 'x86' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-contrib-python-headless-wheels-x86
+        path: wheelhouse/opencv_contrib_python_headless-*.whl
+
+    - name: Saving opencv-contrib-python-headless x64 wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 && matrix.platform == 'x64' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-contrib-python-headless-wheels-x64
+        path: wheelhouse/opencv_contrib_python_headless-*.whl
+
+  test:
+    needs: [build-windows-x86_64]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: powershell
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        platform: [x86, x64]
+        with_contrib: [0, 1]
+        without_gui: [0, 1]
+        build_sdist: [0]
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.platform }}
+
+    - name: Download opencv-python x86 wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 && matrix.platform == 'x86' }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-python-wheels-x86
+        path: wheelhouse/
+
+    - name: Download opencv-python x64 wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 && matrix.platform == 'x64' }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-python-wheels-x64
+        path: wheelhouse/
+
+    - name: Download opencv-python-headless x86 wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 && matrix.platform == 'x86' }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-python-headless-wheels-x86
+        path: wheelhouse/
+
+    - name: Download opencv-python-headless x64 wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 && matrix.platform == 'x64' }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-python-headless-wheels-x64
+        path: wheelhouse/
+
+    - name: Download opencv-contrib-python x86 wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 && matrix.platform == 'x86' }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-contrib-python-wheels-x86
+        path: wheelhouse/
+
+    - name: Download opencv-contrib-python x64 wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 && matrix.platform == 'x64' }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-contrib-python-wheels-x64
+        path: wheelhouse/
+
+    - name: Download opencv-contrib-python-headless x86 wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 && matrix.platform == 'x86' }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-contrib-python-headless-wheels-x86
+        path: wheelhouse/
+
+    - name: Download opencv-contrib-python-headless x64 wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 && matrix.platform == 'x64' }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-contrib-python-headless-wheels-x64
+        path: wheelhouse/
+
+    - name: Package installation
       run: |
-        git submodule update --init --recursive
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
         python get_build_info.py
       shell: powershell
 
-    - name: run test
+    - name: Run tests
       run: |
         cd ${{ github.workspace }}/opencv
         python modules\python\test\test.py -v --repo .
       shell: cmd
 
-    - name: saving artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
-
   test_release_opencv_python:
     if: github.event_name == 'release' && github.event.release.prerelease
-    needs: [build-windows-x86_64]
+    needs: [build-windows-x86_64, test]
     runs-on: ubuntu-latest
     environment: test-opencv-python-release
     defaults:
@@ -105,7 +251,7 @@ jobs:
 
   release_opencv_python:
     if: github.event_name == 'release' && !github.event.release.prerelease
-    needs: [build-windows-x86_64]
+    needs: [build-windows-x86_64, test]
     runs-on: ubuntu-latest
     environment: opencv-python-release
     defaults:

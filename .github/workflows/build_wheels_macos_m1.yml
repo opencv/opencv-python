@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macOS-M1]
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -31,7 +31,6 @@ jobs:
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
-      OPENCV_TEST_DATA_PATH: ${{ github.workspace }}/opencv_extra/testdata
 
     steps:
     - name: Checkout
@@ -44,36 +43,116 @@ jobs:
       if: github.event_name == 'pull_request'
       run: git submodule update --remote
 
-    - name: build script
+    - name: Build a package
       run: |
         git submodule update --init multibuild
         echo $ENABLE_CONTRIB > contrib.enabled
         echo $ENABLE_HEADLESS > headless.enabled
         export MACOSX_DEPLOYMENT_TARGET=11.0
-        arch -arm64 python${{ matrix.python-version }} -m pip wheel --wheel-dir=wheelhouse . --verbose
+        arch -arm64 python${{ matrix.python-version }} -m pip install toml && python${{ matrix.python-version }} -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python${{ matrix.python-version }} -m pip install -r /dev/stdin
+        arch -arm64 python${{ matrix.python-version }} setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
         delocate-wheel ${{ github.workspace }}/wheelhouse/opencv*
 
-    - name: before test
-      run: |
-        git submodule update --init --recursive
-        arch -arm64 python${{ matrix.python-version }} -m pip install --user --no-cache --force-reinstall wheelhouse/opencv*.whl
-        cd ${{ github.workspace }}/tests
-        arch -arm64 python${{ matrix.python-version }} get_build_info.py
-
-    - name: run test
-      run: |
-        cd ${{ github.workspace }}/opencv
-        arch -arm64 python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
-
-    - name: saving artifacts
+    - name: Saving all wheels
       uses: actions/upload-artifact@v2
       with:
         name: wheels
         path: wheelhouse/opencv*.whl
 
+    - name: Saving opencv-python wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-python-wheels
+        path: wheelhouse/opencv_python-*.whl
+
+    - name: Saving opencv-python-headless wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-python-headless-wheels
+        path: wheelhouse/opencv_python_headless-*.whl
+
+    - name: Saving opencv-contrib-python wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-contrib-python-wheels
+        path: wheelhouse/opencv_contrib_python-*.whl
+
+    - name: Saving opencv-contrib-python-headless wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: opencv-contrib-python-headless-wheels
+        path: wheelhouse/opencv_contrib_python_headless-*.whl
+
+  test:
+    needs: [build]
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macOS-M1]
+        python-version: ['3.7', '3.8', '3.9', '3.10']
+        platform: [x64]
+        with_contrib: [0, 1]
+        without_gui: [0, 1]
+        build_sdist: [0]
+
+    env:
+      OPENCV_TEST_DATA_PATH: ${{ github.workspace }}/opencv_extra/testdata
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Download opencv-python wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-python-wheels
+        path: wheelhouse/
+
+    - name: Download opencv-python-headless wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-python-headless-wheels
+        path: wheelhouse/
+
+    - name: Download opencv-contrib-python wheels
+      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-contrib-python-wheels
+        path: wheelhouse/
+
+    - name: Download opencv-contrib-python-headless wheels
+      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 }}
+      uses: actions/download-artifact@v2
+      with:
+        name: opencv-contrib-python-headless-wheels
+        path: wheelhouse/
+
+    - name: Package installation
+      run: |
+        arch -arm64 python${{ matrix.python-version }} -m pip install --user --no-cache --force-reinstall wheelhouse/opencv*.whl
+        cd ${{ github.workspace }}/tests
+        arch -arm64 python${{ matrix.python-version }} get_build_info.py
+
+    - name: Run tests
+      run: |
+        cd ${{ github.workspace }}/opencv
+        arch -arm64 python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
+
   test_release_opencv_python:
     if: github.event_name == 'release' && github.event.release.prerelease
-    needs: [build]
+    needs: [build, test]
     runs-on: ubuntu-latest
     environment: test-opencv-python-release
     defaults:
@@ -92,7 +171,7 @@ jobs:
 
   release_opencv_python:
     if: github.event_name == 'release' && !github.event.release.prerelease
-    needs: [build]
+    needs: [build, test]
     runs-on: ubuntu-latest
     environment: opencv-python-release
     defaults:
