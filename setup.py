@@ -22,26 +22,15 @@ def main():
     build_headless = get_build_env_var_by_name("headless")
     build_java = "ON" if get_build_env_var_by_name("java") else "OFF"
 
-    if sys.version_info[:2] >= (3, 6):
-        minimum_supported_numpy = "1.13.3"
-    if sys.version_info[:2] >= (3, 7):
-        minimum_supported_numpy = "1.14.5"
-    if sys.version_info[:2] >= (3, 8):
-        minimum_supported_numpy = "1.17.3"
-    if sys.version_info[:2] >= (3, 9):
-        minimum_supported_numpy = "1.19.3"
-    if sys.version_info[:2] >= (3, 10):
-        minimum_supported_numpy = "1.21.2"
-
-    # linux arm64 is a special case
-    if sys.platform.startswith("linux") and sys.version_info[:2] >= (3, 6) and platform.machine() == "aarch64":
-        minimum_supported_numpy = "1.19.3"
-
-    # macos arm64 is a special case
-    if sys.platform == "darwin" and sys.version_info[:2] >= (3, 6) and platform.machine() == "arm64":
-        minimum_supported_numpy = "1.21.0"
-
-    numpy_version = "numpy>=%s" % minimum_supported_numpy
+    install_requires = [
+        'numpy>=1.13.3; python_version<"3.7"',
+        'numpy>=1.14.5; python_version>="3.7"',
+        'numpy>=1.17.3; python_version>="3.8"',
+        'numpy>=1.19.3; python_version>="3.9"',
+        'numpy>=1.21.2; python_version>="3.10"',
+        'numpy>=1.19.3; python_version>="3.6" and platform_system=="Linux" and platform_machine=="aarch64"',
+        'numpy>=1.21.2; python_version>="3.6" and platform_system=="Darwin" and platform_machine=="arm64"',
+    ]
 
     python_version = cmaker.CMaker.get_python_version()
     python_lib_path = cmaker.CMaker.get_python_library(python_version).replace(
@@ -108,8 +97,8 @@ def main():
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
         [
-            "python/cv2/python-%s.%s/cv2[^/]*%s"
-            % (sys.version_info[0], sys.version_info[1], re.escape(sysconfig.get_config_var("EXT_SUFFIX")))
+            r"python/cv2/python-%s/cv2.*"
+            % (sys.version_info[0])
         ]
         +
         [
@@ -158,6 +147,7 @@ def main():
             "-DBUILD_TESTS=OFF",
             "-DBUILD_PERF_TESTS=OFF",
             "-DBUILD_DOCS=OFF",
+            "-DPYTHON3_LIMITED_API=ON",
         ]
         + (
             # If it is not defined 'linker flags: /machine:X86' on Windows x64
@@ -245,7 +235,7 @@ def main():
         package_data=package_data,
         maintainer="Olli-Pekka Heinisuo",
         ext_modules=EmptyListWithLength(),
-        install_requires=numpy_version,
+        install_requires=install_requires,
         python_requires=">=3.6",
         classifiers=[
             "Development Status :: 5 - Production/Stable",
@@ -368,7 +358,7 @@ class RearrangeCMakeOutput(object):
         # lines for a proper work using pylint and an autocomplete in IDE
         with open(os.path.join(cmake_install_dir, "python", "cv2", "__init__.py"), 'r') as opencv_init:
             opencv_init_lines = opencv_init.readlines()
-            extra_imports = ('\nfrom .cv2 import *\nfrom . import data\n')
+            extra_imports = ('\nfrom .cv2 import *\nfrom . import data\nfrom . import version\n')
             free_line_after_imports = 5
             opencv_init_lines.insert(free_line_after_imports, extra_imports)
 
@@ -378,8 +368,8 @@ class RearrangeCMakeOutput(object):
         # add lines from the old __init__.py file to the config file
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', '__init__.py'), 'r') as custom_init:
             custom_init_data = custom_init.read()
-        with open('%spython/cv2/config-%s.%s.py'
-        % (cmake_install_dir, sys.version_info[0], sys.version_info[1]), 'w') as opencv_init_config:
+        with open('%spython/cv2/config-%s.py'
+        % (cmake_install_dir, sys.version_info[0]), 'w') as opencv_init_config:
             opencv_init_config.write(custom_init_data)
 
         for package_name, relpaths_re in cls.package_paths_re.items():
