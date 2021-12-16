@@ -59,33 +59,11 @@ jobs:
         name: wheels
         path: wheelhouse/opencv*.whl
 
-    - name: Saving opencv-python wheels
-      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 }}
+    - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v2
       with:
-        name: opencv-python-wheels
-        path: wheelhouse/opencv_python-*.whl
-
-    - name: Saving opencv-python-headless wheels
-      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 }}
-      uses: actions/upload-artifact@v2
-      with:
-        name: opencv-python-headless-wheels
-        path: wheelhouse/opencv_python_headless-*.whl
-
-    - name: Saving opencv-contrib-python wheels
-      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 }}
-      uses: actions/upload-artifact@v2
-      with:
-        name: opencv-contrib-python-wheels
-        path: wheelhouse/opencv_contrib_python-*.whl
-
-    - name: Saving opencv-contrib-python-headless wheels
-      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 }}
-      uses: actions/upload-artifact@v2
-      with:
-        name: opencv-contrib-python-headless-wheels
-        path: wheelhouse/opencv_contrib_python_headless-*.whl
+        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
+        path: wheelhouse/opencv*.whl
 
   test:
     needs: [build]
@@ -111,32 +89,10 @@ jobs:
         submodules: true
         fetch-depth: 0
 
-    - name: Download opencv-python wheels
-      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 0 }}
+    - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v2
       with:
-        name: opencv-python-wheels
-        path: wheelhouse/
-
-    - name: Download opencv-python-headless wheels
-      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 0 }}
-      uses: actions/download-artifact@v2
-      with:
-        name: opencv-python-headless-wheels
-        path: wheelhouse/
-
-    - name: Download opencv-contrib-python wheels
-      if: ${{ matrix.without_gui == 0 && matrix.with_contrib == 1 }}
-      uses: actions/download-artifact@v2
-      with:
-        name: opencv-contrib-python-wheels
-        path: wheelhouse/
-
-    - name: Download opencv-contrib-python-headless wheels
-      if: ${{ matrix.without_gui == 1 && matrix.with_contrib == 1 }}
-      uses: actions/download-artifact@v2
-      with:
-        name: opencv-contrib-python-headless-wheels
+        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
 
     - name: Package installation
