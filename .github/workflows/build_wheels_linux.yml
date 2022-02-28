@@ -54,10 +54,6 @@ jobs:
         submodules: false
         fetch-depth: 0
 
-    - name: Update submodules
-      if: github.event_name == 'pull_request'
-      run: git submodule update --remote
-
     - name: Build a package
       run: source scripts/build.sh
 
@@ -158,10 +154,6 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
-
-    - name: Update submodules
-      if: github.event_name == 'pull_request'
-      run: git submodule update --remote
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2

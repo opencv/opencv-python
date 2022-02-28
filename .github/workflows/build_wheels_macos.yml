@@ -66,10 +66,6 @@ jobs:
         submodules: false
         fetch-depth: 0
 
-    - name: Update submodules
-      if: github.event_name == 'pull_request'
-      run: git submodule update --remote
-
     - name: Build a package
       run: |
         set -e
