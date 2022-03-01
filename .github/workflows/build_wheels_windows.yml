@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [windows-2019]
         python-version: ['3.6']
         platform: [x86, x64]
         with_contrib: [0, 1]
