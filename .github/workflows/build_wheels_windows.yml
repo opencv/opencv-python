@@ -53,7 +53,7 @@ jobs:
         architecture: ${{ matrix.platform }}
 
     - name: Setup MSBuild.exe
-      uses: warrenbuckley/Setup-MSBuild@v1
+      uses: microsoft/setup-msbuild@v1.1
 
     - name: Build a package
       run: |
