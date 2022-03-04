@@ -149,6 +149,7 @@ def main():
             "-DBUILD_DOCS=OFF",
             "-DPYTHON3_LIMITED_API=ON",
             "-DBUILD_OPENEXR=ON",
+            "-DBUILD_PNG=ON",
         ]
         + (
             # If it is not defined 'linker flags: /machine:X86' on Windows x64
