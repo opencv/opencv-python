@@ -141,36 +141,35 @@ function run_tests {
 
     PYTHON=python$PYTHON_VERSION
 
-    if [ -n "$IS_OSX" ]; then
-      echo "Running for OS X"
+    echo "Running for linux"
 
-      cd ../tests
-      $PYTHON get_build_info.py
-
-      cd ../opencv/
-      export OPENCV_TEST_DATA_PATH=../opencv_extra/testdata
-    else
-      echo "Running for linux"
-
-      if [ $PYTHON == "python3.6" ]; then
-        $PYTHON -m pip install -U numpy==1.19.4
-      fi
-      cd /io/tests
-      $PYTHON get_build_info.py
-
-      cd /io/opencv
-      export OPENCV_TEST_DATA_PATH=/io/opencv_extra/testdata
+    if [ $PYTHON == "python3.6" ]; then
+      $PYTHON -m pip install -U numpy==1.19.4
     fi
+    cd /io/tests
+    $PYTHON get_build_info.py
+
+    cd /io/opencv
+    export OPENCV_TEST_DATA_PATH=/io/opencv_extra/testdata
 
     test_wheels
+    pylint_test
 }
 
 function test_wheels {
 
-    echo "Starting tests..."
+    echo "Starting OpenCV tests..."
 
     #Test package
     $PYTHON modules/python/test/test.py -v --repo .
+}
+
+function pylint_test {
+
+    echo "Starting Pylint tests..."
+
+    $PYTHON -m pip install pylint
+    $PYTHON -m pylint /io/tests/pylint.py --extension-pkg-whitelist=cv2 --disable=missing-docstring
 }
 
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
