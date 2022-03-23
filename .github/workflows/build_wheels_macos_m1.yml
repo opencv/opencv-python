@@ -108,7 +108,7 @@ jobs:
 
     - name: Pylint test
       run: |
-        arch -arm64 python${{ matrix.python-version }} -m pip install pylint
+        arch -arm64 python${{ matrix.python-version }} -m pip install pylint==2.12.2
         arch -arm64 python${{ matrix.python-version }} -m pylint ${{ github.workspace }}/tests/pylint.py --extension-pkg-whitelist=cv2 --disable=missing-docstring
 
   test_release_opencv_python:
