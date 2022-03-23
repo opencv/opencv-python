@@ -168,7 +168,7 @@ function pylint_test {
 
     echo "Starting Pylint tests..."
 
-    $PYTHON -m pip install pylint
+    $PYTHON -m pip install pylint==2.12.2
     $PYTHON -m pylint /io/tests/pylint.py --extension-pkg-whitelist=cv2 --disable=missing-docstring
 }
 
