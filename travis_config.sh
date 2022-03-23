@@ -169,7 +169,8 @@ function pylint_test {
     echo "Starting Pylint tests..."
 
     $PYTHON -m pip install pylint==2.12.2
-    $PYTHON -m pylint /io/tests/pylint.py --extension-pkg-whitelist=cv2 --disable=missing-docstring
+    cd /io/tests
+    $PYTHON -m pylint /io/opencv/samples/python/squares.py
 }
 
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
