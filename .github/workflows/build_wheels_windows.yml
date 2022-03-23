@@ -96,6 +96,7 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
+      PYLINT_TEST_FILE: ${{ github.workspace }}\opencv\samples\python\squares.py
 
     steps:
     - name: Checkout
@@ -133,7 +134,8 @@ jobs:
     - name: Pylint test
       run: |
         python -m pip install pylint==2.12.2
-        python -m pylint ${{ github.workspace }}\tests\pylint.py --extension-pkg-whitelist=cv2 --disable=missing-docstring
+        cd ${{ github.workspace }}\tests
+        python -m pylint $PYLINT_TEST_FILE
       shell: cmd
 
   test_release_opencv_python:
