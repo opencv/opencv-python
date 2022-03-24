@@ -171,12 +171,14 @@ jobs:
 
     - name: Build a package
       run: |
+        # Download all 3rdparty files
+        source scripts/source-packages-preparation.sh ${{ github.workspace }}
         set -e
         # Build and package
         set -x
           python -m pip install --upgrade pip
           python -m pip install scikit-build
-          python setup.py sdist
+          python setup.py sdist --formats=xztar
         set +x
         # Install and run tests
         set -x
@@ -186,7 +188,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: wheels
-        path: dist/opencv*.tar.gz
+        path: dist/opencv*.tar.xz
 
   test_release_opencv_python:
     if: github.event_name == 'release' && github.event.release.prerelease
