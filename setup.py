@@ -414,7 +414,8 @@ class RearrangeCMakeOutput(object):
                     final_install_relpaths.append(new_install_relpath)
                     del m, fslash_relpath, new_install_relpath
                 else:
-                    if not found:
+                    # gapi can be missed if ADE was not downloaded (network issue)
+                    if not found and "gapi" not in relpath_re:
                         raise Exception("Not found: '%s'" % relpath_re)
                 del r, found
 
