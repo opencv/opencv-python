@@ -171,8 +171,6 @@ jobs:
 
     - name: Build a package
       run: |
-        # Download all 3rdparty files
-        source scripts/source-packages-preparation.sh ${{ github.workspace }}
         set -e
         # Build and package
         set -x

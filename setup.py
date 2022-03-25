@@ -162,8 +162,6 @@ def main():
             "-DPYTHON3_LIMITED_API=ON",
             "-DBUILD_OPENEXR=ON",
             "-DBUILD_PNG=ON",
-            # To have all 3rdparty files in one place for source packages
-            "-DOPENCV_DOWNLOAD_PATH=%s" % (os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv", "3rdparty")),
         ]
         + (
             # If it is not defined 'linker flags: /machine:X86' on Windows x64
