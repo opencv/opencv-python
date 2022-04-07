@@ -452,7 +452,7 @@ class RearrangeCMakeOutput(object):
             data_files,
             # To get around a check that prepends source dir to paths and breaks package detection code.
             cmake_source_dir="",
-            cmake_install_dir=cmake_install_reldir,
+            _cmake_install_dir=cmake_install_reldir,
         )
 
 
