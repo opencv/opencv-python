@@ -2,29 +2,60 @@ FROM quay.io/pypa/manylinux2014_aarch64:latest
 
 ARG CCACHE_VERSION=3.7.9
 ARG FFMPEG_VERSION=4.4.1
+ARG FREETYPE_VERSION=2.12.1
+ARG LIBPNG_VERSION=1.6.37
 ARG NASM_VERSION=2.15.04
-ARG OPENSSL_VERSION=1_1_1m
+ARG OPENSSL_VERSION=1_1_1o
 ARG QT_VERSION=5.15.0
 ARG YASM_VERSION=1.3.0
 
-RUN yum install bzip2-devel curl-devel zlib-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel freetype-devel -y
+ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
+
+# epel-release need for aarch64 to get openblas packages
+RUN yum install bzip2-devel curl-devel zlib-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release -y && \
+    yum install openblas-devel -y && \
+    cp /usr/include/lapacke/lapacke*.h /usr/include/ && \
+    curl https://raw.githubusercontent.com/xianyi/OpenBLAS/v0.3.3/cblas.h -o /usr/include/cblas.h && \
+    # libpng will be built from source
+    yum remove libpng -y
+
+RUN mkdir ~/libpng_sources && \
+    cd ~/libpng_sources && \
+    curl -O -L https://download.sourceforge.net/libpng/libpng-${LIBPNG_VERSION}.tar.gz && \
+    tar -xf libpng-${LIBPNG_VERSION}.tar.gz && \
+    cd libpng-${LIBPNG_VERSION} && \
+    ./configure --prefix=/usr/local && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf ~/libpng_sources
+
+RUN mkdir ~/freetype_sources && \
+    cd ~/freetype_sources && \
+    curl -O -L https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz && \
+    tar -xf freetype-${FREETYPE_VERSION}.tar.gz && \
+    cd freetype-${FREETYPE_VERSION} && \
+    ./configure --prefix="$HOME/ffmpeg_build" --enable-freetype-config && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf ~/freetype_sources
 
 RUN curl -O -L https://download.qt.io/official_releases/qt/5.15/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz && \
     tar -xf qt-everywhere-src-${QT_VERSION}.tar.xz && \
-    cd qt-everywhere* && \
+    cd qt-everywhere-src-${QT_VERSION} && \
     export MAKEFLAGS=-j$(nproc) && \
     ./configure -prefix /opt/Qt${QT_VERSION} -release -opensource -confirm-license -qtnamespace QtOpenCVPython -xcb -xcb-xlib -bundled-xcb-xinput -no-openssl -no-dbus -skip qt3d -skip qtactiveqt -skip qtcanvas3d -skip qtconnectivity -skip qtdatavis3d -skip qtdoc -skip qtgamepad -skip qtgraphicaleffects -skip qtimageformats -skip qtlocation -skip qtmultimedia -skip qtpurchasing -skip qtqa -skip qtremoteobjects -skip qtrepotools -skip qtscript -skip qtscxml -skip qtsensors -skip qtserialbus -skip qtserialport -skip qtspeech -skip qttranslations -skip qtwayland -skip qtwebchannel -skip qtwebengine -skip qtwebsockets -skip qtwebview -skip xmlpatterns -skip declarative -make libs && \
     make && \
     make install && \
     cd .. && \
-    rm -rf qt-everywhere-src-${QT_VERSION} && \
-    rm qt-everywhere-src-${QT_VERSION}.tar.xz
+    rm -rf qt-everywhere*
 
 ENV QTDIR /opt/Qt${QT_VERSION}
 ENV PATH "$QTDIR/bin:$PATH"
 
-RUN mkdir ~/ffmpeg_sources && \
-    cd ~/ffmpeg_sources && \
+RUN mkdir ~/openssl_sources && \
+    cd ~/openssl_sources && \
     curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_${OPENSSL_VERSION}.tar.gz && \
     tar -xf OpenSSL_${OPENSSL_VERSION}.tar.gz && \
     cd openssl-OpenSSL_${OPENSSL_VERSION} && \
@@ -32,31 +63,40 @@ RUN mkdir ~/ffmpeg_sources && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     # skip installing documentation
     make install_sw && \
-    rm -rf ~/openssl_build
+    cd .. && \
+    rm -rf ~/openssl_build ~/openssl_sources
 
-RUN cd ~/ffmpeg_sources && \
+RUN mkdir ~/nasm_sources && \
+    cd ~/nasm_sources && \
     curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.bz2 && \
     tar -xf nasm-${NASM_VERSION}.tar.bz2 && cd nasm-${NASM_VERSION} && ./autogen.sh && \
     ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
-    make install
+    make install && \
+    cd .. && \
+    rm -rf ~/nasm_sources
 
-RUN cd ~/ffmpeg_sources && \
+RUN mkdir ~/yasm_sources && \
+    cd ~/yasm_sources && \
     curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-${YASM_VERSION}.tar.gz && \
     tar -xf yasm-${YASM_VERSION}.tar.gz && \
     cd yasm-${YASM_VERSION} && \
     ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
-    make install
+    make install && \
+    cd .. && \
+    rm -rf ~/yasm_sources
 
-RUN cd ~/ffmpeg_sources && \
-    git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git && \
+RUN mkdir ~/libvpx_sources && \
+    cd ~/libvpx_sources && \
+    git clone --depth 1 https://github.com/webmproject/libvpx.git && \
     cd libvpx && \
     ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install
 
-RUN cd ~/ffmpeg_sources && \
+RUN mkdir ~/ffmpeg_sources && \
+    cd ~/ffmpeg_sources && \
     curl -O -L https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.bz2 && \
     tar -xf ffmpeg-${FFMPEG_VERSION}.tar.bz2 && \
     cd ffmpeg-${FFMPEG_VERSION} && \
@@ -66,7 +106,8 @@ RUN cd ~/ffmpeg_sources && \
     make install && \
     echo "/root/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
     ldconfig && \
-    rm -rf ~/ffmpeg_sources
+    rm -rf ~/ffmpeg_sources && \
+    yum remove bzip2-devel -y
 
 RUN curl -O -L https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz && \
     tar -xf ccache-${CCACHE_VERSION}.tar.gz && \
@@ -74,6 +115,10 @@ RUN curl -O -L https://github.com/ccache/ccache/releases/download/v${CCACHE_VERS
     linux32 ./configure && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install
+
+# Git security vulnerability: https://github.blog/2022-04-12-git-security-vulnerability-announced
+RUN mkdir /io && \
+    git config --global --add safe.directory /io
 
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/root/ffmpeg_build/lib/pkgconfig
 ENV LDFLAGS -L/root/ffmpeg_build/lib

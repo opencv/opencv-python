@@ -40,7 +40,7 @@ jobs:
       MB_ML_VER: 2014
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/asenyaev/manylinux2014_${PLAT}
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014:${PLAT}
       USE_CCACHE: 0
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
