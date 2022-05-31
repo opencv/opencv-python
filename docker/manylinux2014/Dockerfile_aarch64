@@ -93,7 +93,9 @@ RUN mkdir ~/libvpx_sources && \
     cd libvpx && \
     ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
-    make install
+    make install && \
+    cd .. && \
+    rm -rf ~/libvpx_sources
 
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \
@@ -114,7 +116,9 @@ RUN curl -O -L https://github.com/ccache/ccache/releases/download/v${CCACHE_VERS
     cd ccache-${CCACHE_VERSION} && \
     linux32 ./configure && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
-    make install
+    make install && \
+    cd .. && \
+    rm -rf ccache-${CCACHE_VERSION}.tar.gz
 
 # Git security vulnerability: https://github.blog/2022-04-12-git-security-vulnerability-announced
 RUN mkdir /io && \
