@@ -93,20 +93,20 @@ def main():
             else []
         )
         +
-        # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
-        # Naming conventions vary so widely between versions and OSes
-        # had to give up on checking them.
-        [
-            r"python/cv2/python-%s/cv2.*"
-            % (sys.version_info[0])
-        ]
-        +
         [
             r"python/cv2/__init__.py"
         ]
         +
         [
             r"python/cv2/.*config.*.py"
+        ],
+        # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
+        # Naming conventions vary so widely between versions and OSes
+        # had to give up on checking them.
+        os.path.join("cv2", "python-%s"  % (sys.version_info[0])):
+        [
+            r"python/cv2/python-%s/cv2.*"
+            % (sys.version_info[0])
         ],
         "cv2.data": [  # OPENCV_OTHER_INSTALL_PATH
             ("etc" if os.name == "nt" else "share/opencv4") + r"/haarcascades/.*\.xml"
@@ -374,30 +374,24 @@ class RearrangeCMakeOutput(object):
 
         print("Copying files from CMake output")
 
-        # lines for a proper work using pylint and an autocomplete in IDE
-        with open(os.path.join(cmake_install_dir, "python", "cv2", "__init__.py"), 'r') as opencv_init:
-            opencv_init_lines = opencv_init.readlines()
-            extra_imports = ('\nfrom .cv2 import *\nfrom .cv2 import _registerMatType\nfrom . import mat_wrapper\nfrom . import gapi'
-                             '\nfrom . import misc\nfrom . import utils\nfrom . import data\nfrom . import version\n')
-            free_line_after_imports = 6
-            opencv_init_lines.insert(free_line_after_imports, extra_imports)
-            opencv_init_data = ""
-            for line in opencv_init_lines:
-                opencv_init_replacement = line.replace('importlib.import_module("cv2")', 'importlib.import_module("cv2.cv2")')
-                opencv_init_data = opencv_init_data + opencv_init_replacement
+        # lines for a proper work using an autocomplete in IDE
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', 'init-override.py'), 'r') as init_override:
+            init_override_data = init_override.read()
+        with open(os.path.join(cmake_install_dir, "python", "cv2", "__init__.py"), 'a') as opencv_init:
+            opencv_init.write(init_override_data)
 
-        with open(os.path.join(cmake_install_dir, "python", "cv2", "__init__.py"), 'w') as opencv_final_init:
-            opencv_final_init.write(opencv_init_data)
-
-        # add lines from the old __init__.py file to the config file
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', '__init__.py'), 'r') as custom_init:
-            custom_init_data = custom_init.read()
-        with open('%spython/cv2/config-%s.py'
-        % (cmake_install_dir, sys.version_info[0]), 'w') as opencv_init_config:
-            opencv_init_config.write(custom_init_data)
+        # append extra environment for not headless packages
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', 'config-override.py'), 'r') as config_override:
+            config_override_data = config_override.read()
+        with open(os.path.join(cmake_install_dir, 'python', 'cv2', 'config.py'), 'a') as opencv_config:
+            opencv_config.write(config_override_data)
 
         for package_name, relpaths_re in cls.package_paths_re.items():
-            package_dest_reldir = package_name.replace(".", os.path.sep)
+            print(package_name, relpaths_re)
+            if package_name != os.path.join("cv2", "python-%s"  % (sys.version_info[0])):
+                package_dest_reldir = package_name.replace(".", os.path.sep)
+            else:
+                package_dest_reldir = package_name
             for relpath_re in relpaths_re:
                 found = False
                 r = re.compile(relpath_re + "$")
@@ -427,7 +421,10 @@ class RearrangeCMakeOutput(object):
         print("Copying files from non-default sourcetree locations")
 
         for package_name, paths in cls.files_outside_package.items():
-            package_dest_reldir = package_name.replace(".", os.path.sep)
+            if package_name != os.path.join("cv2", "python-%s"  % (sys.version_info[0])):
+                package_dest_reldir = package_name.replace(".", os.path.sep)
+            else:
+                package_dest_reldir = package_name
             for path in paths:
                 new_install_relpath = os.path.join(
                     package_dest_reldir,

@@ -1,6 +1,5 @@
-PYTHON_EXTENSIONS_PATHS = [
-    LOADER_DIR
-] + PYTHON_EXTENSIONS_PATHS
+import os
+import sys
 
 ci_and_not_headless = False
 
@@ -22,3 +21,4 @@ if sys.platform.startswith("linux") and ci_and_not_headless:
     os.environ["QT_QPA_FONTDIR"] = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "qt", "fonts"
     )
+

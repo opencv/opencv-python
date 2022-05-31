@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - master
+      - 3.4
     paths-ignore:
       - '.github/workflows/build_wheels_linux_arm.yml'
       - '.github/workflows/build_wheels_windows*'
