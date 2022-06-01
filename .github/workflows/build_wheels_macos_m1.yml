@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - master
+      - 3.4
     paths-ignore:
       - '.github/workflows/build_wheels_linux*'
       - '.github/workflows/build_wheels_windows*'
@@ -81,6 +82,7 @@ jobs:
 
     env:
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}/opencv_extra/testdata
+      PYLINT_TEST_FILE: ${{ github.workspace }}/opencv/samples/python/squares.py
 
     steps:
     - name: Checkout
@@ -105,6 +107,12 @@ jobs:
       run: |
         cd ${{ github.workspace }}/opencv
         arch -arm64 python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
+
+    - name: Pylint test
+      run: |
+        arch -arm64 python${{ matrix.python-version }} -m pip install pylint==2.12.2
+        cd ${{ github.workspace }}/tests
+        arch -arm64 python${{ matrix.python-version }} -m pylint $PYLINT_TEST_FILE
 
   test_release_opencv_python:
     if: github.event_name == 'release' && github.event.release.prerelease

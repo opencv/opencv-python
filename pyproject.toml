@@ -1,6 +1,7 @@
 [build-system]
 requires = [
-  "setuptools", "wheel", "scikit-build", "cmake", "pip",
+  "setuptools==59.2.0", "wheel==0.37.0", "cmake>=3.1", "pip",
+  "scikit-build>=0.13.2",
   "numpy==1.13.3; python_version=='3.6' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
   "numpy==1.14.5; python_version=='3.7' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
   "numpy==1.17.3; python_version=='3.8' and platform_machine != 'aarch64' and platform_machine != 'arm64'",

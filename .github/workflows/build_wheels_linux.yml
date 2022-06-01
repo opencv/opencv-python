@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - master
+      - 3.4
     paths-ignore:
       - '.github/workflows/build_wheels_linux_arm.yml'
       - '.github/workflows/build_wheels_windows*'
@@ -39,7 +40,7 @@ jobs:
       MB_ML_VER: 2014
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/asenyaev/manylinux2014_${PLAT}
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014:${PLAT}
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       PLAT: x86_64
@@ -102,7 +103,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        submodules: false
+        submodules: true
         fetch-depth: 0
 
     - name: Setup Environment variables
@@ -145,7 +146,7 @@ jobs:
       NP_TEST_DEP: numpy==1.19.4
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/asenyaev/manylinux2014_${PLAT}
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014:${PLAT}
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
@@ -176,7 +177,7 @@ jobs:
         set -x
           python -m pip install --upgrade pip
           python -m pip install scikit-build
-          python setup.py sdist
+          python setup.py sdist --formats=xztar
         set +x
         # Install and run tests
         set -x
@@ -186,7 +187,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: wheels
-        path: dist/opencv*.tar.gz
+        path: dist/opencv*.tar.xz
 
   test_release_opencv_python:
     if: github.event_name == 'release' && github.event.release.prerelease
