@@ -177,7 +177,7 @@ jobs:
         set -x
           python -m pip install --upgrade pip
           python -m pip install scikit-build
-          python setup.py sdist --formats=xztar
+          python setup.py sdist --formats=gztar
         set +x
         # Install and run tests
         set -x
@@ -187,7 +187,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: wheels
-        path: dist/opencv*.tar.xz
+        path: dist/opencv*.tar.gz
 
   test_release_opencv_python:
     if: github.event_name == 'release' && github.event.release.prerelease
