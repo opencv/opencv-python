@@ -1,6 +1,6 @@
 [![Downloads](http://pepy.tech/badge/opencv-python)](http://pepy.tech/project/opencv-python)
 
-## OpenCV on Wheels
+## OpenCV on Wheels.
 
 Pre-built CPU-only OpenCV packages for Python.
 
