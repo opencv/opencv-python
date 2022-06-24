@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macOS-M1]
+        os: [opencv-cn-mac-arm64]
         python-version: ['3.7']
         platform: [x64]
         with_contrib: [0, 1]
@@ -73,7 +73,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macOS-M1]
+        os: [opencv-cn-mac-arm64-tests]
         python-version: ['3.7', '3.8', '3.9', '3.10']
         platform: [x64]
         with_contrib: [0, 1]
