@@ -15,21 +15,18 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     defaults:
       run:
         shell: bash
-
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         python-version: ['3.6']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
-
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       REPO_DIR: .
@@ -47,27 +44,24 @@ jobs:
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
-
     steps:
+    - name: Cleanup
+      uses: asenyaev/cleanup-action@v1
     - name: Checkout
       uses: actions/checkout@v2
       with:
         submodules: false
         fetch-depth: 0
-
     - name: Update submodules
       if: github.event_name == 'pull_request'
       run: git submodule update --remote
-
     - name: Build a package
       run: source scripts/build.sh
-
     - name: Saving all wheels
       uses: actions/upload-artifact@v2
       with:
         name: wheels
         path: wheelhouse/opencv*.whl
-
     - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v2
       with:
@@ -76,21 +70,18 @@ jobs:
 
   test:
     needs: [build]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     defaults:
       run:
         shell: bash
-
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
-
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
@@ -98,42 +89,37 @@ jobs:
       NP_TEST_DEP_LATEST: numpy==1.21.2
       CONFIG_PATH: travis_config.sh
       PLAT: x86_64
-
     steps:
+    - name: Cleanup
+      uses: asenyaev/cleanup-action@v1
     - name: Checkout
       uses: actions/checkout@v2
       with:
         submodules: true
         fetch-depth: 0
-
     - name: Setup Environment variables
       run: if [ "3.10" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
-
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v2
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
-
     - name: Package installation and run tests
       run: source scripts/install.sh
 
   build_sdist:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     defaults:
       run:
         shell: bash
-
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         python-version: [3.8]
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [1]
-
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       REPO_DIR: .
@@ -152,24 +138,23 @@ jobs:
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui || 0 }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib || 0 }}
-
     steps:
+    - name: Cleanup
+      run: find . -mindepth 1 -delete
+      working-directory: ${{ github.workspace }}
     - name: Checkout
       uses: actions/checkout@v2
       with:
         submodules: false
         fetch-depth: 0
-
     - name: Update submodules
       if: github.event_name == 'pull_request'
       run: git submodule update --remote
-
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
-
     - name: Build a package
       run: |
         set -e
@@ -182,7 +167,6 @@ jobs:
         # Install and run tests
         set -x
         echo "skipping tests because of sdist"
-
     - name: saving artifacts
       uses: actions/upload-artifact@v2
       with:
@@ -192,7 +176,7 @@ jobs:
   test_release_opencv_python:
     if: github.event_name == 'release' && github.event.release.prerelease
     needs: [build, build_sdist, test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: test-opencv-python-release
     defaults:
       run:
@@ -202,7 +186,6 @@ jobs:
         with:
           name: wheels
           path: wheelhouse/
-
       - name: Upload all wheels
         run: |
           python -m pip install twine
@@ -211,7 +194,7 @@ jobs:
   release_opencv_python:
     if: github.event_name == 'release' && !github.event.release.prerelease
     needs: [build, build_sdist, test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: opencv-python-release
     defaults:
       run:
@@ -221,22 +204,18 @@ jobs:
         with:
           name: wheels
           path: wheelhouse/
-
       - name: Upload wheels for opencv_python
         run: |
           python -m pip install twine
           python -m twine upload -u ${{ secrets.OPENCV_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_PASSWORD }} --skip-existing wheelhouse/opencv_python-* wheelhouse/opencv-python-[^h]*
-
       - name: Upload wheels for opencv_contrib_python
         run: |
           python -m pip install twine
           python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python-* wheelhouse/opencv-contrib-python-[^h]*
-
       - name: Upload wheels for opencv_python_headless
         run: |
           python -m pip install twine
           python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_PASSWORD }} --skip-existing wheelhouse/opencv_python_headless-* wheelhouse/opencv-python-headless-*
-
       - name: Upload wheels for opencv_contrib_python_headless
         run: |
           python -m pip install twine
