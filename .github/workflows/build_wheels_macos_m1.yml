@@ -31,9 +31,7 @@ jobs:
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
     steps:
     - name: Cleanup
-      run: |
-        rm -rf ./* || true
-        rm -rf ./.??* || true
+      run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
     - name: Checkout
       uses: actions/checkout@v2
@@ -79,9 +77,7 @@ jobs:
       PYLINT_TEST_FILE: ${{ github.workspace }}/opencv/samples/python/squares.py
     steps:
     - name: Cleanup
-      run: |
-        rm -rf ./* || true
-        rm -rf ./.??* || true
+      run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
     - name: Checkout
       uses: actions/checkout@v2

@@ -37,8 +37,8 @@ jobs:
       MB_ML_VER: 2014
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014:${PLAT}
-      USE_CCACHE: 1
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20220628
+      USE_CCACHE: 0
       UNICODE_WIDTH: 32
       PLAT: x86_64
       SDIST: ${{ matrix.build_sdist || 0 }}
@@ -46,7 +46,8 @@ jobs:
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
     steps:
     - name: Cleanup
-      uses: asenyaev/cleanup-action@v1
+      run: find . -mindepth 1 -delete
+      working-directory: ${{ github.workspace }}
     - name: Checkout
       uses: actions/checkout@v2
       with:
@@ -91,7 +92,8 @@ jobs:
       PLAT: x86_64
     steps:
     - name: Cleanup
-      uses: asenyaev/cleanup-action@v1
+      run: find . -mindepth 1 -delete
+      working-directory: ${{ github.workspace }}
     - name: Checkout
       uses: actions/checkout@v2
       with:
@@ -132,7 +134,7 @@ jobs:
       NP_TEST_DEP: numpy==1.19.4
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014:${PLAT}
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20220628
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
