@@ -1,3 +1,6 @@
+# Version: 20220628
+# Image name: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64
+
 FROM quay.io/pypa/manylinux2014_aarch64:latest
 
 ARG CCACHE_VERSION=3.7.9
@@ -35,7 +38,7 @@ RUN mkdir ~/freetype_sources && \
     curl -O -L https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz && \
     tar -xf freetype-${FREETYPE_VERSION}.tar.gz && \
     cd freetype-${FREETYPE_VERSION} && \
-    ./configure --prefix="$HOME/ffmpeg_build" --enable-freetype-config && \
+    ./configure --prefix="/ffmpeg_build" --enable-freetype-config && \
     make && \
     make install && \
     cd .. && \
@@ -59,7 +62,7 @@ RUN mkdir ~/openssl_sources && \
     curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_${OPENSSL_VERSION}.tar.gz && \
     tar -xf OpenSSL_${OPENSSL_VERSION}.tar.gz && \
     cd openssl-OpenSSL_${OPENSSL_VERSION} && \
-    ./config --prefix="$HOME/ffmpeg_build" --openssldir="$HOME/ffmpeg_build" no-pinshared shared zlib && \
+    ./config --prefix="/ffmpeg_build" --openssldir="/ffmpeg_build" no-pinshared shared zlib && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     # skip installing documentation
     make install_sw && \
@@ -70,7 +73,7 @@ RUN mkdir ~/nasm_sources && \
     cd ~/nasm_sources && \
     curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.bz2 && \
     tar -xf nasm-${NASM_VERSION}.tar.bz2 && cd nasm-${NASM_VERSION} && ./autogen.sh && \
-    ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
+    ./configure --prefix="/ffmpeg_build" --bindir="$HOME/bin" && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install && \
     cd .. && \
@@ -81,7 +84,7 @@ RUN mkdir ~/yasm_sources && \
     curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-${YASM_VERSION}.tar.gz && \
     tar -xf yasm-${YASM_VERSION}.tar.gz && \
     cd yasm-${YASM_VERSION} && \
-    ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
+    ./configure --prefix="/ffmpeg_build" --bindir="$HOME/bin" && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install && \
     cd .. && \
@@ -91,7 +94,7 @@ RUN mkdir ~/libvpx_sources && \
     cd ~/libvpx_sources && \
     git clone --depth 1 https://github.com/webmproject/libvpx.git && \
     cd libvpx && \
-    ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
+    ./configure --prefix="/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install && \
     cd .. && \
@@ -103,10 +106,10 @@ RUN mkdir ~/ffmpeg_sources && \
     tar -xf ffmpeg-${FFMPEG_VERSION}.tar.bz2 && \
     cd ffmpeg-${FFMPEG_VERSION} && \
     PATH=~/bin:$PATH && \
-    PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --extra-cflags="-I$HOME/ffmpeg_build/include" --extra-ldflags="-L$HOME/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --bindir="$HOME/bin" && \
+    PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" ./configure --prefix="/ffmpeg_build" --extra-cflags="-I/ffmpeg_build/include" --extra-ldflags="-L/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --bindir="$HOME/bin" && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install && \
-    echo "/root/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
+    echo "/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
     ldconfig && \
     rm -rf ~/ffmpeg_sources && \
     yum remove bzip2-devel -y
@@ -120,10 +123,20 @@ RUN curl -O -L https://github.com/ccache/ccache/releases/download/v${CCACHE_VERS
     cd .. && \
     rm -rf ccache-${CCACHE_VERSION}.tar.gz
 
-# Git security vulnerability: https://github.blog/2022-04-12-git-security-vulnerability-announced
-RUN mkdir /io && \
-    git config --global --add safe.directory /io
+# Self-hosted runner UID is 1004
+RUN useradd ci -m -s /bin/bash -G users --uid=1004 && \
+    mkdir /io && \
+    chown -R ci:ci /io && \
+    # This needs to find ffmpeg packages from ci user
+    chown -R ci:ci /ffmpeg_build && \
+    # This calls in mutlibuild scripts and cannot be run without permissions
+    chown -R ci:ci /opt/_internal/pipx/venvs/auditwheel
 
-ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/root/ffmpeg_build/lib/pkgconfig
-ENV LDFLAGS -L/root/ffmpeg_build/lib
+USER ci
+
+# Git security vulnerability: https://github.blog/2022-04-12-git-security-vulnerability-announced
+RUN git config --global --add safe.directory /io
+
+ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/ffmpeg_build/lib/pkgconfig
+ENV LDFLAGS -L/ffmpeg_build/lib
 ENV PATH "$HOME/bin:$PATH"
