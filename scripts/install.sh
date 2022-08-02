@@ -13,6 +13,7 @@ source multibuild/travis_steps.sh
 # source travis_multibuild_customize.sh
 echo $ENABLE_CONTRIB > contrib.enabled
 echo $ENABLE_HEADLESS > headless.enabled
+echo $ENABLE_ROLLING > rolling.enabled
 set -x
 install_run $PLAT
 set +x
