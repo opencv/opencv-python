@@ -57,14 +57,15 @@ if __name__ == "__main__":
         # tag identifies the build and should be a sequential revision number
         version = tag[0]
         opencv_version += ".{}".format(version)
-    elif rolling:
+    # rolling has converted into string using get_and_set_info() function in setup.py
+    elif rolling == "True":
         # rolling version identifier, will be published in a dedicated rolling PyPI repository
         version = date.today().strftime('%Y%m%d')
-        opencv_version += "+{}".format(version)
+        opencv_version += ".{}".format(version)
     else:
         # local version identifier, not to be published on PyPI
         version = git_hash
-        opencv_version += "+{}".format(version)
+        opencv_version += ".{}".format(version)
 
     with open("cv2/version.py", "w") as f:
         f.write('opencv_version = "{}"\n'.format(opencv_version))
