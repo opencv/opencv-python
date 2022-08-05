@@ -20,30 +20,18 @@ on:
 
 jobs:
   Build:
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-11
     defaults:
       run:
         shell: bash
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-10.15, macos-11]
         python-version: ['3.6']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
-        exclude:
-          - os: macos-10.15
-            python-version: '3.10'
-          - os: macos-11
-            python-version: '3.6'
-          - os: macos-11
-            python-version: '3.7'
-          - os: macos-11
-            python-version: '3.8'
-          - os: macos-11
-            python-version: '3.9'
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       REPO_DIR: .
@@ -62,6 +50,7 @@ jobs:
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
+      MACOSX_DEPLOYMENT_TARGET: 10.15
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete
@@ -108,30 +97,18 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-11
     defaults:
       run:
         shell: bash
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-10.15, macos-11]
         python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
-        exclude:
-          - os: macos-10.15
-            python-version: '3.10'
-          - os: macos-11
-            python-version: '3.6'
-          - os: macos-11
-            python-version: '3.7'
-          - os: macos-11
-            python-version: '3.8'
-          - os: macos-11
-            python-version: '3.9'
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
