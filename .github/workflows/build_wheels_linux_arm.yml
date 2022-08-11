@@ -1,4 +1,4 @@
-name: Build PYPI wheels for opencv-python on Linux ARM
+name: Linux ARM64
 
 on:
   pull_request:
@@ -13,10 +13,13 @@ on:
       - '.github/workflows/build_wheels_macos*'
   release:
     types: [published, edited]
+  schedule:
+    - cron: '0 3 * * 6'
+  workflow_dispatch:
 
 
 jobs:
-  build_arm:
+  Build:
     runs-on: opencv-cn-lin-arm64
     defaults:
       run:
@@ -32,7 +35,7 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       REPO_DIR: .
-      BUILD_COMMIT: master
+      BUILD_COMMIT: ${{ github.ref }}
       PROJECT_SPEC: opencv-python
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
@@ -47,31 +50,36 @@ jobs:
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
     steps:
-    - name: UID
-      run: id -u
     - name: Cleanup
       run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
+    - name: Setup environment
+      run: |
+        if [[ "${{ github.event.pull_request }}" == "true" ]]; then
+          echo "BUILD_COMMIT=${{ github.base_ref }}" >> $GITHUB_ENV
+        elif [[ "${{ github.event_name }}" == "schedule" ]]; then
+          echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
+        fi
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: false
         fetch-depth: 0
     - name: Build a package
       run: source scripts/build.sh
     - name: Saving all wheels
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: wheels
         path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/opencv*.whl
 
-  test:
-    needs: [build_arm]
+  Test:
+    needs: [Build]
     runs-on: opencv-cn-lin-arm64
     defaults:
       run:
@@ -88,6 +96,7 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       PLAT: aarch64
+      BUILD_COMMIT: ${{ github.ref }}
       NP_TEST_DEP: numpy==1.19.4
       NP_TEST_DEP_LATEST: numpy==1.21.4
       CONFIG_PATH: travis_config.sh
@@ -97,31 +106,66 @@ jobs:
     - name: Cleanup
       run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
+    - name: Setup environment
+      run: |
+        if [[ "${{ github.event.pull_request }}" == "true" ]]; then
+          echo "BUILD_COMMIT=${{ github.base_ref }}" >> $GITHUB_ENV
+        fi
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: true
         fetch-depth: 0
     - name: Setup Environment variables
       run: if [ "3.10" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
     - name: Download a wheel accordingly to matrix
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
     - name: Package installation and run tests
       run: source scripts/install.sh
 
-  test_release_opencv_python:
+  Release_rolling:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs: [Build, Test]
+    runs-on: ubuntu-20.04
+    environment: opencv-python-rolling-release
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: wheels
+          path: wheelhouse/
+      - name: Upload wheels for opencv_python_rolling
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_python_rolling-*
+      - name: Upload wheels for opencv_contrib_python_rolling
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python_rolling-*
+      - name: Upload wheels for opencv_python_headless_rolling
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_python_headless_rolling-*
+      - name: Upload wheels for opencv_contrib_python_headless_rolling
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python_headless_rolling-*
+
+  Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
-    needs: [build_arm, test]
+    needs: [Build, Test]
     runs-on: ubuntu-20.04
     environment: test-opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: wheels
           path: wheelhouse/
@@ -130,16 +174,16 @@ jobs:
           python -m pip install twine
           python -m twine upload --repository testpypi -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} --skip-existing wheelhouse/opencv_*
 
-  release_opencv_python:
+  Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
-    needs: [build_arm, test]
+    needs: [Build, Test]
     runs-on: ubuntu-20.04
     environment: opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: wheels
           path: wheelhouse/

@@ -1,4 +1,4 @@
-name: Build PYPI wheels for opencv-python on Windows
+name: Windows x86_64
 
 on:
   pull_request:
@@ -12,10 +12,13 @@ on:
       - '.github/workflows/build_wheels_macos*'
   release:
     types: [published, edited]
+  schedule:
+    - cron: '0 3 * * 6'
+  workflow_dispatch:
 
 
 jobs:
-  build-windows-x86_64:
+  Build:
     runs-on: windows-2019
     strategy:
       fail-fast: false
@@ -38,16 +41,19 @@ jobs:
         rm -rf ./* || true
         rm -rf ./.??* || true
       working-directory: ${{ github.workspace }}
+    - name: Setup environment
+      shell: bash
+      run: |
+        if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
+        fi
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: false
         fetch-depth: 0
-    - name: Update submodules
-      if: github.event_name == 'pull_request'
-      run: git submodule update --remote
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
@@ -62,18 +68,18 @@ jobs:
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp36 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
     - name: Saving all wheels
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: wheels
         path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/opencv*
 
-  test:
-    needs: [build-windows-x86_64]
+  Test:
+    needs: [Build]
     runs-on: windows-2019
     defaults:
       run:
@@ -98,17 +104,17 @@ jobs:
         rm -rf ./.??* || true
       working-directory: ${{ github.workspace }}
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: true
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
     - name: Download a wheel accordingly to matrix
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/
@@ -129,16 +135,46 @@ jobs:
         cd ${{ github.workspace }}\tests
         python -m pylint $PYLINT_TEST_FILE
 
-  test_release_opencv_python:
+  Release_rolling:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs: [Build, Test]
+    runs-on: ubuntu-20.04
+    environment: opencv-python-rolling-release
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: wheels
+          path: wheelhouse/
+      - name: Upload wheels for opencv_python_rolling
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_python_rolling-*
+      - name: Upload wheels for opencv_contrib_python_rolling
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python_rolling-*
+      - name: Upload wheels for opencv_python_headless_rolling
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_python_headless_rolling-*
+      - name: Upload wheels for opencv_contrib_python_headless_rolling
+        run: |
+          python -m pip install twine
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python_headless_rolling-*
+
+  Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
-    needs: [build-windows-x86_64, test]
+    needs: [Build, Test]
     runs-on: ubuntu-20.04
     environment: test-opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: wheels
           path: wheelhouse/
@@ -147,16 +183,16 @@ jobs:
           python -m pip install twine
           python -m twine upload --repository testpypi -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} --skip-existing wheelhouse/opencv_*
 
-  release_opencv_python:
+  Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
-    needs: [build-windows-x86_64, test]
+    needs: [Build, Test]
     runs-on: ubuntu-20.04
     environment: opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: wheels
           path: wheelhouse/

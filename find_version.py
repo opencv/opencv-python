@@ -1,11 +1,12 @@
 import sys
-import os
 import subprocess
+from datetime import date
 
 if __name__ == "__main__":
     contrib = sys.argv[1]
     headless = sys.argv[2]
-    ci_build = sys.argv[3]
+    rolling = sys.argv[3]
+    ci_build = sys.argv[4]
 
     opencv_version = ""
     # dig out the version from OpenCV sources
@@ -56,13 +57,19 @@ if __name__ == "__main__":
         # tag identifies the build and should be a sequential revision number
         version = tag[0]
         opencv_version += ".{}".format(version)
+    # rolling has converted into string using get_and_set_info() function in setup.py
+    elif rolling == "True":
+        # rolling version identifier, will be published in a dedicated rolling PyPI repository
+        version = date.today().strftime('%Y%m%d')
+        opencv_version += ".{}".format(version)
     else:
         # local version identifier, not to be published on PyPI
         version = git_hash
-        opencv_version += "+{}".format(version)
+        opencv_version += ".{}".format(version)
 
     with open("cv2/version.py", "w") as f:
         f.write('opencv_version = "{}"\n'.format(opencv_version))
         f.write("contrib = {}\n".format(contrib))
         f.write("headless = {}\n".format(headless))
+        f.write("rolling = {}\n".format(rolling))
         f.write("ci_build = {}".format(ci_build))
