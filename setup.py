@@ -93,7 +93,7 @@ def main():
     packages = ["cv2", "cv2.data"]
 
     package_data = {
-        "cv2": ["*%s" % sysconfig.get_config_vars().get("SO"), "version.py"]
+        "cv2": [f"*{sysconfig.get_config_vars().get('O')}", "version.py"]
         + (["*.dll"] if os.name == "nt" else [])
         + ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"],
         "cv2.data": ["*.xml"],
@@ -103,7 +103,7 @@ def main():
     # Path regexes with forward slashes relative to CMake install dir.
     rearrange_cmake_output_data = {
         "cv2": (
-            [r"bin/opencv_videoio_ffmpeg\d{3}%s\.dll" % ("_64" if is64 else "")]
+            [r"bin/opencv_videoio_ffmpeg\d{3}{}\.dll" % ("_64" if is64 else "")]
             if os.name == "nt"
             else []
         )
@@ -154,13 +154,13 @@ def main():
         (ci_cmake_generator if is_CI_build else [])
         + [
             # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
-            "-DPYTHON3_EXECUTABLE=%s" % sys.executable,
-            "-DPYTHON3_INCLUDE_DIR=%s" % python_include_dir,
-            "-DPYTHON3_LIBRARY=%s" % python_lib_path,
+            f"-DPYTHON3_EXECUTABLE={sys.executable}",
+            f"-DPYTHON3_INCLUDE_DIR={python_include_dir}", 
+            f"-DPYTHON3_LIBRARY={python_lib_path}",
             "-DBUILD_opencv_python3=ON",
             "-DBUILD_opencv_python2=OFF",
             # Disable the Java build by default as it is not needed
-            "-DBUILD_opencv_java=%s" % build_java,
+            f"-DBUILD_opencv_java={build_java}",
             # Relative dir to install the built module to in the build tree.
             # The default is generated from sysconfig, we'd rather have a constant for simplicity
             "-DOPENCV_PYTHON3_INSTALL_PATH=python",
@@ -190,7 +190,7 @@ def main():
             else []
           )
         + (
-            ["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")]
+            [f"-DOPENCV_EXTRA_MODULES_PATH={os.path.abspath('opencv_contrib/modules')}"]
             if build_contrib
             else []
         )
@@ -230,7 +230,7 @@ def main():
                 for file in os.listdir("/usr/share/fonts/dejavu"):
                     if file.endswith(".ttf"):
                         fonts.append(
-                            (r"lib/qt/fonts/dejavu/%s\.ttf" % file.split(".")[0])
+                            (fr"lib/qt/fonts/dejavu/{file.split('.'[0])}\.ttf")
                         )
 
                 rearrange_cmake_output_data["cv2.qt.fonts"] = fonts
@@ -392,8 +392,7 @@ class RearrangeCMakeOutput(object):
         # add lines from the old __init__.py file to the config file
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', '__init__.py'), 'r') as custom_init:
             custom_init_data = custom_init.read()
-        with open('%spython/cv2/config-%s.py'
-        % (cmake_install_dir, sys.version_info[0]), 'w') as opencv_init_config:
+        with open(f'{(cmake_install_dir, sys.version_info[0])}python/cv2/config-%s.py', 'w') as opencv_init_config:
             opencv_init_config.write(custom_init_data)
 
         for package_name, relpaths_re in cls.package_paths_re.items():
