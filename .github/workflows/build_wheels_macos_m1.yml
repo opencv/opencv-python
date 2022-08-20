@@ -43,7 +43,8 @@ jobs:
       run: |
         if [[ "${{ github.event.pull_request }}" == "true" ]]; then
           echo "BUILD_COMMIT=${{ github.base_ref }}" >> $GITHUB_ENV
-        elif [[ "${{ github.event_name }}" == "schedule" ]]; then
+        fi
+        if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
     - name: Checkout
