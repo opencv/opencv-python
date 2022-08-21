@@ -44,7 +44,7 @@ jobs:
     - name: Setup environment
       shell: bash
       run: |
-        if [[ "${{ github.event_name }}" == "schedule" ]]; then
+        if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
     - name: Checkout
