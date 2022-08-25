@@ -21,7 +21,7 @@ RUN yum install bzip2-devel curl-devel xcb-util-renderutil-devel xcb-util-devel 
     cp /usr/include/lapacke/lapacke*.h /usr/include/ && \
     curl https://raw.githubusercontent.com/xianyi/OpenBLAS/v0.3.3/cblas.h -o /usr/include/cblas.h && \
     # libpng will be built from source
-    yum remove libpng zlib-devel -y
+    yum remove libpng zlib-devel bzip2-devel -y
 
 RUN mkdir ~/zlib_sources && \
     cd ~/zlib_sources && \
@@ -83,8 +83,8 @@ RUN mkdir ~/openssl_sources && \
 
 RUN mkdir ~/nasm_sources && \
     cd ~/nasm_sources && \
-    curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.bz2 && \
-    tar -xf nasm-${NASM_VERSION}.tar.bz2 && cd nasm-${NASM_VERSION} && ./autogen.sh && \
+    curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.gz && \
+    tar -xf nasm-${NASM_VERSION}.tar.gz && cd nasm-${NASM_VERSION} && ./autogen.sh && \
     ./configure --prefix="/ffmpeg_build" --bindir="$HOME/bin" && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install && \
@@ -114,8 +114,8 @@ RUN mkdir ~/libvpx_sources && \
 
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.bz2 && \
-    tar -xf ffmpeg-${FFMPEG_VERSION}.tar.bz2 && \
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz && \
+    tar -xf ffmpeg-${FFMPEG_VERSION}.tar.gz && \
     cd ffmpeg-${FFMPEG_VERSION} && \
     PATH=~/bin:$PATH && \
     PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" ./configure --prefix="/ffmpeg_build" --extra-cflags="-I/ffmpeg_build/include" --extra-ldflags="-L/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --bindir="$HOME/bin" && \
@@ -123,8 +123,7 @@ RUN mkdir ~/ffmpeg_sources && \
     make install && \
     echo "/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
     ldconfig && \
-    rm -rf ~/ffmpeg_sources && \
-    yum remove bzip2-devel -y
+    rm -rf ~/ffmpeg_sources
 
 RUN curl -O -L https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz && \
     tar -xf ccache-${CCACHE_VERSION}.tar.gz && \
