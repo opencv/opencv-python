@@ -35,7 +35,6 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       REPO_DIR: .
-      BUILD_COMMIT: ${{ github.ref }}
       PROJECT_SPEC: opencv-python
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
@@ -55,9 +54,6 @@ jobs:
       working-directory: ${{ github.workspace }}
     - name: Setup environment
       run: |
-        if [[ "${{ github.event.pull_request }}" == "true" ]]; then
-          echo "BUILD_COMMIT=${{ github.base_ref }}" >> $GITHUB_ENV
-        fi
         if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
@@ -135,7 +131,6 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       REPO_DIR: .
-      BUILD_COMMIT: ${{ github.ref }}
       PROJECT_SPEC: opencv-python
       PLAT: x86_64
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
@@ -156,9 +151,6 @@ jobs:
       working-directory: ${{ github.workspace }}
     - name: Setup environment
       run: |
-        if [[ "${{ github.event.pull_request }}" == "true" ]]; then
-          echo "BUILD_COMMIT=${{ github.base_ref }}" >> $GITHUB_ENV
-        fi
         if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
