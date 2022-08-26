@@ -30,7 +30,6 @@ jobs:
         without_gui: [0, 1]
         build_sdist: [0]
     env:
-      BUILD_COMMIT: ${{ github.ref }}
       CI_BUILD: 1
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
@@ -41,9 +40,6 @@ jobs:
       working-directory: ${{ github.workspace }}
     - name: Setup environment
       run: |
-        if [[ "${{ github.event.pull_request }}" == "true" ]]; then
-          echo "BUILD_COMMIT=${{ github.base_ref }}" >> $GITHUB_ENV
-        fi
         if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
@@ -84,18 +80,12 @@ jobs:
         without_gui: [0, 1]
         build_sdist: [0]
     env:
-      BUILD_COMMIT: ${{ github.ref }}
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}/opencv_extra/testdata
       PYLINT_TEST_FILE: ${{ github.workspace }}/opencv/samples/python/squares.py
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
-    - name: Setup environment
-      run: |
-        if [[ "${{ github.event.pull_request }}" == "true" ]]; then
-          echo "BUILD_COMMIT=${{ github.base_ref }}" >> $GITHUB_ENV
-        fi
     - name: Checkout
       uses: actions/checkout@v3
       with:
