@@ -1,0 +1,33 @@
+name: Build Packages
+
+on:
+  pull_request:
+    branches:
+      - master
+      - 3.4
+      - 4.x
+      - 5.x
+  release:
+    types: [published, edited]
+
+
+jobs:
+  Linux-ARM64:
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-Linux-ARM64.yaml@main
+    secrets: inherit
+
+  Linux-x86_64:
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-Linux-x86-64.yaml@main
+    secrets: inherit
+
+  macOS-ARM64:
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-macOS-ARM64.yaml@main
+    secrets: inherit
+
+  macOS-x86_64:
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-macOS-x86-64.yaml@main
+    secrets: inherit
+
+  Windows:
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-Windows-10.yaml@main
+    secrets: inherit
