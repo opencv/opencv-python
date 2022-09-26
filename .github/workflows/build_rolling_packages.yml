@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        MATRIX_BRANCH: [4.x]
+        MATRIX_BRANCH: [5.x]
     uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-Linux-ARM64.yaml@main
     secrets: inherit
     with:
@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        MATRIX_BRANCH: [4.x]
+        MATRIX_BRANCH: [5.x]
     uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-Linux-x86-64.yaml@main
     secrets: inherit
     with:
@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        MATRIX_BRANCH: [4.x]
+        MATRIX_BRANCH: [5.x]
     uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-macOS-ARM64.yaml@main
     secrets: inherit
     with:
@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        MATRIX_BRANCH: [4.x]
+        MATRIX_BRANCH: [5.x]
     uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-macOS-x86-64.yaml@main
     secrets: inherit
     with:
@@ -50,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        MATRIX_BRANCH: [4.x]
+        MATRIX_BRANCH: [5.x]
     uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-Windows-10.yaml@main
     secrets: inherit
     with:
