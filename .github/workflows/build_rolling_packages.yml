@@ -1,0 +1,57 @@
+name: Build Rolling Packages
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+
+jobs:
+  Linux-ARM64:
+    strategy:
+      fail-fast: false
+      matrix:
+        MATRIX_BRANCH: [4.x]
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-Linux-ARM64.yaml@main
+    secrets: inherit
+    with:
+      MATRIX_BRANCH: ${{ matrix.MATRIX_BRANCH }}
+
+  Linux-x86_64:
+    strategy:
+      fail-fast: false
+      matrix:
+        MATRIX_BRANCH: [4.x]
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-Linux-x86-64.yaml@main
+    secrets: inherit
+    with:
+      MATRIX_BRANCH: ${{ matrix.MATRIX_BRANCH }}
+
+  macOS-ARM64:
+    strategy:
+      fail-fast: false
+      matrix:
+        MATRIX_BRANCH: [4.x]
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-macOS-ARM64.yaml@main
+    secrets: inherit
+    with:
+      MATRIX_BRANCH: ${{ matrix.MATRIX_BRANCH }}
+
+  macOS-x86_64:
+    strategy:
+      fail-fast: false
+      matrix:
+        MATRIX_BRANCH: [4.x]
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-macOS-x86-64.yaml@main
+    secrets: inherit
+    with:
+      MATRIX_BRANCH: ${{ matrix.MATRIX_BRANCH }}
+
+  Windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        MATRIX_BRANCH: [4.x]
+    uses: opencv/ci-gha-workflow/.github/workflows/OCV-Python-Windows-10.yaml@main
+    secrets: inherit
+    with:
+      MATRIX_BRANCH: ${{ matrix.MATRIX_BRANCH }}
