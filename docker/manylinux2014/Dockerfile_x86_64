@@ -1,4 +1,4 @@
-# Version: 20220824
+# Version: 20221205
 # Image name: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64
 
 FROM quay.io/pypa/manylinux2014_x86_64:latest
@@ -11,7 +11,7 @@ ARG NASM_VERSION=2.15.04
 ARG OPENSSL_VERSION=1_1_1s
 ARG QT_VERSION=5.15.0
 ARG YASM_VERSION=1.3.0
-ARG ZLIB_VERSION=1.2.12
+ARG ZLIB_VERSION=1.2.13
 
 ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
