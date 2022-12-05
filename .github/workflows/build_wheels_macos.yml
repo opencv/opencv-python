@@ -45,7 +45,7 @@ jobs:
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       PLAT: x86_64
-      FFMPEG_FORMULA_VERSION: '@4'
+      FFMPEG_FORMULA_VERSION: '@5'
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
