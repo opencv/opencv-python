@@ -56,7 +56,7 @@ if [ -n "$IS_OSX" ]; then
     function generate_ffmpeg_formula {
         local FF="ffmpeg"
         local LFF="ffmpeg_opencv"
-        local FF_FORMULA; FF_FORMULA=$(brew formula "${FF}${FFMPEG_FORMULA_VERSION}")
+        local FF_FORMULA; FF_FORMULA=$(brew formula "${FF}")
         local LFF_FORMULA; LFF_FORMULA="$(dirname "$FF_FORMULA")/${LFF}.rb"
 
         local REGENERATE
@@ -76,9 +76,8 @@ if [ -n "$IS_OSX" ]; then
         if [ -n "$REGENERATE" ]; then
             echo "Regenerating custom ffmpeg formula"
             # Bottle block syntax: https://docs.brew.sh/Bottles#bottle-dsl-domain-specific-language
-            # FfmpegAT4 is a class in ffmpeg@4 formula
             perl -wpe 'BEGIN {our ($found_blank, $bottle_block);}
-                if (/(^class )(FfmpegAT4)(\s.*)/) {$_=$1."FfmpegOpencv".$3."\n"; next;}
+                if (/(^class )(Ffmpeg)(\s.*)/) {$_=$1."Opencv".$3."\n"; next;}
                 if (!$found_blank && /^$/) {$_.="conflicts_with \"ffmpeg\"\n\n"; $found_blank=1; next;}
                 if (!$bottle_block && /^\s*bottle do$/) { $bottle_block=1; next; }
                 if ($bottle_block) { if (/^\s*end\s*$/) { $bottle_block=0} elsif (/^\s*sha256\s/) {$_=""} next; }
