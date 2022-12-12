@@ -48,6 +48,7 @@ jobs:
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
+      PIP_DEFAULT_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete
@@ -98,6 +99,7 @@ jobs:
       CONFIG_PATH: travis_config.sh
       DOCKER_TEST_IMAGE: multibuild/focal_arm64v8
       UNICODE_WIDTH: 32
+      PIP_DEFAULT_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete

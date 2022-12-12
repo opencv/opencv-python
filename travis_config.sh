@@ -5,6 +5,8 @@
 #See multibuild/README.rst
 echo "===  Loading config.sh  === "
 
+export PIP_DEFAULT_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+
 # To see build progress
 function build_wheel {
     build_bdist_wheel $@
