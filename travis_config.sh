@@ -36,6 +36,11 @@ else
   echo "    > Linux environment "
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.15.0/lib
   export MAKEFLAGS="-j$(grep -E '^processor[[:space:]]*:' /proc/cpuinfo | wc -l)"
+  if [[ $PLAT == 'aarch64' ]]; then
+    # To avoid network issues with pypi.org on OpenCV CN machines
+    export PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+    echo "Running for linux aarch64"
+  fi
 fi
 
 if [ -n "$IS_OSX" ]; then
