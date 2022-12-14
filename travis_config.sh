@@ -77,7 +77,7 @@ if [ -n "$IS_OSX" ]; then
             echo "Regenerating custom ffmpeg formula"
             # Bottle block syntax: https://docs.brew.sh/Bottles#bottle-dsl-domain-specific-language
             perl -wpe 'BEGIN {our ($found_blank, $bottle_block);}
-                if (/(^class )(Ffmpeg)(\s.*)/) {$_=$1."Opencv".$3."\n"; next;}
+                if (/(^class )(Ffmpeg)(\s.*)/) {$_=$1."FfmpegOpencv".$3."\n"; next;}
                 if (!$found_blank && /^$/) {$_.="conflicts_with \"ffmpeg\"\n\n"; $found_blank=1; next;}
                 if (!$bottle_block && /^\s*bottle do$/) { $bottle_block=1; next; }
                 if ($bottle_block) { if (/^\s*end\s*$/) { $bottle_block=0} elsif (/^\s*sha256\s/) {$_=""} next; }
