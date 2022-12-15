@@ -50,12 +50,12 @@ if [ -n "$IS_OSX" ]; then
 
     BREW_SLOW_BUILIDING_PACKAGES=$(printf '%s\n' \
         "cmake 15" \
-        "ffmpeg_opencv 10" \
+        "ffmpeg 10" \
     )
 
     function generate_ffmpeg_formula {
         local FF="ffmpeg"
-        local LFF="ffmpeg_opencv"
+        local LFF="ffmpeg"
         local FF_FORMULA; FF_FORMULA=$(brew formula "${FF}")
         local LFF_FORMULA; LFF_FORMULA="$(dirname "$FF_FORMULA")/${LFF}.rb"
 
@@ -117,9 +117,9 @@ function pre_build {
     brew update
     generate_ffmpeg_formula
     brew_add_local_bottles
-    brew install --build-bottle ffmpeg_opencv
+    brew install --build-bottle ffmpeg
     # It needs when we use not the latest ffmpeg formula
-    brew link ffmpeg_opencv
+    brew link ffmpeg
 
     if [ -n "$CACHE_STAGE" ]; then
         brew_go_bootstrap_mode 0
