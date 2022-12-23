@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.6']
+        python-version: ['3.7']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -58,6 +58,12 @@ jobs:
         if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
+        # hack for image issue on mac: https://github.com/actions/runner-images/issues/6817
+        rm /usr/local/bin/2to3*
+        rm /usr/local/bin/idle3*
+        rm /usr/local/bin/pydoc3*
+        rm /usr/local/bin/python3*
+        # end hack
     - name: Checkout
       uses: actions/checkout@v3
       with:
@@ -100,7 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -109,7 +115,7 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       NP_TEST_DEP: numpy==1.19.4
-      NP_TEST_DEP_LATEST: numpy==1.21.4
+      NP_TEST_DEP_LATEST: numpy==1.24.0
       CONFIG_PATH: travis_config.sh
       PLAT: x86_64
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}/opencv_extra/testdata
@@ -129,7 +135,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
     - name: Setup Environment variables
-      run: if [ "3.10" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
+      run: if [ "3.11" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v3
       with:
@@ -146,7 +152,7 @@ jobs:
         python modules/python/test/test.py -v --repo .
     - name: Pylint test
       run: |
-        python -m pip install pylint==2.12.2
+        python -m pip install pylint==2.15.9
         cd ${{ github.workspace }}/tests
         python -m pylint $PYLINT_TEST_FILE
 
