@@ -15,5 +15,8 @@ echo $ENABLE_CONTRIB > contrib.enabled
 echo $ENABLE_HEADLESS > headless.enabled
 echo $ENABLE_ROLLING > rolling.enabled
 set -x
+if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+  pip install --upgrade pip
+fi
 install_run $PLAT
 set +x

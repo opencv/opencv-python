@@ -15,6 +15,7 @@ def add_zlib_versions():
                 updated_line = line[:-2] + ', "1.2.9", "1.2.12"]'
             else:
                 updated_line = line[:-2] + '"1.2.9", "1.2.12"]'
+            print("auditwheel patch: replace policy line \"%s\" with \"%s\"" % (line, updated_line))
             manylinux_policy_replacement = line.replace(line, updated_line)
         else:
             manylinux_policy_replacement = line
