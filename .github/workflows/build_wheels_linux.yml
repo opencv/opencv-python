@@ -105,6 +105,8 @@ jobs:
       with:
         submodules: true
         fetch-depth: 0
+    - name: Update pip
+      run: pip install --upgrade pip
     - name: Setup Environment variables
       run: if [ "3.11" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
     - name: Download a wheel accordingly to matrix
