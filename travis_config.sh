@@ -168,7 +168,7 @@ function pylint_test {
 
     echo "Starting Pylint tests..."
 
-    $PYTHON -m pip install pylint==2.12.2
+    $PYTHON -m pip install pylint==2.15.9
     cd /io/tests
     $PYTHON -m pylint /io/opencv/samples/python/squares.py
 }
