@@ -75,7 +75,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -109,7 +109,7 @@ jobs:
         arch -arm64 python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
     - name: Pylint test
       run: |
-        arch -arm64 python${{ matrix.python-version }} -m pip install pylint==2.12.2
+        arch -arm64 python${{ matrix.python-version }} -m pip install pylint==2.15.9
         cd ${{ github.workspace }}/tests
         arch -arm64 python${{ matrix.python-version }} -m pylint $PYLINT_TEST_FILE
 
