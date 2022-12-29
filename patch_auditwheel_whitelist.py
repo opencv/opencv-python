@@ -12,9 +12,9 @@ def add_zlib_versions():
     for line in manylinux_policy_lines:
         if "ZLIB" in line:
             if len(line) > 22:
-                updated_line = line[:-2] + ', "1.2.9", "1.2.12"]'
+                updated_line = line[:-2] + ', "1.2.9", "1.2.12", "1.2.13"]'
             else:
-                updated_line = line[:-2] + '"1.2.9", "1.2.12"]'
+                updated_line = line[:-2] + '"1.2.9", "1.2.12", "1.2.13"]'
             print("auditwheel patch: replace policy line \"%s\" with \"%s\"" % (line, updated_line))
             manylinux_policy_replacement = line.replace(line, updated_line)
         else:
