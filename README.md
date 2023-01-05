@@ -67,7 +67,7 @@ A: Make sure you have removed old manual installations of OpenCV Python bindings
 
 **Q: Function foo() or method bar() returns wrong result, throws exception or crashes interpreter. What should I do?**
 
-A: The repository contains only OpenCV-Python package build scripts, but not OpenCV itself. Python bindings for OpenCV are developed in official OpenCV repository and it's the best place to report issues. Also please check {OpenCV wiki](https://github.com/opencv/opencv/wiki) and [the official OpenCV forum](https://forum.opencv.org/) before file new bugs.
+A: The repository contains only OpenCV-Python package build scripts, but not OpenCV itself. Python bindings for OpenCV are developed in official OpenCV repository and it's the best place to report issues. Also please check [OpenCV wiki](https://github.com/opencv/opencv/wiki) and [the official OpenCV forum](https://forum.opencv.org/) before file new bugs.
 
 **Q: Why the packages do not include non-free algorithms?**
 
