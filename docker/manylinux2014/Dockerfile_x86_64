@@ -1,4 +1,4 @@
-# Version: 20221205
+# Version: 20230117
 # Image name: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64
 
 FROM quay.io/pypa/manylinux2014_x86_64:latest
@@ -16,23 +16,12 @@ ARG ZLIB_VERSION=1.2.13
 ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
 # epel-release need for aarch64 to get openblas packages
-RUN yum install bzip2-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release -y && \
+RUN yum install curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release -y && \
     yum install openblas-devel dejavu-sans-fonts -y && \
     cp /usr/include/lapacke/lapacke*.h /usr/include/ && \
     curl https://raw.githubusercontent.com/xianyi/OpenBLAS/v0.3.3/cblas.h -o /usr/include/cblas.h && \
     # libpng will be built from source
-    yum remove libpng zlib-devel bzip2-devel -y
-
-RUN mkdir ~/zlib_sources && \
-    cd ~/zlib_sources && \
-    curl -O -L https://www.zlib.net/zlib-${ZLIB_VERSION}.tar.gz && \
-    tar -xf zlib-${ZLIB_VERSION}.tar.gz && \
-    cd zlib-${ZLIB_VERSION} && \
-    ./configure --prefix=/usr/local && \
-    make && \
-    make install && \
-    cd .. && \
-    rm -rf ~/zlib_sources
+    yum remove libpng -y
 
 RUN mkdir ~/libpng_sources && \
     cd ~/libpng_sources && \
