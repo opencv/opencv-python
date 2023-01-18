@@ -23,6 +23,7 @@ function bdist_wheel_cmd {
       TOOLS_PATH=/opt/_internal/pipx/venvs/auditwheel
       /opt/python/cp39-cp39/bin/python -m venv $TOOLS_PATH
       source $TOOLS_PATH/bin/activate
+      python patch_auditwheel_whitelist.py
       deactivate
     fi
     if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
