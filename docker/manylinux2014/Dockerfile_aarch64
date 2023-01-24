@@ -1,4 +1,4 @@
-# Version: 20230117
+# Version: 20230124
 # Image name: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64
 
 FROM quay.io/pypa/manylinux2014_aarch64:latest
@@ -9,13 +9,13 @@ ARG FREETYPE_VERSION=2.12.1
 ARG LIBPNG_VERSION=1.6.37
 ARG NASM_VERSION=2.15.04
 ARG OPENSSL_VERSION=1_1_1s
-ARG QT_VERSION=5.15.0
+ARG QT_VERSION=5.15.8
 ARG YASM_VERSION=1.3.0
 
 ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
 # epel-release need for aarch64 to get openblas packages
-RUN yum install zlib-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release -y && \
+RUN yum install zlib-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release wayland-devel libwayland-egl -y && \
     yum install openblas-devel dejavu-sans-fonts -y && \
     cp /usr/include/lapacke/lapacke*.h /usr/include/ && \
     curl https://raw.githubusercontent.com/xianyi/OpenBLAS/v0.3.3/cblas.h -o /usr/include/cblas.h && \
@@ -44,13 +44,12 @@ RUN mkdir ~/freetype_sources && \
     cd .. && \
     rm -rf ~/freetype_sources
 
-RUN curl -O -L https://download.qt.io/official_releases/qt/5.15/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz && \
-    tar -xf qt-everywhere-src-${QT_VERSION}.tar.xz && \
+RUN curl -O -L https://download.qt.io/archive/qt/5.15/${QT_VERSION}/single/qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
+    tar -xf qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
     cd qt-everywhere-src-${QT_VERSION} && \
     export MAKEFLAGS=-j$(nproc) && \
-    ./configure -prefix /opt/Qt${QT_VERSION} -release -opensource -confirm-license -qtnamespace QtOpenCVPython -xcb -xcb-xlib -bundled-xcb-xinput -no-openssl -no-dbus -skip qt3d -skip qtactiveqt -skip qtcanvas3d -skip qtconnectivity -skip qtdatavis3d -skip qtdoc -skip qtgamepad -skip qtgraphicaleffects -skip qtimageformats -skip qtlocation -skip qtmultimedia -skip qtpurchasing -skip qtqa -skip qtremoteobjects -skip qtrepotools -skip qtscript -skip qtscxml -skip qtsensors -skip qtserialbus -skip qtserialport -skip qtspeech -skip qttranslations -skip qtwayland -skip qtwebchannel -skip qtwebengine -skip qtwebsockets -skip qtwebview -skip xmlpatterns -skip declarative -make libs && \
-    make && \
-    make install && \
+    ./configure -prefix /opt/Qt${QT_VERSION} -release -opensource -confirm-license -qtnamespace QtOpenCVPython -xcb -xcb-xlib -bundled-xcb-xinput -no-openssl -no-dbus  -skip qt3d -skip qtactiveqt -skip qtcanvas3d -skip qtconnectivity -skip qtdatavis3d -skip qtdoc -skip qtgamepad -skip qtgraphicaleffects -skip qtimageformats -skip qtlocation -skip qtmultimedia -skip qtpurchasing -skip qtqa -skip qtremoteobjects -skip qtrepotools -skip qtscript -skip qtscxml -skip qtsensors -skip qtserialbus -skip qtserialport -skip qtspeech -skip qttranslations -skip qtwebchannel -skip qtwebengine -skip qtwebsockets -skip qtwebview -skip xmlpatterns -skip declarative -make libs && \
+    make && make install && \
     cd .. && \
     rm -rf qt-everywhere*
 
@@ -139,3 +138,4 @@ RUN git config --global --add safe.directory /io
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/ffmpeg_build/lib/pkgconfig
 ENV LDFLAGS -L/ffmpeg_build/lib
 ENV PATH "$HOME/bin:$PATH"
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt${QT_VERSION}/lib
