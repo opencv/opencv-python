@@ -20,7 +20,7 @@ on:
 
 jobs:
   Build:
-    runs-on: opencv-cn-mac-arm64
+    runs-on: python-macos11-m1
     strategy:
       fail-fast: false
       matrix:
