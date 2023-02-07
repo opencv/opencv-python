@@ -48,7 +48,6 @@ jobs:
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
-      MACOSX_DEPLOYMENT_TARGET: '11.0'
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete
