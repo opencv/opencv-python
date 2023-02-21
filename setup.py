@@ -32,6 +32,7 @@ def main():
         'numpy>=1.19.3; python_version>="3.6" and platform_system=="Linux" and platform_machine=="aarch64"',
         'numpy>=1.21.0; python_version<="3.9" and platform_system=="Darwin" and platform_machine=="arm64"',
         'numpy>=1.21.4; python_version>="3.10" and platform_system=="Darwin"',
+        "numpy>=1.22.0; python_version>='3.11'"
     ]
 
     python_version = cmaker.CMaker.get_python_version()
@@ -262,7 +263,7 @@ def main():
         name=package_name,
         version=package_version,
         url="https://github.com/opencv/opencv-python",
-        license="MIT",
+        license="Apache 2.0",
         description="Wrapper package for OpenCV python bindings.",
         long_description=long_description,
         long_description_content_type="text/markdown",
@@ -279,7 +280,7 @@ def main():
             "Intended Audience :: Education",
             "Intended Audience :: Information Technology",
             "Intended Audience :: Science/Research",
-            "License :: OSI Approved :: MIT License",
+            "License :: OSI Approved :: Apache 2.0",
             "Operating System :: MacOS",
             "Operating System :: Microsoft :: Windows",
             "Operating System :: POSIX",
@@ -292,6 +293,7 @@ def main():
             "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3.9",
             "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11",
             "Programming Language :: C++",
             "Programming Language :: Python :: Implementation :: CPython",
             "Topic :: Scientific/Engineering",

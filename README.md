@@ -216,11 +216,11 @@ The default ``manylinux2014`` images have been extended with some OpenCV depende
 
 Python 3.x compatible pre-built wheels are provided for the officially supported Python versions (not in EOL):
 
-- 3.6
 - 3.7
 - 3.8
 - 3.9
 - 3.10
+- 3.11
 
 ### Backward compatibility
 
@@ -228,3 +228,4 @@ Starting from 4.2.0 and 3.4.9 builds the macOS Travis build environment was upda
 
 Starting from 4.3.0 and 3.4.10 builds the Linux build environment was updated from `manylinux1` to `manylinux2014`. This dropped support for old Linux distributions.
 
+Starting from version 4.7.0 the Mac OS GitHub Actions build environment was update to version 11. Mac OS 10.x support depricated. See https://github.com/actions/runner-images/issues/5583
