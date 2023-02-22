@@ -280,7 +280,7 @@ def main():
             "Intended Audience :: Education",
             "Intended Audience :: Information Technology",
             "Intended Audience :: Science/Research",
-            "License :: OSI Approved :: Apache 2.0",
+            "License :: OSI Approved :: Apache Software License",
             "Operating System :: MacOS",
             "Operating System :: Microsoft :: Windows",
             "Operating System :: POSIX",
