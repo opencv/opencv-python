@@ -4,6 +4,8 @@
 
 Pre-built CPU-only OpenCV packages for Python.
 
+OpenCV (Open Source Computer Vision Library) is an open-source computer vision and machine learning software library. OpenCV Python provides a set of easy-to-use functions for image and video processing, including image loading, filtering, transformation, feature extraction, object detection, and more. It provides interfaces to popular machine learning frameworks like TensorFlow and PyTorch, making it a popular choice for computer vision tasks in both academia and industry.
+
 Check the manual build section if you wish to compile the bindings from source to enable additional modules such as CUDA.
 
 ### Installation and Usage
