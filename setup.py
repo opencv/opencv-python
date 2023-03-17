@@ -395,8 +395,14 @@ class RearrangeCMakeOutput(object):
         # add lines from the old __init__.py file to the config file
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', '__init__.py'), 'r') as custom_init:
             custom_init_data = custom_init.read()
-        with open('%spython/cv2/config-%s.py'
-        % (cmake_install_dir, sys.version_info[0]), 'w') as opencv_init_config:
+
+        # OpenCV generates config with different name for case with PYTHON3_LIMITED_API=ON
+        config_py = os.path.join(cmake_install_dir, 'python', 'cv2', 'config-%s.%s.py'
+                                 % (sys.version_info[0], sys.version_info[1]))
+        if not os.path.exists(config_py):
+            config_py = os.path.join(cmake_install_dir, 'python', 'cv2', 'config-%s.py' % sys.version_info[0])
+
+        with open(config_py, 'w') as opencv_init_config:
             opencv_init_config.write(custom_init_data)
 
         for package_name, relpaths_re in cls.package_paths_re.items():
