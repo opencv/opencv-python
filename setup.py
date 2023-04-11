@@ -256,13 +256,6 @@ def main():
             cmake_args.append("-DWITH_LAPACK=ON")
             cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
-    # https://github.com/scikit-build/scikit-build/issues/479
-    if "CMAKE_ARGS" in os.environ:
-        import shlex
-
-        cmake_args.extend(shlex.split(os.environ["CMAKE_ARGS"]))
-        del shlex
-
     # works via side effect
     RearrangeCMakeOutput(
         rearrange_cmake_output_data, files_outside_package_dir, package_data.keys()
@@ -314,7 +307,7 @@ def main():
     )
 
 
-class RearrangeCMakeOutput(object):
+class RearrangeCMakeOutput:
     """
         Patch SKBuild logic to only take files related to the Python package
         and construct a file hierarchy that SKBuild expects (see below)
