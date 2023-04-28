@@ -32,7 +32,7 @@ def main():
         'numpy>=1.19.3; python_version>="3.6" and platform_system=="Linux" and platform_machine=="aarch64"',
         'numpy>=1.21.0; python_version<="3.9" and platform_system=="Darwin" and platform_machine=="arm64"',
         'numpy>=1.21.4; python_version>="3.10" and platform_system=="Darwin"',
-        "numpy>=1.22.0; python_version>='3.11'"
+        "numpy>=1.24.3; python_version>='3.11'"
     ]
 
     python_version = cmaker.CMaker.get_python_version()
