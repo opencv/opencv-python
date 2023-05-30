@@ -36,7 +36,7 @@ def main():
     ]
 
     python_version = cmaker.CMaker.get_python_version()
-    python_lib_path = cmaker.CMaker.get_python_library(python_version).replace(
+    python_lib_path = (cmaker.CMaker.get_python_library(python_version) or "").replace(
         "\\", "/"
     )
     python_include_dir = cmaker.CMaker.get_python_include_dir(python_version).replace(
