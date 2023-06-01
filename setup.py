@@ -162,6 +162,7 @@ def main():
         + [
             # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
             "-DPYTHON3_EXECUTABLE=%s" % sys.executable,
+            "-DPYTHON_DEFAULT_EXECUTABLE=%s" % sys.executable,
             "-DPYTHON3_INCLUDE_DIR=%s" % python_include_dir,
             "-DPYTHON3_LIBRARY=%s" % python_lib_path,
             "-DBUILD_opencv_python3=ON",
