@@ -129,6 +129,10 @@ def main():
         +
         [
             r"python/cv2/.*config.*.py"
+        ]
+        +
+        [
+            r"python/cv2/.*\.pyi"
         ],
         "cv2.data": [  # OPENCV_OTHER_INSTALL_PATH
             ("etc" if os.name == "nt" else "share/opencv4") + r"/haarcascades/.*\.xml"
