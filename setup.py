@@ -129,7 +129,10 @@ def main():
         +
         [
             r"python/cv2/.*config.*.py"
-        ],
+        ]
+        +
+        [ r"python/cv2/py.typed" ] if sys.version_info >= (3, 6) else []
+        ,
         "cv2.data": [  # OPENCV_OTHER_INSTALL_PATH
             ("etc" if os.name == "nt" else "share/opencv4") + r"/haarcascades/.*\.xml"
         ],
@@ -392,7 +395,6 @@ class RearrangeCMakeOutput(object):
             p.replace(os.path.sep, "/") for p in install_relpaths
         ]
         relpaths_zip = list(zip(fslash_install_relpaths, install_relpaths))
-        del install_relpaths, fslash_install_relpaths
 
         final_install_relpaths = []
 
@@ -410,6 +412,19 @@ class RearrangeCMakeOutput(object):
 
         with open(config_py, 'w') as opencv_init_config:
             opencv_init_config.write(custom_init_data)
+
+        if sys.version_info >= (3, 6):
+            for p in install_relpaths:
+                if p.endswith(".pyi"):
+                    target_rel_path = os.path.relpath(p, "python/cv2")
+                    cls._setuptools_wrap._copy_file(
+                        os.path.join(cmake_install_dir, p),
+                        os.path.join(cmake_install_dir, "cv2", target_rel_path),
+                        hide_listing=False,
+                    )
+                    final_install_relpaths.append(os.path.join("cv2", target_rel_path))
+
+        del install_relpaths, fslash_install_relpaths
 
         for package_name, relpaths_re in cls.package_paths_re.items():
             package_dest_reldir = package_name.replace(".", os.path.sep)
