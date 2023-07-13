@@ -9,11 +9,12 @@ import sysconfig
 import platform
 import skbuild
 from skbuild import cmaker
+import multiprocessing
 
 
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
+    parallel_level = int(multiprocessing.cpu_count() / 2)
     CI_BUILD = os.environ.get("CI_BUILD", "False")
     is_CI_build = True if CI_BUILD == "1" else False
     cmake_source_dir = "opencv"
@@ -222,6 +223,9 @@ def main():
 
     if sys.platform.startswith("linux") and not is64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
+    if sys.platform.startswith("linux"):
+        # add environ MAKEFLAGS = cpu_core_num/2
+        os.environ['MAKEFLAGS'] = '-j ' + str(parallel_level)
 
     # OS-specific components during CI builds
     if is_CI_build:
@@ -308,6 +312,9 @@ def main():
         cmake_args=cmake_args,
         cmake_source_dir=cmake_source_dir,
     )
+    # del MAKEFLAGS environ
+    if 'MAKEFLAGS' in os.environ:
+        del os.environ['MAKEFLAGS']
 
 
 class RearrangeCMakeOutput:
