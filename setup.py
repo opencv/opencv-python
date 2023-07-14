@@ -14,7 +14,8 @@ import multiprocessing
 
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    parallel_level = int(multiprocessing.cpu_count() / 2)
+    parallel_level = int(multiprocessing.cpu_count() / 2+0.5)
+    enable_parallel_level = False
     CI_BUILD = os.environ.get("CI_BUILD", "False")
     is_CI_build = True if CI_BUILD == "1" else False
     cmake_source_dir = "opencv"
@@ -223,10 +224,10 @@ def main():
 
     if sys.platform.startswith("linux") and not is64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
-    if sys.platform.startswith("linux"):
+    if sys.platform.startswith("linux") and 'MAKEFLAGS' not in os.environ:
         # add environ MAKEFLAGS = cpu_core_num/2
         os.environ['MAKEFLAGS'] = '-j ' + str(parallel_level)
-
+        enable_parallel_level = True
     # OS-specific components during CI builds
     if is_CI_build:
 
@@ -313,7 +314,7 @@ def main():
         cmake_source_dir=cmake_source_dir,
     )
     # del MAKEFLAGS environ
-    if 'MAKEFLAGS' in os.environ:
+    if enable_parallel_level:
         del os.environ['MAKEFLAGS']
 
 
