@@ -1,5 +1,21 @@
 [![Downloads](http://pepy.tech/badge/opencv-python)](http://pepy.tech/project/opencv-python)
 
+- [OpenCV on Wheels](#opencv-on-wheels)
+  - [Installation and Usage](#installation-and-usage)
+- [Frequently Asked Questions](#frequently-asked-questions)
+- [Documentation for opencv-python](#documentation-for-opencv-python)
+  - [CI build process](#ci-build-process)
+  - [Manual builds](#manual-builds)
+    - [Manual debug builds](#manual-debug-builds)
+    - [Source distributions](#source-distributions)
+  - [Licensing](#licensing)
+  - [Versioning](#versioning)
+  - [Releases](#releases)
+  - [Development builds](#development-builds)
+  - [Manylinux wheels](#manylinux-wheels)
+  - [Supported Python versions](#supported-python-versions)
+  - [Backward compatibility](#backward-compatibility)
+
 ## OpenCV on Wheels
 
 Pre-built CPU-only OpenCV packages for Python.
