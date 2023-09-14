@@ -108,10 +108,17 @@ def main():
 
     # Files from CMake output to copy to package.
     # Path regexes with forward slashes relative to CMake install dir.
+    # OpenBLAS package bug on Windows: https://github.com/xianyi/OpenBLAS/issues/4227
     rearrange_cmake_output_data = {
         "cv2": (
             [r"bin/opencv_videoio_ffmpeg\d{3}%s\.dll" % ("_64" if is64 else "")]
             if os.name == "nt"
+            else []
+        )
+        +
+        (
+            [os.path.join(os.environ["OpenBLAS_HOME"], "bin", "libopenblas.exp.dll").replace("\\", "\\\\")]
+            if os.name == "nt" and "OpenBLAS_HOME" in os.environ
             else []
         )
         +
