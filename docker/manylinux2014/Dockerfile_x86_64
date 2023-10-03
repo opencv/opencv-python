@@ -1,4 +1,4 @@
-# Version: 20231006
+# Version: 20231109
 # Image name: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64
 
 FROM quay.io/pypa/manylinux2014_x86_64:latest
