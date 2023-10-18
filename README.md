@@ -1,4 +1,4 @@
-[![Downloads](http://pepy.tech/badge/opencv-python)](http://pepy.tech/project/opencv-python)
+[![Downloads](https://static.pepy.tech/badge/opencv-python)](http://pepy.tech/project/opencv-python)
 
 - [OpenCV on Wheels](#opencv-on-wheels)
   - [Installation and Usage](#installation-and-usage)
