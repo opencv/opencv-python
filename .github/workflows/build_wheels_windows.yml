@@ -61,7 +61,20 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
+      # OpenBLAS package bug on Windows: https://github.com/xianyi/OpenBLAS/issues/4227
       run: |
+        mkdir openblas
+        cd openblas
+        curl -o OpenBLAS-0.3.24.zip https://altushost-swe.dl.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-${{ matrix.platform }}.zip
+        unzip OpenBLAS-0.3.24.zip
+        set OpenBLAS_HOME=${{ github.workspace }}\openblas
+        dir %OpenBLAS_HOME%
+        dir %OpenBLAS_HOME%\bin
+        set PATH=${{ github.workspace }}\openblas\bin;%PATH%
+        set
+        copy /y /b %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
+        dir %OpenBLAS_HOME%\bin
+        cd ..
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
@@ -69,6 +82,7 @@ jobs:
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
+      working-directory: ${{ github.workspace }}
     - name: Saving all wheels
       uses: actions/upload-artifact@v3
       with:
