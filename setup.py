@@ -7,8 +7,7 @@ import subprocess
 import re
 import sysconfig
 import platform
-import skbuild
-from skbuild import cmaker
+from skbuild import cmaker, setup
 
 
 def main():
@@ -264,7 +263,7 @@ def main():
         rearrange_cmake_output_data, files_outside_package_dir, package_data.keys()
     )
 
-    skbuild.setup(
+    setup(
         name=package_name,
         version=package_version,
         url="https://github.com/opencv/opencv-python",
