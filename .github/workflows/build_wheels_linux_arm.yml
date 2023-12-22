@@ -42,7 +42,7 @@ jobs:
       MB_ML_VER: 2014
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20231006
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20231109
       USE_CCACHE: 0
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
@@ -84,7 +84,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -94,7 +94,7 @@ jobs:
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       PLAT: aarch64
       NP_TEST_DEP: numpy==1.19.4
-      NP_TEST_DEP_LATEST: numpy==1.24.0
+      NP_TEST_DEP_LATEST: numpy==1.26.0
       CONFIG_PATH: travis_config.sh
       DOCKER_TEST_IMAGE: multibuild/focal_arm64v8
       UNICODE_WIDTH: 32
@@ -108,7 +108,7 @@ jobs:
         submodules: true
         fetch-depth: 0
     - name: Setup Environment variables
-      run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
+      run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v3
       with:
