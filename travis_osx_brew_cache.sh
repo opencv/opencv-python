@@ -265,14 +265,14 @@ function _brew_parse_bottle_json {
 
     local JSON; JSON="${1:?}"; shift
 
-    local JSON_DATA; JSON_DATA=$(python2.7 -c 'if True:
+    local JSON_DATA; JSON_DATA=$(python3 -c 'if True:
     import sys,json; j=json.load(open(sys.argv[1],"rb")); [name]=j.keys(); [pdata]=j.values()
-    print name
-    print pdata["formula"]["pkg_version"]
-    print pdata["bottle"]["rebuild"]
+    print(name)
+    print(pdata["formula"]["pkg_version"])
+    print(pdata["bottle"]["rebuild"])
     [(tag_name, tag_dict)]=pdata["bottle"]["tags"].items()
-    print tag_name
-    print tag_dict["sha256"]
+    print(tag_name)
+    print(tag_dict["sha256"])
     ' "$JSON")
 
     unset JSON
@@ -292,15 +292,15 @@ function _brew_parse_package_info {
     PACKAGE="${1:?}"; shift
     OS_CODENAME="${1:?}"; shift
 
-    local JSON_DATA; JSON_DATA=$(python2.7 -c 'if True:
+    local JSON_DATA; JSON_DATA=$(python3 -c 'if True:
     import sys, json, subprocess; j=json.loads(subprocess.check_output(("brew","info","--json=v1",sys.argv[1])))
     data=j[0]
     revision=data["revision"]
     # in bottle''s json, revision is included into version; here, they are separate
-    print data["versions"]["stable"]+("_"+str(revision) if revision else "")
+    print(data["versions"]["stable"]+("_"+str(revision) if revision else ""))
     bottle_data=data["bottle"].get("stable",{"rebuild":"","files":{}})
-    print bottle_data["rebuild"]
-    print bottle_data["files"].get(sys.argv[2],{"sha256":"!?"})["sha256"]     #prevent losing trailing blank line to command substitution
+    print(bottle_data["rebuild"])
+    print(bottle_data["files"].get(sys.argv[2],{"sha256":"!?"})["sha256"])     #prevent losing trailing blank line to command substitution
     ' \
     "$PACKAGE" "$OS_CODENAME"); JSON_DATA="${JSON_DATA%\!\?}"  #!? can't occur in a hash
 

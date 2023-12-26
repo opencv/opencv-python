@@ -20,7 +20,7 @@ on:
 
 jobs:
   Build:
-    runs-on: macos-11
+    runs-on: macos-12
     defaults:
       run:
         shell: bash
@@ -98,7 +98,7 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: macos-11
+    runs-on: macos-12
     defaults:
       run:
         shell: bash
