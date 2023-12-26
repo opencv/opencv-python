@@ -55,8 +55,8 @@ jobs:
         echo $ENABLE_CONTRIB > contrib.enabled
         echo $ENABLE_HEADLESS > headless.enabled
         export MACOSX_DEPLOYMENT_TARGET=11.0
-        arch -arm64 python${{ matrix.python-version }} -m pip install toml && python${{ matrix.python-version }} -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python${{ matrix.python-version }} -m pip install -r /dev/stdin
-        arch -arm64 python${{ matrix.python-version }} setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
+        python${{ matrix.python-version }} -m pip install toml && python${{ matrix.python-version }} -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python${{ matrix.python-version }} -m pip install -r /dev/stdin
+        python${{ matrix.python-version }} setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
         delocate-wheel ${{ github.workspace }}/wheelhouse/opencv*
     - name: Saving all wheels
       uses: actions/upload-artifact@v3
@@ -100,18 +100,18 @@ jobs:
         path: wheelhouse/
     - name: Package installation
       run: |
-        arch -arm64 python${{ matrix.python-version }} -m pip install --user --no-cache --force-reinstall wheelhouse/opencv*.whl
+        python${{ matrix.python-version }} -m pip install --user --no-cache --force-reinstall wheelhouse/opencv*.whl
         cd ${{ github.workspace }}/tests
-        arch -arm64 python${{ matrix.python-version }} get_build_info.py
+        python${{ matrix.python-version }} get_build_info.py
     - name: Run tests
       run: |
         cd ${{ github.workspace }}/opencv
-        arch -arm64 python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
+        python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
     - name: Pylint test
       run: |
-        arch -arm64 python${{ matrix.python-version }} -m pip install pylint==2.15.9
+        python${{ matrix.python-version }} -m pip install pylint==2.15.9
         cd ${{ github.workspace }}/tests
-        arch -arm64 python${{ matrix.python-version }} -m pylint $PYLINT_TEST_FILE
+        python${{ matrix.python-version }} -m pylint $PYLINT_TEST_FILE
 
   Release_rolling:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
