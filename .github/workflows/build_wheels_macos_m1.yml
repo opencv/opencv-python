@@ -98,17 +98,24 @@ jobs:
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
+    - name: Create Venv for test
+      run: |
+        test -d "${{ github.workspace }}/opencv_test" && rm -rf "${{ github.workspace }}/opencv_test"
+        python${{ matrix.python-version }} -m venv ${{ github.workspace }}/opencv_test
     - name: Package installation
       run: |
-        python${{ matrix.python-version }} -m pip install --user --no-cache --force-reinstall wheelhouse/opencv*.whl
+        source ${{ github.workspace }}/opencv_test/bin/activate
+        python${{ matrix.python-version }} -m pip install --no-cache --force-reinstall wheelhouse/opencv*.whl
         cd ${{ github.workspace }}/tests
         python${{ matrix.python-version }} get_build_info.py
     - name: Run tests
       run: |
+        source ${{ github.workspace }}/opencv_test/bin/activate
         cd ${{ github.workspace }}/opencv
         python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
     - name: Pylint test
       run: |
+        source ${{ github.workspace }}/opencv_test/bin/activate
         python${{ matrix.python-version }} -m pip install pylint==2.15.9
         cd ${{ github.workspace }}/tests
         python${{ matrix.python-version }} -m pylint $PYLINT_TEST_FILE
