@@ -1,5 +1,9 @@
 [![Downloads](https://static.pepy.tech/badge/opencv-python)](http://pepy.tech/project/opencv-python)
 
+### Keep OpenCV Free
+
+OpenCV is raising funds to keep the library free for everyone, and we need the support of the entire community to do it. [Donate to OpenCV on IndieGoGo](http://igg.me/at/opencv5) to show your support.
+
 - [OpenCV on Wheels](#opencv-on-wheels)
   - [Installation and Usage](#installation-and-usage)
 - [Frequently Asked Questions](#frequently-asked-questions)
