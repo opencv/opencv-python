@@ -105,6 +105,7 @@ jobs:
     - name: Package installation
       run: |
         source ${{ github.workspace }}/opencv_test/bin/activate
+        python${{ matrix.python-version }} -m pip install --upgrade pip
         python${{ matrix.python-version }} -m pip install --no-cache --force-reinstall wheelhouse/opencv*.whl
         cd ${{ github.workspace }}/tests
         python${{ matrix.python-version }} get_build_info.py
