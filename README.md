@@ -241,6 +241,7 @@ Python 3.x compatible pre-built wheels are provided for the officially supported
 - 3.9
 - 3.10
 - 3.11
+- 3.12
 
 ### Backward compatibility
 
@@ -249,3 +250,5 @@ Starting from 4.2.0 and 3.4.9 builds the macOS Travis build environment was upda
 Starting from 4.3.0 and 3.4.10 builds the Linux build environment was updated from `manylinux1` to `manylinux2014`. This dropped support for old Linux distributions.
 
 Starting from version 4.7.0 the Mac OS GitHub Actions build environment was update to version 11. Mac OS 10.x support depricated. See https://github.com/actions/runner-images/issues/5583
+
+Starting from version 4.9.0 the Mac OS GitHub Actions build environment was update to version 12. Mac OS 10.x support depricated by Brew and most of used packages.
