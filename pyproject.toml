@@ -9,7 +9,7 @@ requires = [
   "numpy==1.19.3; python_version=='3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
   "numpy==1.21.2; python_version=='3.10' and platform_system!='Darwin'",
   "numpy==1.21.4; python_version=='3.10' and platform_system=='Darwin'",
-  "numpy==1.22.2; python_version>='3.11'",
+  "numpy>=1.26.3; python_version>='3.11'",
   "pip",
   "scikit-build>=0.14.0",
   "setuptools==59.2.0",
