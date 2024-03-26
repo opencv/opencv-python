@@ -220,7 +220,7 @@ The master branch follows OpenCV master branch releases. 3.4 branch follows Open
 
 ### Development builds
 
-Every commit to the master branch of this repo will be built. Possible build artifacts use local version identifiers:
+Every commit to the main branch of this repo will be built. Possible build artifacts use local version identifiers:
 
 ``cv_major.cv_minor.cv_revision+git_hash_of_this_repo`` e.g. ``3.1.0+14a8d39``
 
