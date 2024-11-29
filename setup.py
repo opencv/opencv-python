@@ -191,7 +191,7 @@ def main():
             "-DBUILD_TESTS=OFF",
             "-DBUILD_PERF_TESTS=OFF",
             "-DBUILD_DOCS=OFF",
-            "-DPYTHON3_LIMITED_API=ON",
+            "-DPYTHON3_LIMITED_API=%s" % ("OFF" if sysconfig.get_config_var("Py_GIL_DISABLED") else "ON"),
             "-DBUILD_OPENEXR=ON",
         ]
         + (
