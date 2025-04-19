@@ -1,46 +1,25 @@
-"""
-Custom build backend for setuptools + scikit-build-based Python packages.
-Ensures CMake >= 3.5 is available for building C/C++ extensions.
-"""
-
+# Import the default setuptools PEP 517 build backend under a custom alias
+# This allows us to extend or override its functionality where needed
 from setuptools import build_meta as _orig
 
-# Pass-through functions from the original setuptools backend
 prepare_metadata_for_build_wheel = _orig.prepare_metadata_for_build_wheel
 build_wheel = _orig.build_wheel
 build_sdist = _orig.build_sdist
 get_requires_for_build_sdist = _orig.get_requires_for_build_sdist
 
 def get_requires_for_build_wheel(config_settings=None):
-    """
-    Returns a list of additional build-time dependencies required to build a wheel.
-
-    This custom version checks if the system has an appropriate version of CMake
-    (>= 3.5), which is required by scikit-build. If not present or outdated, it
-    appends 'cmake>=3.5' to the required packages list.
-
-    Args:
-        config_settings (dict, optional): Configuration settings (unused).
-
-    Returns:
-        List[str]: List of required build dependencies.
-    """
     from packaging import version
     from skbuild.exceptions import SKBuildError
     from skbuild.cmaker import get_cmake_version
-
-    # Get default requirements
-    packages = list(_orig.get_requires_for_build_wheel(config_settings))
-
-    # Define minimum version required
+    packages = _orig.get_requires_for_build_wheel(config_settings)
+    # check if system cmake can be used if present
+    # if not, append cmake PyPI distribution to required packages
+    # scikit-build>=0.18 itself requires cmake 3.5+
     min_version = "3.5"
-
     try:
-        cmake_ver = get_cmake_version().split("-")[0]
-        if version.parse(cmake_ver) < version.parse(min_version):
+        if version.parse(get_cmake_version().split("-")[0]) < version.parse(min_version):
             packages.append(f'cmake>={min_version}')
-    except (SKBuildError, OSError, ValueError) as e:
-        # Catch broader exceptions in case of system misconfigurations
+    except SKBuildError:
         packages.append(f'cmake>={min_version}')
 
     return packages
