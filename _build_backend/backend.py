@@ -1,3 +1,5 @@
+# Import the default setuptools PEP 517 build backend under a custom alias
+# This allows us to extend or override its functionality where needed
 from setuptools import build_meta as _orig
 
 prepare_metadata_for_build_wheel = _orig.prepare_metadata_for_build_wheel
