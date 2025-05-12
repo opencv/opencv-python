@@ -71,16 +71,12 @@ jobs:
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
-    - name: Saving all wheels
+      
+    - name: Upload built wheel
       uses: actions/upload-artifact@v4
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
-    - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v4
-      with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
-        path: wheelhouse/opencv*
+        with:
+          name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}-${{ github.run_id }}-${{ github.job }}
+          path: wheelhouse/opencv*.whl
 
   Test:
     needs: [Build]
@@ -117,11 +113,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
-    - name: Download a wheel accordingly to matrix
+        
+    - name: Download all artifacts
       uses: actions/download-artifact@v3
-      with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
-        path: wheelhouse/
+        with:
+          path: wheelhouse/
+
     - name: Package installation
       run: |
         cd ${{ github.workspace }}/tests
@@ -148,10 +145,11 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download all wheels
+        uses: actions/download-artifact@v3
         with:
-          name: wheels
           path: wheelhouse/
+
       - name: Upload wheels for opencv_python_rolling
         run: |
           python -m pip install twine
@@ -178,9 +176,9 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download all wheels
+        uses: actions/download-artifact@v3
         with:
-          name: wheels
           path: wheelhouse/
       - name: Upload all wheels
         run: |
@@ -196,9 +194,9 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download all wheels
+        uses: actions/download-artifact@v3
         with:
-          name: wheels
           path: wheelhouse/
       - name: Upload wheels for opencv_python
         run: |
