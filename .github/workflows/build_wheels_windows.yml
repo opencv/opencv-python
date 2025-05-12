@@ -72,12 +72,7 @@ jobs:
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
     - name: Saving all wheels
-      uses: actions/upload-artifact@v3.1.3
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
-    - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v3.1.3
+      uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/opencv*
@@ -148,9 +143,8 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: wheels
           path: wheelhouse/
       - name: Upload wheels for opencv_python_rolling
         run: |
@@ -178,9 +172,8 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: wheels
           path: wheelhouse/
       - name: Upload all wheels
         run: |
@@ -196,9 +189,8 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: wheels
           path: wheelhouse/
       - name: Upload wheels for opencv_python
         run: |
