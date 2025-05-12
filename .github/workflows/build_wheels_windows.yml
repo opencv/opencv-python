@@ -74,7 +74,7 @@ jobs:
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
-        name: wheels
+        name: wheels-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v4
@@ -150,7 +150,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wheels
+          name: wheels-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
           path: wheelhouse/
       - name: Upload wheels for opencv_python_rolling
         run: |
@@ -180,7 +180,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wheels
+          name: wheels-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
           path: wheelhouse/
       - name: Upload all wheels
         run: |
@@ -198,7 +198,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wheels
+          name: wheels-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
           path: wheelhouse/
       - name: Upload wheels for opencv_python
         run: |
