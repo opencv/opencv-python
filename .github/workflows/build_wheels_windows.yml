@@ -72,9 +72,12 @@ jobs:
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
       
-    - name: Check for Media Foundation
+    - name: Find CMakeCache.txt and check for MSMF
       run: |
-          findstr /i MSMF build\CMakeCache.txt || echo "MSMF not found"
+          for /r %%f in (CMakeCache.txt) do (
+          echo Found: %%f
+          findstr /i MSMF "%%f"
+          )
       shell: cmd
 
     - name: Saving all wheels
