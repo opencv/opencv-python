@@ -107,6 +107,7 @@ jobs:
         set "CI_BUILD=1"
         set "OpenBLAS_HOME=${{ github.workspace }}\\openblas"
         set "PATH=%OpenBLAS_HOME%\\bin;%PATH%"
+        set "CMAKE_ARGS=-DLAPACK=ON -DLAPACK_IMPL=OpenBLAS -DOpenBLAS_LIB=%OpenBLAS_HOME%\\lib\\libopenblas.lib -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME%\\include"
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
       shell: cmd
 
