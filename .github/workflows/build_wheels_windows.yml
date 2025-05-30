@@ -41,36 +41,59 @@ jobs:
         rm -rf ./* || true
         rm -rf ./.??* || true
       working-directory: ${{ github.workspace }}
+
     - name: Setup environment
       shell: bash
       run: |
         if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
+
     - name: Checkout
       uses: actions/checkout@v3
       with:
         submodules: false
         fetch-depth: 0
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
+
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1
+
     - name: Setup NASM
       uses: ilammy/setup-nasm@v1
+
+    - name: Setup OpenBLAS
+      run: |
+        mkdir openblas
+        cd openblas
+        curl -o OpenBLAS-0.3.24.zip https://altushost-swe.dl.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-${{ matrix.platform }}.zip
+        tar -xf OpenBLAS-0.3.24.zip || unzip OpenBLAS-0.3.24.zip
+        set "OpenBLAS_HOME=${{ github.workspace }}\\openblas"
+        set "PATH=%OpenBLAS_HOME%\\bin;%PATH%"
+        if exist %OpenBLAS_HOME%\\bin\\libopenblas.dll (
+          copy /y %OpenBLAS_HOME%\\bin\\libopenblas.dll %OpenBLAS_HOME%\\bin\\libopenblas.exp.dll
+        )
+        dir %OpenBLAS_HOME%\\bin
+      shell: cmd
+
     - name: Build a package
-      # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install cmake==3.24.2
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
-        set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
+        set "CI_BUILD=1"
+        set "OpenBLAS_HOME=${{ github.workspace }}\\openblas"
+        set "PATH=%OpenBLAS_HOME%\\bin;%PATH%"
+        python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
       shell: cmd
+
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
