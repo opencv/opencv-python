@@ -68,18 +68,34 @@ jobs:
       uses: ilammy/setup-nasm@v1
 
     - name: Setup OpenBLAS
+      shell: cmd
       run: |
+        setlocal enableextensions enabledelayedexpansion
+
+        rem Determine correct architecture
+        if "${{ matrix.platform }}"=="x64" (
+          set ARCH=x64
+        ) else (
+          set ARCH=x86
+        )
+
+        echo Using architecture: %ARCH%
+
         mkdir openblas
         cd openblas
-        curl -o OpenBLAS-0.3.24.zip https://altushost-swe.dl.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-${{ matrix.platform }}.zip
-        tar -xf OpenBLAS-0.3.24.zip || unzip OpenBLAS-0.3.24.zip
-        set "OpenBLAS_HOME=${{ github.workspace }}\\openblas"
-        set "PATH=%OpenBLAS_HOME%\\bin;%PATH%"
-        if exist %OpenBLAS_HOME%\\bin\\libopenblas.dll (
-          copy /y %OpenBLAS_HOME%\\bin\\libopenblas.dll %OpenBLAS_HOME%\\bin\\libopenblas.exp.dll
+        curl -L -o OpenBLAS.zip https://downloads.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-%ARCH%.zip
+        powershell -Command "Expand-Archive -Path OpenBLAS.zip -DestinationPath ."
+
+        set "OpenBLAS_HOME=%CD%"
+        set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
+
+        if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
+          copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
         )
-        dir %OpenBLAS_HOME%\\bin
-      shell: cmd
+
+        echo Finished OpenBLAS setup
+        dir %OpenBLAS_HOME%\bin
+
 
     - name: Build a package
       run: |
