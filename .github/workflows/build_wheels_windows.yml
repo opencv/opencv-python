@@ -108,7 +108,7 @@ jobs:
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
 
         echo Using OpenBLAS_HOME=%OpenBLAS_HOME%
-        set "CMAKE_ARGS=-DLAPACK=ON -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME:/=/%/include -DOpenBLAS_LIBRARIES=%OpenBLAS_HOME:/=/%/bin/libopenblas.dll"
+        set "CMAKE_ARGS=-DLAPACK=ON -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME:/=/%/include -DOpenBLAS_LIBRARIES=%OpenBLAS_HOME:/=/%/lib/libopenblas.lib"
         echo CMAKE_ARGS: %CMAKE_ARGS%
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
       shell: cmd
