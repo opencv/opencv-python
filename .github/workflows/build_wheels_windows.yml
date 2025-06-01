@@ -67,40 +67,49 @@ jobs:
     - name: Setup NASM
       uses: ilammy/setup-nasm@v1
 
-    - name: Build a package
+    - name: Setup OpenBLAS
+      shell: cmd
       run: |
-        python --version
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install cmake==3.24.2
-        python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
-
         setlocal enableextensions enabledelayedexpansion
 
         rem Determine correct architecture
-        if "${{ matrix.platform }}"=="x64" (
+        if "%{matrix.platform}%"=="x64" (
           set ARCH=x64
           set FOLDER=win64
-        ) else (
-          set ARCH=x86
-          set FOLDER=win32
-        )
+         ) else (
+           set ARCH=x86
+           set FOLDER=win32
+         )
 
-        echo Using architecture: %ARCH%
         mkdir openblas
         cd openblas
         curl -L -o OpenBLAS.zip https://downloads.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-%ARCH%.zip
         powershell -Command "Expand-Archive -Path OpenBLAS.zip -DestinationPath ."
 
         set "OpenBLAS_HOME=%CD%"
+        echo OpenBLAS_HOME=%OpenBLAS_HOME%
         set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
+
         if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
-          copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
-        )
-        
+        copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
+         )
+
+        echo Finished OpenBLAS setup
+        cd ..
+        echo set "OpenBLAS_HOME=%OpenBLAS_HOME%" > set_openblas_env.cmd
+
+    - name: Build a package
+      run: |
+        call set_openblas_env.cmd
+        python --version
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install cmake==3.24.2
+        python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
+
+        echo Using OpenBLAS_HOME=%OpenBLAS_HOME%
         set "CMAKE_ARGS=-DLAPACK=ON -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME%\include -DOpenBLAS_LIBRARIES=%OpenBLAS_HOME%\bin\libopenblas.dll"
-        echo %OpenBLAS_HOME%
-        echo %CMAKE_ARGS%
+        echo CMAKE_ARGS: %CMAKE_ARGS%
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
       shell: cmd
 
