@@ -89,7 +89,9 @@ jobs:
 
         set "OpenBLAS_HOME=%CD%"
         set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
-        powershell -Command "$base = Resolve-Path .; $cfg = 'lib/cmake/openblas/OpenBLASConfig.cmake'; $fullInclude = Join-Path $base 'include'; $fullLib = Join-Path $base 'bin/libopenblas.dll'; (Get-Content $cfg) -replace 'SET\\(OpenBLAS_INCLUDE_DIRS.*?\\)', 'SET(OpenBLAS_INCLUDE_DIRS \"' + $fullInclude + '\")' -replace 'SET\\(OpenBLAS_LIBRARIES.*?\\)', 'SET(OpenBLAS_LIBRARIES \"' + $fullLib + '\")' | Set-Content $cfg"
+        powershell -Command "$base = Resolve-Path .; $cfg = 'lib/cmake/openblas/OpenBLASConfig.cmake'; $fullInclude = (Join-Path $base 'include').Replace('\','/'); $fullLib = (Join-Path $base 'bin/libopenblas.dll').Replace('\','/'); $content = Get-Content $cfg; $content = $content -replace 'SET\(OpenBLAS_INCLUDE_DIRS.*?\)', 'SET(OpenBLAS_INCLUDE_DIRS \"' + $fullInclude + '\")'; $content = $content -replace 'SET\(OpenBLAS_LIBRARIES.*?\)', 'SET(OpenBLAS_LIBRARIES \"' + $fullLib + '\")'; Set-Content $cfg $content"
+        type D:\a\opencv-python\opencv-python\openblas\lib\cmake\openblas\OpenBLASConfig.cmake
+
 
         if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
           copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
