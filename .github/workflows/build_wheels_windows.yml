@@ -89,7 +89,7 @@ jobs:
 
         set "OpenBLAS_HOME=%CD%"
         set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
-        powershell -Command "$base=Resolve-Path .; $fullInclude=($fullIncludePath=Join-Path $base 'include') -replace '\\','/'; $fullLib=($fullLibPath=Join-Path $base 'bin/libopenblas.dll') -replace '\\','/'; $cfg='lib/cmake/openblas/OpenBLASConfig.cmake'; $content=Get-Content $cfg -Raw; $content=$content -replace 'SET\\(OpenBLAS_INCLUDE_DIRS.*?\\)', 'SET(OpenBLAS_INCLUDE_DIRS \"' + $fullInclude + '\")'; $content=$content -replace 'SET\\(OpenBLAS_LIBRARIES.*?\\)', 'SET(OpenBLAS_LIBRARIES \"' + $fullLib + '\")'; Set-Content $cfg $content"
+        powershell -Command "$cfg='lib/cmake/openblas/OpenBLASConfig.cmake'; $includePath='D:/a/opencv-python/opencv-python/openblas/include'; $libPath='D:/a/opencv-python/opencv-python/openblas/bin/libopenblas.dll'; (Get-Content $cfg -Raw) -replace 'SET\\(OpenBLAS_INCLUDE_DIRS.*?\\)', 'SET(OpenBLAS_INCLUDE_DIRS \"' + $includePath + '\")' -replace 'SET\\(OpenBLAS_LIBRARIES.*?\\)', 'SET(OpenBLAS_LIBRARIES \"' + $libPath + '\")' | Set-Content $cfg"
         type D:\a\opencv-python\opencv-python\openblas\lib\cmake\openblas\OpenBLASConfig.cmake
 
 
