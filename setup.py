@@ -115,6 +115,12 @@ def main():
             else []
         )
         +
+        (
+            [os.path.join(os.environ["OpenBLAS_HOME"], "bin", "libopenblas.exp.dll").replace("\\", "\\\\")]
+            if os.name == "nt" and "OpenBLAS_HOME" in os.environ
+            else []
+        )
+        +
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
