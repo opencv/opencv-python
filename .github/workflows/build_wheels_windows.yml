@@ -67,9 +67,14 @@ jobs:
     - name: Setup NASM
       uses: ilammy/setup-nasm@v1
 
-    - name: Setup OpenBLAS
-      shell: cmd
+    - name: Build a package
       run: |
+        python --version
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install cmake==3.24.2
+        python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
+
         setlocal enableextensions enabledelayedexpansion
 
         rem Determine correct architecture
@@ -92,22 +97,7 @@ jobs:
         if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
           copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
         )
-
-        echo Finished OpenBLAS setup
-        dir %OpenBLAS_HOME%\bin
-        dir %OpenBLAS_HOME%\lib
-        dir %OpenBLAS_HOME%
-        dir %OpenBLAS_HOME%\include
-
-
-    - name: Build a package
-      run: |
-        python --version
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install cmake==3.24.2
-        python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
-    
+        
         set "CMAKE_ARGS=-DLAPACK=ON -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME%\include -DOpenBLAS_LIBRARIES=%OpenBLAS_HOME%\bin\libopenblas.dll"
         echo %OpenBLAS_HOME%
         echo %CMAKE_ARGS%
