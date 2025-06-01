@@ -89,6 +89,7 @@ jobs:
 
         set "OpenBLAS_HOME=%CD%"
         set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
+        powershell -Command "(Get-Content cmake/openblas/OpenBLASConfig.cmake) -replace 'win32/include', 'include' -replace 'win64/include', 'include' -replace 'win32/bin', 'bin' -replace 'win64/bin', 'bin' | Set-Content cmake/openblas/OpenBLASConfig.cmake"
 
         if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
           copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
