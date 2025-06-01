@@ -89,7 +89,7 @@ jobs:
 
         set "OpenBLAS_HOME=%CD%"
         set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
-        powershell -Command "(Get-Content lib/cmake/openblas/OpenBLASConfig.cmake) -replace 'win32/include', 'D:/a/opencv-python/opencv-python/openblas/include' -replace 'win64/include', 'D:/a/opencv-python/opencv-python/openblas/include' -replace 'win32/bin/libopenblas.dll', 'D:/a/opencv-python/opencv-python/openblas/bin' -replace 'win64/bin/libopenblas.dll', 'D:/a/opencv-python/opencv-python/openblas/bin' | Set-Content lib/cmake/openblas/OpenBLASConfig.cmake"
+        powershell -Command "(Get-Content lib/cmake/openblas/OpenBLASConfig.cmake) -replace 'win32/include', 'D:/a/opencv-python/opencv-python/openblas/include' -replace 'win64/include', 'D:/a/opencv-python/opencv-python/openblas/include' -replace 'win32/bin/libopenblas.dll', 'D:/a/opencv-python/opencv-python/openblas/lib' -replace 'win64/bin/libopenblas.dll', 'D:/a/opencv-python/opencv-python/openblas/lib' | Set-Content lib/cmake/openblas/OpenBLASConfig.cmake"
         
         type D:\a\opencv-python\opencv-python\openblas\lib\cmake\openblas\OpenBLASConfig.cmake
 
