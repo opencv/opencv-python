@@ -89,12 +89,7 @@ jobs:
 
         set "OpenBLAS_HOME=%CD%"
         set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
-        powershell -Command ^
-          "$base = Resolve-Path .; " + `
-          "$cfg = 'lib/cmake/openblas/OpenBLASConfig.cmake'; " + `
-          "$fullInclude = Join-Path $base 'include'; " + `
-          "$fullLib = Join-Path $base 'bin/libopenblas.dll'; " + `
-          "(Get-Content $cfg) -replace 'SET\\(OpenBLAS_INCLUDE_DIRS.*?\\)', 'SET(OpenBLAS_INCLUDE_DIRS \"' + $fullInclude + '\")' -replace 'SET\\(OpenBLAS_LIBRARIES.*?\\)', 'SET(OpenBLAS_LIBRARIES \"' + $fullLib + '\")' | Set-Content $cfg"
+        powershell -Command "$base = Resolve-Path .; $cfg = 'lib/cmake/openblas/OpenBLASConfig.cmake'; $fullInclude = Join-Path $base 'include'; $fullLib = Join-Path $base 'bin/libopenblas.dll'; (Get-Content $cfg) -replace 'SET\\(OpenBLAS_INCLUDE_DIRS.*?\\)', 'SET(OpenBLAS_INCLUDE_DIRS \"' + $fullInclude + '\")' -replace 'SET\\(OpenBLAS_LIBRARIES.*?\\)', 'SET(OpenBLAS_LIBRARIES \"' + $fullLib + '\")' | Set-Content $cfg"
 
         if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
           copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
