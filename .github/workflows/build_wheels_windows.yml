@@ -84,8 +84,6 @@ jobs:
         echo Using architecture: %ARCH%
         mkdir openblas
         cd openblas
-        mkdir %FOLDER%
-        cd %FOLDER%
         curl -L -o OpenBLAS.zip https://downloads.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-%ARCH%.zip
         powershell -Command "Expand-Archive -Path OpenBLAS.zip -DestinationPath ."
 
