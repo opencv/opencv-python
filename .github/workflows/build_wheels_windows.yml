@@ -75,14 +75,16 @@ jobs:
         rem Determine correct architecture
         if "${{ matrix.platform }}"=="x64" (
           set ARCH=x64
+          set FOLDER=win64
         ) else (
           set ARCH=x86
+          set FOLDER=win32
         )
 
         echo Using architecture: %ARCH%
 
-        mkdir openblas
-        cd openblas
+        mkdir %FOLDER%
+        cd %FOLDER%
         curl -L -o OpenBLAS.zip https://downloads.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-%ARCH%.zip
         powershell -Command "Expand-Archive -Path OpenBLAS.zip -DestinationPath ."
 
