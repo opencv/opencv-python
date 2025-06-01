@@ -89,7 +89,7 @@ jobs:
 
         set "OpenBLAS_HOME=%CD%"
         set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
-        powershell -Command "$cfg='lib/cmake/openblas/OpenBLASConfig.cmake'; $inc=$env:OpenBLAS_HOME + '/include'; $lib=$env:OpenBLAS_HOME + '/lib/libopenblas.lib'; $content = Get-Content $cfg -Raw; $content = $content -replace 'SET\(OpenBLAS_INCLUDE_DIRS .*?\)', 'SET(OpenBLAS_INCLUDE_DIRS ' + $inc + ')'; $content = $content -replace 'SET\(OpenBLAS_LIBRARIES .*?\)', 'SET(OpenBLAS_LIBRARIES ' + $lib + ')'; Set-Content $cfg $content"
+        powershell -Command "$cfg = 'lib/cmake/openblas/OpenBLASConfig.cmake'; $inc = Join-Path $env:OpenBLAS_HOME 'include' -Resolve; $lib = Join-Path $env:OpenBLAS_HOME 'lib/libopenblas.lib' -Resolve; $inc = $inc -replace '\\','/'; $lib = $lib -replace '\\','/'; $txt = Get-Content $cfg -Raw; $txt = $txt -replace 'SET\(OpenBLAS_INCLUDE_DIRS\s+.*?\)', 'SET(OpenBLAS_INCLUDE_DIRS ' + $inc + ')'; $txt = $txt -replace 'SET\(OpenBLAS_LIBRARIES\s+.*?\)', 'SET(OpenBLAS_LIBRARIES ' + $lib + ')'; Set-Content $cfg $txt"
 
         type D:\a\opencv-python\opencv-python\openblas\lib\cmake\openblas\OpenBLASConfig.cmake
 
