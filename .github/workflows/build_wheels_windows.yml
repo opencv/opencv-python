@@ -95,6 +95,9 @@ jobs:
 
         echo Finished OpenBLAS setup
         dir %OpenBLAS_HOME%\bin
+        dir %OpenBLAS_HOME%\lib
+        dir %OpenBLAS_HOME%
+        dir %OpenBLAS_HOME%\include
 
 
     - name: Build a package
