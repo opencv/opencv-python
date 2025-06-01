@@ -104,10 +104,12 @@ jobs:
         python -m pip install --upgrade setuptools
         python -m pip install cmake==3.24.2
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
+    
         set "CI_BUILD=1"
         set "OpenBLAS_HOME=${{ github.workspace }}\\openblas"
         set "PATH=%OpenBLAS_HOME%\\bin;%PATH%"
-        set "CMAKE_ARGS=-DLAPACK=ON -DLAPACK_IMPL=OpenBLAS -DOpenBLAS_LIB=%OpenBLAS_HOME%\\lib\\libopenblas.lib -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME%\\include"
+        set "CMAKE_ARGS=-DLAPACK=ON -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME%\\include -DOpenBLAS_LIBRARIES=%OpenBLAS_HOME%\\lib\\libopenblas.lib"
+
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
       shell: cmd
 
