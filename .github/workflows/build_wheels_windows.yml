@@ -162,6 +162,7 @@ jobs:
         path: wheelhouse/
     - name: Package installation
       run: |
+        set "GITHUB_WORKSPACE=%CD%"
         dir %GITHUB_WORKSPACE%\openblas\bin
         set "PATH=%GITHUB_WORKSPACE%\openblas\bin;%PATH%"
         cd ${{ github.workspace }}/tests
