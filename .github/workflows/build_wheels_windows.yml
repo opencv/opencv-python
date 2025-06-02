@@ -113,13 +113,19 @@ jobs:
 
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
       shell: cmd
-
+      
+    - name: Copy OpenBLAS DLL to wheelhouse
+      run: |
+        copy openblas\bin\libopenblas.dll wheelhouse\
+      shell: cmd
+      
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: |
           wheelhouse/opencv*
+          wheelhouse/libopenblas.dll
 
   Test:
     needs: [Build]
@@ -161,8 +167,18 @@ jobs:
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/
-    
         
+    - name: Add OpenBLAS DLL to PATH
+      run: |
+        set "PATH=%CD%\wheelhouse;%PATH%"
+        echo %PATH%
+      shell: cmd
+      
+    - name: Check OpenBLAS DLL presence
+      run: |
+        where libopenblas.dll || echo "OpenBLAS DLL not found"
+      shell: cmd
+      
     - name: Package installation
       run: |
         cd ${{ github.workspace }}/tests
