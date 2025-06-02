@@ -138,7 +138,6 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
       PYLINT_TEST_FILE: ${{ github.workspace }}\opencv\samples\python\squares.py
-      PATH: ${{ github.workspace }}\openblas\bin;${{ env.PATH }}
     steps:
     - name: Cleanup
       shell: bash
