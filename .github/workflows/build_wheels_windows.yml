@@ -112,13 +112,17 @@ jobs:
         echo %CMAKE_ARGS%
 
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
-        for /d %%D in (build\lib*) do set BUILDDIR=%%D
-        if exist %BUILDDIR%\cv2 (
-             copy /Y openblas\bin\libopenblas.dll %BUILDDIR%\cv2\libopenblas.dll
-        ) else (
-             echo [!] cv2 directory not found in %BUILDDIR%
-             exit /b 1
+        setlocal enabledelayedexpansion
+        for /d %%D in (build\lib*) do (
+            set "BUILDDIR=%%D"
+            if exist "%%D\cv2" (  
+                copy /Y openblas\bin\libopenblas.dll "%%D\cv2\libopenblas.dll"
+            ) else (
+                echo [!] cv2 directory not found in %%D
+                exit /b 1
+            )
         )
+        endlocal
       shell: cmd
 
     - name: Saving all wheels
