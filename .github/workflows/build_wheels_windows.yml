@@ -112,6 +112,13 @@ jobs:
         echo %CMAKE_ARGS%
 
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
+        for /d %%D in (build\lib*) do set BUILDDIR=%%D
+        if exist %BUILDDIR%\cv2 (
+             copy /Y openblas\bin\libopenblas.dll %BUILDDIR%\cv2\libopenblas.dll
+        ) else (
+             echo [!] cv2 directory not found in %BUILDDIR%
+             exit /b 1
+        )
       shell: cmd
 
     - name: Saving all wheels
@@ -120,7 +127,6 @@ jobs:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: |
           wheelhouse/opencv*
-          openblas/**
 
   Test:
     needs: [Build]
@@ -166,9 +172,6 @@ jobs:
         
     - name: Package installation
       run: |
-        $env:OpenBLAS_HOME = "$PWD"
-        $env:PATH = "$env:OpenBLAS_HOME\wheelhouse\openblas\bin;$env:PATH"
-        Write-Host "OpenBLAS_HOME=$env:OpenBLAS_HOME"
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
