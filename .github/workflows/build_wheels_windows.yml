@@ -19,7 +19,7 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2019
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -122,7 +122,7 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: windows-2019
+    runs-on: windows-2022
     defaults:
       run:
         shell: cmd
@@ -162,6 +162,7 @@ jobs:
         path: wheelhouse/
     - name: Package installation
       run: |
+        dir %GITHUB_WORKSPACE%\openblas\bin
         set "PATH=%GITHUB_WORKSPACE%\openblas\bin;%PATH%"
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
