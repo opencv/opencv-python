@@ -192,10 +192,15 @@ jobs:
         if ($LastExitCode -ne 0) {throw $LastExitCode}
         python get_build_info.py
       shell: powershell
+      env:
+        PATH: ${{ github.workspace }}\wheelhouse;${{ env.PATH }}
     - name: Run tests
       run: |
         cd ${{ github.workspace }}/opencv
         python modules\python\test\test.py -v --repo .
+      env:
+        PATH: ${{ github.workspace }}\wheelhouse;${{ env.PATH }}
+        
     - name: Pylint test
       run: |
         python -m pip install pylint==2.15.9
