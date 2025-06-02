@@ -194,12 +194,14 @@ jobs:
       shell: powershell
       env:
         PATH: ${{ github.workspace }}\wheelhouse;${{ env.PATH }}
+        PYTHONPATH: ${{ github.workspace }}\wheelhouse;${{ env.PYTHONPATH }}
     - name: Run tests
       run: |
         cd ${{ github.workspace }}/opencv
         python modules\python\test\test.py -v --repo .
       env:
         PATH: ${{ github.workspace }}\wheelhouse;${{ env.PATH }}
+        PYTHONPATH: ${{ github.workspace }}\wheelhouse;${{ env.PYTHONPATH }}
         
     - name: Pylint test
       run: |
