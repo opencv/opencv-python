@@ -168,15 +168,21 @@ jobs:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/
         
+    - name: Show contents of wheelhouse
+      run: |
+        echo "== wheelhouse contents =="
+        dir /b wheelhouse
+      shell: cmd 
+
     - name: Add OpenBLAS DLL to PATH
       run: |
-        set "PATH=%CD%\wheelhouse;%PATH%"
+        set "PATH=${{ github.workspace }}\wheelhouse;%PATH%"
+        echo "== PATH =="
         echo %PATH%
-      shell: cmd
-      
-    - name: Check OpenBLAS DLL presence
-      run: |
-        where libopenblas.dll || echo "OpenBLAS DLL not found"
+        echo "== Checking for libopenblas.dll =="
+        where libopenblas.dll || (
+          echo "ERROR: libopenblas.dll not found!" & exit /b 1
+        )
       shell: cmd
       
     - name: Package installation
