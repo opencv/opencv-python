@@ -118,7 +118,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
-        path: wheelhouse/opencv*
+        path: |
+          wheelhouse/opencv*
+          openblas/**
 
   Test:
     needs: [Build]
@@ -160,14 +162,12 @@ jobs:
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/
-    - name: check DLL
-      shell: powershell
-      run: |
-          dir "$PWD\openblas\bin\libopenblas*.dll"
+    
+        
     - name: Package installation
       run: |
         $env:OpenBLAS_HOME = "$PWD"
-        $env:PATH = "$env:OpenBLAS_HOME\openblas\bin;$env:PATH"
+        $env:PATH = "$env:OpenBLAS_HOME\wheelhouse\openblas\bin;$env:PATH"
         Write-Host "OpenBLAS_HOME=$env:OpenBLAS_HOME"
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
