@@ -162,9 +162,9 @@ jobs:
         path: wheelhouse/
     - name: Package installation
       run: |
-        set "OpenBLAS_HOME=%CD%"
-        echo OpenBLAS_HOME=%OpenBLAS_HOME%
-        set "PATH=%OpenBLAS_HOME%\openblas\bin;%PATH%"
+        $env:OpenBLAS_HOME = (Get-Location).Path
+        Write-Host "OpenBLAS_HOME=$env:OpenBLAS_HOME"
+        $env:PATH = "$env:OpenBLAS_HOME\openblas\bin;$env:PATH" 
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
