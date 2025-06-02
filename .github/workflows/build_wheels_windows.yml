@@ -138,6 +138,7 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
       PYLINT_TEST_FILE: ${{ github.workspace }}\opencv\samples\python\squares.py
+      PATH: ${{ github.workspace }}\openblas\bin;${{ env.PATH }}
     steps:
     - name: Cleanup
       shell: bash
@@ -162,9 +163,6 @@ jobs:
         path: wheelhouse/
     - name: Package installation
       run: |
-        $env:OpenBLAS_HOME = (Get-Location).Path
-        Write-Host "OpenBLAS_HOME=$env:OpenBLAS_HOME"
-        $env:PATH = "$env:OpenBLAS_HOME\openblas\bin;$env:PATH" 
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
