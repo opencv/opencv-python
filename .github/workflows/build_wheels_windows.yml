@@ -160,6 +160,10 @@ jobs:
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/
+    - name: check DLL
+      shell: powershell
+      run: |
+          dir "$PWD\openblas\bin\libopenblas*.dll"
     - name: Package installation
       run: |
         $env:OpenBLAS_HOME = "$PWD"
