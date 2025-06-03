@@ -115,10 +115,10 @@ def main():
             else []
         )
         +
-        "openblas": (
-        [r"openblas/bin/libopenblas\d*\.dll"]
-        if os.name == "nt"
-        else []
+       (
+            [os.path.join(os.environ["OpenBLAS_HOME"], "bin", "libopenblas.exp.dll").replace("\\", "\\\\")]
+            if os.name == "nt" and "OpenBLAS_HOME" in os.environ
+            else []
         )
         +
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
