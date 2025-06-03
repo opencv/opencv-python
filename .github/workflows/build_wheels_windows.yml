@@ -188,9 +188,6 @@ jobs:
       
     - name: Package installation
       run: |
-        # Copy DLL next to cv2.pyd (Python 3.8+ needs this)
-        $cv2_path = python -c "import cv2; import os; print(os.path.dirname(cv2.__file__))"
-        Copy-Item "${{ github.workspace }}\wheelhouse\libopenblas.dll" "$cv2_path\libopenblas.dll"
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
@@ -198,18 +195,14 @@ jobs:
       shell: powershell
       env:
         PATH: ${{ github.workspace }}\wheelhouse;${{ env.PATH }}
+        PYTHONPATH: ${{ github.workspace }}\wheelhouse;${{ env.PYTHONPATH }}
     - name: Run tests
       run: |
-        # Find cv2 install path
-        $cv2_path = python -c "import cv2; import os; print(os.path.dirname(cv2.__file__))"
-
-        # Copy DLL next to cv2.pyd
-        Copy-Item "${{ github.workspace }}\wheelhouse\libopenblas.dll" "$cv2_path\libopenblas.dll"
-
         cd ${{ github.workspace }}/opencv
         python modules\python\test\test.py -v --repo .
       env:
         PATH: ${{ github.workspace }}\wheelhouse;${{ env.PATH }}
+        PYTHONPATH: ${{ github.workspace }}\wheelhouse;${{ env.PYTHONPATH }}
         
     - name: Pylint test
       run: |
