@@ -116,8 +116,8 @@ def main():
         )
         +
        (
-            [os.path.join(os.environ["OpenBLAS_HOME"], "bin", "libopenblas.dll").replace("\\", "\\\\")]
-            if os.name == "nt" and "OpenBLAS_HOME" in os.environ
+            [r"openblas[\\/]+bin[\\/]+libopenblas\.dll"]
+            if os.name == "nt"
             else []
         )
         +
