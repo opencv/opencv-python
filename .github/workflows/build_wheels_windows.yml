@@ -162,6 +162,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
+        
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
@@ -187,12 +188,12 @@ jobs:
       
     - name: Package installation
       run: |
-        cd ${{ github.workspace }}/tests
-        &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
-        if ($LastExitCode -ne 0) {throw $LastExitCode}
         # Copy DLL next to cv2.pyd (Python 3.8+ needs this)
         $cv2_path = python -c "import cv2; import os; print(os.path.dirname(cv2.__file__))"
         Copy-Item "${{ github.workspace }}\wheelhouse\libopenblas.dll" "$cv2_path\libopenblas.dll"
+        cd ${{ github.workspace }}/tests
+        &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
+        if ($LastExitCode -ne 0) {throw $LastExitCode}
         python get_build_info.py
       shell: powershell
       env:
