@@ -113,37 +113,13 @@ jobs:
 
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
       shell: cmd
-      
-    - name: Copy OpenBLAS DLL to wheelhouse
-      run: |
-        copy openblas\bin\libopenblas.dll wheelhouse\
-      shell: cmd
-    - name: Inject libopenblas.dll into .whl
-      run: |
-        for %%F in (wheelhouse\opencv_python*.whl) do (
-          echo Processing %%F
-          mkdir tmpwhl
-          cd tmpwhl
-          tar -xf ..\%%F
 
-          echo Copying libopenblas.dll into cv2/
-          copy ..\wheelhouse\libopenblas.dll cv2\
-
-          echo Repacking wheel
-          del ..\%%F
-          tar -cf ..\%%F *
-
-          cd ..
-          rmdir /s /q tmpwhl
-         )
-      shell: cmd
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: |
           wheelhouse/opencv*
-          wheelhouse/libopenblas.dll
 
   Test:
     needs: [Build]
@@ -187,40 +163,20 @@ jobs:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/
         
-    - name: Show contents of wheelhouse
-      run: |
-        echo "== wheelhouse contents =="
-        dir /b wheelhouse
-      shell: cmd 
 
-    - name: Add OpenBLAS DLL to PATH
-      run: |
-        set "PATH=${{ github.workspace }}\wheelhouse;%PATH%"
-        echo "== PATH =="
-        echo %PATH%
-        echo "== Checking for libopenblas.dll =="
-        where libopenblas.dll || (
-          echo "ERROR: libopenblas.dll not found!" & exit /b 1
-        )
-      shell: cmd
       
     - name: Package installation
       run: |
         cd ${{ github.workspace }}/tests
         &python -m pip install --user --no-warn-script-location (ls "../wheelhouse/opencv*.whl")
         if ($LastExitCode -ne 0) {throw $LastExitCode}
-        $cv2_path = $(python -c "import cv2, os; print(os.path.dirname(cv2.__file__))")
-        echo $cv2_path
         python get_build_info.py
       shell: powershell
-      env:
-        PATH: ${{ github.workspace }}\wheelhouse;${{ env.PATH }}
+
     - name: Run tests
       run: |
         cd ${{ github.workspace }}/opencv
         python modules\python\test\test.py -v --repo .
-      env:
-        PATH: ${{ github.workspace }}\wheelhouse;${{ env.PATH }}
         
     - name: Pylint test
       run: |
