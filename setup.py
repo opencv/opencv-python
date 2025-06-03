@@ -116,7 +116,7 @@ def main():
         )
         +
        (
-             [r".*openblas.*[\\/]+libopenblas\.exp\.dll"]
+            [r"openblas[\\/]+bin[\\/]+libopenblas\.dll"]
             if os.name == "nt"
             else []
         )
