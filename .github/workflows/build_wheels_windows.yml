@@ -118,7 +118,25 @@ jobs:
       run: |
         copy openblas\bin\libopenblas.dll wheelhouse\
       shell: cmd
-      
+    - name: Inject libopenblas.dll into .whl
+      run: |
+        for %%F in (wheelhouse\opencv_python*.whl) do (
+          echo Processing %%F
+          mkdir tmpwhl
+          cd tmpwhl
+          tar -xf ..\%%F
+
+          echo Copying libopenblas.dll into cv2/
+          copy ..\wheelhouse\libopenblas.dll cv2\
+
+          echo Repacking wheel
+          del ..\%%F
+          tar -cf ..\%%F *
+
+          cd ..
+          rmdir /s /q tmpwhl
+         )
+      shell: cmd
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
@@ -193,7 +211,6 @@ jobs:
         if ($LastExitCode -ne 0) {throw $LastExitCode}
         $cv2_path = $(python -c "import cv2, os; print(os.path.dirname(cv2.__file__))")
         echo $cv2_path
-        Copy-Item "${{ github.workspace }}\wheelhouse\libopenblas.dll" "$cv2_path\libopenblas.dll"
         python get_build_info.py
       shell: powershell
       env:
