@@ -93,7 +93,8 @@ jobs:
         if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
         copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
          )
-
+        echo Listing OpenBLAS directory:
+        dir %OpenBLAS_HOME%\bin
         echo Finished OpenBLAS setup
         cd ..
         echo set "OpenBLAS_HOME=%OpenBLAS_HOME%" > set_openblas_env.cmd
