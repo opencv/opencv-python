@@ -67,52 +67,40 @@ jobs:
     - name: Setup NASM
       uses: ilammy/setup-nasm@v1
 
-    - name: Setup OpenBLAS
-      shell: cmd
-      run: |
-        setlocal enableextensions enabledelayedexpansion
-
-        rem Determine correct architecture
-        if "%{matrix.platform}%"=="x64" (
-          set ARCH=x64
-          set FOLDER=win64
-         ) else (
-           set ARCH=x86
-           set FOLDER=win32
-         )
-
-        mkdir openblas
-        cd openblas
-        curl -L -o OpenBLAS.zip https://downloads.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-%ARCH%.zip
-        powershell -Command "Expand-Archive -Path OpenBLAS.zip -DestinationPath ."
-
-        set "OpenBLAS_HOME=%CD%"
-        echo OpenBLAS_HOME=%OpenBLAS_HOME%
-        set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
-
-        if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
-        copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
-         )
-        echo Listing OpenBLAS directory:
-        dir %OpenBLAS_HOME%\bin
-        echo Finished OpenBLAS setup
-        cd ..
-        echo set "OpenBLAS_HOME=%OpenBLAS_HOME%" > set_openblas_env.cmd
 
     - name: Build a package
       run: |
-        call set_openblas_env.cmd
-        python --version
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install cmake==3.24.2
-        python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
+            rem ==== Setup OpenBLAS ====
+            if "%{matrix.platform}%"=="x64" (
+              set ARCH=x64
+            ) else (
+              set ARCH=x86
+            )
+            mkdir openblas
+            cd openblas
+            curl -L -o OpenBLAS.zip https://downloads.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-%ARCH%.zip
+            powershell -Command "Expand-Archive -Path OpenBLAS.zip -DestinationPath ."
+            set "OpenBLAS_HOME=%CD%"
+            set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
+            if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
+              copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
+            )
+            cd ..
 
-        set "OpenBLAS_HOME_UNIX=%OpenBLAS_HOME:\=/%"
-        set "CMAKE_ARGS=-DLAPACK=ON -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME_UNIX%/include -DOpenBLAS_LIBRARIES=%OpenBLAS_HOME_UNIX%/lib/libopenblas.lib"
-        echo %CMAKE_ARGS%
+            rem ==== Install build dependencies ====
+            python --version
+            python -m pip install --upgrade pip
+            python -m pip install --upgrade setuptools
+            python -m pip install cmake==3.24.2
+            python -m pip install toml
+            python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt
+            python -m pip install -r requirements.txt
 
-        python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
+            rem ==== Build ====
+            set "OpenBLAS_HOME_UNIX=%OpenBLAS_HOME:\=/%"
+            set "CMAKE_ARGS=-DLAPACK=ON -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME_UNIX%/include -DOpenBLAS_LIBRARIES=%OpenBLAS_HOME_UNIX%/lib/libopenblas.lib"
+            echo %CMAKE_ARGS%
+            python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
       shell: cmd
 
     - name: Saving all wheels
