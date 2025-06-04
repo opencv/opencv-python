@@ -115,12 +115,6 @@ def main():
             else []
         )
         +
-       (
-            [r"openblas[\\/]+bin[\\/]+libopenblas\.dll"]
-            if os.name == "nt"
-            else []
-        )
-        +
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
         # Naming conventions vary so widely between versions and OSes
         # had to give up on checking them.
