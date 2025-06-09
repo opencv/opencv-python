@@ -166,7 +166,7 @@ def main():
            generator_name = "Visual Studio 17"
         else:
            generator_name = "Visual Studio 14"
-        ci_cmake_generator = ["-G", generator_name + (" Win64" if is64 else "")]
+        ci_cmake_generator = ["-G", generator_name] + (["-A", "x64"] if is64 else ["-A", "Win32"])
     else:
         ci_cmake_generator = ["-G", "Unix Makefiles"]
         
