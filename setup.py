@@ -163,10 +163,12 @@ def main():
     if os.name == "nt": 
         vs_env = os.environ.get("VISUAL_STUDIO")
         if vs_env == "17":
-           generator_name = "Visual Studio 17"
+           generator_name = "Visual Studio 17 2022"
+           arch = "x64" if is64 else "Win32"
+           ci_cmake_generator = ["-G", generator_name, "-A", arch]
         else:
-           generator_name = "Visual Studio 14"
-        ci_cmake_generator = ["-G", generator_name] + (["-A", "x64"] if is64 else ["-A", "Win32"])
+           generator_name = "Visual Studio 14" + (" Win64" if is64 else "")
+           ci_cmake_generator = ["-G", generator_name]
     else:
         ci_cmake_generator = ["-G", "Unix Makefiles"]
         
