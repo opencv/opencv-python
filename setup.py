@@ -159,13 +159,13 @@ def main():
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
-    
+
     if os.name == "nt": 
         vs_env = os.environ.get("VISUAL_STUDIO")
         if vs_env == "17":
            generator_name = "Visual Studio 17"
         else:
-            enerator_name = "Visual Studio 14"
+           generator_name = "Visual Studio 14"
         ci_cmake_generator = ["-G", generator_name + (" Win64" if is64 else "")]
     else:
         ci_cmake_generator = ["-G", "Unix Makefiles"]
