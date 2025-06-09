@@ -163,7 +163,7 @@ def main():
     windows_version = int(platform.release())
     print(windows_version)
     if os.name == "nt": 
-        if windows_version == 2025:
+        if windows_version == 10:
             generator_name = "Visual Studio 17"
         else:
             enerator_name = "Visual Studio 14"
