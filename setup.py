@@ -160,11 +160,10 @@ def main():
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
     
-    windows_version = int(platform.release())
-    print(windows_version)
     if os.name == "nt": 
-        if windows_version == 10:
-            generator_name = "Visual Studio 17"
+        vs_env = os.environ.get("VISUAL_STUDIO")
+        if vs_env == "17":
+           generator_name = "Visual Studio 17"
         else:
             enerator_name = "Visual Studio 14"
         ci_cmake_generator = ["-G", generator_name + (" Win64" if is64 else "")]
