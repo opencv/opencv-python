@@ -19,7 +19,7 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2019
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
@@ -65,6 +65,7 @@ jobs:
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
+        set "VISUAL_STUDIO=17"
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
