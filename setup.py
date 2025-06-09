@@ -159,7 +159,9 @@ def main():
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
-
+    
+    windows_version = int(platform.release())
+    print(windows_version)
     if os.name == "nt": 
         if windows_version == 2025:
             generator_name = "Visual Studio 17"
