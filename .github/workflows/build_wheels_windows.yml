@@ -19,7 +19,7 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2025
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
