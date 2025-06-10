@@ -19,7 +19,7 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2025
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -82,7 +82,7 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: windows-2025
+    runs-on: windows-2022
     defaults:
       run:
         shell: cmd
