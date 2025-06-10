@@ -200,6 +200,7 @@ def main():
             "-DPYTHON3_LIMITED_API=ON",
             "-DBUILD_OPENEXR=ON",
             "-DWITH_OBSENSOR=OFF",
+            "-DWITH_MEDIAFOUNDATION=OFF",
         ]
         + (
             # CMake flags for windows/arm64 build
