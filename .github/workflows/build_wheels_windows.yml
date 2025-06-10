@@ -41,87 +41,44 @@ jobs:
         rm -rf ./* || true
         rm -rf ./.??* || true
       working-directory: ${{ github.workspace }}
-
     - name: Setup environment
       shell: bash
       run: |
         if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
-
     - name: Checkout
       uses: actions/checkout@v3
       with:
         submodules: false
         fetch-depth: 0
-
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
-
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1
-
     - name: Setup NASM
       uses: ilammy/setup-nasm@v1
 
-
-    - name: Setup OpenBLAS
-      shell: cmd
-      run: |
-        setlocal enableextensions enabledelayedexpansion
-
-        rem Determine correct architecture
-        if "%{matrix.platform}%"=="x64" (
-          set ARCH=x64
-          set FOLDER=win64
-         ) else (
-           set ARCH=x86
-           set FOLDER=win32
-         )
-
-        mkdir openblas
-        cd openblas
-        curl -L -o OpenBLAS.zip https://downloads.sourceforge.net/project/openblas/v0.3.24/OpenBLAS-0.3.24-%ARCH%.zip
-        powershell -Command "Expand-Archive -Path OpenBLAS.zip -DestinationPath ."
-
-        set "OpenBLAS_HOME=%CD%"
-        echo OpenBLAS_HOME=%OpenBLAS_HOME%
-        set "PATH=%OpenBLAS_HOME%\bin;%PATH%"
-
-        if exist %OpenBLAS_HOME%\bin\libopenblas.dll (
-        copy /y %OpenBLAS_HOME%\bin\libopenblas.dll %OpenBLAS_HOME%\bin\libopenblas.exp.dll
-         )
-        echo Listing OpenBLAS directory:
-        dir %OpenBLAS_HOME%\bin
-        echo Finished OpenBLAS setup
-        cd ..
-        echo set "OpenBLAS_HOME=%OpenBLAS_HOME%" > set_openblas_env.cmd
-
     - name: Build a package
+      # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
-        call set_openblas_env.cmd
+        set "VISUAL_STUDIO=17"
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install cmake==3.24.2
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
-
-        set "OpenBLAS_HOME_UNIX=%OpenBLAS_HOME:\=/%"
-        set "CMAKE_ARGS=-DLAPACK=ON -DOpenBLAS_INCLUDE_DIR=%OpenBLAS_HOME_UNIX%/include -DOpenBLAS_LIBRARIES=%OpenBLAS_HOME_UNIX%/lib/libopenblas.lib"
-        echo %CMAKE_ARGS%
-        dir
-        python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\\wheelhouse -v
+        set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
 
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
-        path: |
-          wheelhouse/opencv*
+        path: wheelhouse/opencv*
 
   Test:
     needs: [Build]
@@ -158,13 +115,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
-        
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/
-      
     - name: Package installation
       run: |
         cd ${{ github.workspace }}/tests
@@ -172,12 +127,10 @@ jobs:
         if ($LastExitCode -ne 0) {throw $LastExitCode}
         python get_build_info.py
       shell: powershell
-
     - name: Run tests
       run: |
         cd ${{ github.workspace }}/opencv
         python modules\python\test\test.py -v --repo .
-        
     - name: Pylint test
       run: |
         python -m pip install pylint==2.15.9
