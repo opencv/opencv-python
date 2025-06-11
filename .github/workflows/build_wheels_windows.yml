@@ -52,6 +52,8 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
+        submodule-update-depth: 1 
+        
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -110,6 +112,8 @@ jobs:
       with:
         submodules: true
         fetch-depth: 0
+        submodule-update-depth: 1 
+        
     - name: Show current commit and branch
       run: |
         git rev-parse --abbrev-ref HEAD
