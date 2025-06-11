@@ -59,12 +59,12 @@ jobs:
         python${{ matrix.python-version }} setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
         delocate-wheel ${{ github.workspace }}/wheelhouse/opencv*
     - name: Saving all wheels
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: wheels
         path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/opencv*.whl
