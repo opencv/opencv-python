@@ -20,7 +20,7 @@ on:
 
 jobs:
   Build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -77,7 +77,7 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -116,7 +116,7 @@ jobs:
       run: source scripts/install.sh
 
   Build_sdist:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -185,7 +185,7 @@ jobs:
   Release_rolling:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-rolling-release
     defaults:
       run:
@@ -215,7 +215,7 @@ jobs:
   Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
     needs: [Build, Build_sdist, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: test-opencv-python-release
     defaults:
       run:
@@ -233,7 +233,7 @@ jobs:
   Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
     needs: [Build, Build_sdist, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-release
     defaults:
       run:
