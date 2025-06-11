@@ -115,11 +115,12 @@ jobs:
     - name: Update submodules to HEAD of 4.x
       shell: bash
       run: |
-          git submodule foreach '
-            echo "$name"
-            git fetch origin
-            git checkout 4.x || true
-            git pull origin 4.x || true     
+         git submodule foreach '
+           echo "$name"
+           git fetch origin
+           git checkout 4.x || true
+           git pull origin 4.x || true
+         '  
         
     - name: Show current commit and branch
       run: |
