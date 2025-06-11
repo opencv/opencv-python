@@ -50,7 +50,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
-        ref: ${{ github.head_ref }}
         submodules: false
         fetch-depth: 0
         
@@ -110,29 +109,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
-        ref: ${{ github.head_ref }}
         submodules: true
         fetch-depth: 0
-
-    - name: Update submodules to HEAD of 4.x
-      shell: bash
-      run: |
-         git submodule foreach '
-           echo "$name"
-           git fetch origin
-           git checkout 4.x || true
-           git pull origin 4.x || true
-         '  
         
-    - name: Show current commit and branch
-      run: |
-        git rev-parse --abbrev-ref HEAD
-        git log -1 --oneline
-
-    - name: Print location of np.fromstring
-      run: |
-        findstr /C:"np.fromstring" opencv\modules\python\test\tests_common.py || echo "No fromstring found"
-
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
