@@ -19,7 +19,7 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2022
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
@@ -82,7 +82,7 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: windows-2022
+    runs-on: windows-2025
     defaults:
       run:
         shell: cmd
@@ -110,6 +110,15 @@ jobs:
       with:
         submodules: true
         fetch-depth: 0
+    - name: Show current commit and branch
+      run: |
+        git rev-parse --abbrev-ref HEAD
+        git log -1 --oneline
+
+    - name: Print location of np.fromstring
+      run: |
+        findstr /C:"np.fromstring" opencv\modules\python\test\tests_common.py || echo "No fromstring found"
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
