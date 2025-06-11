@@ -50,6 +50,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
+        ref: ${{ github.head_ref }}
         submodules: false
         fetch-depth: 0
         
@@ -109,6 +110,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
+        ref: ${{ github.head_ref }}
         submodules: true
         fetch-depth: 0
 
