@@ -199,7 +199,6 @@ def main():
             "-DBUILD_DOCS=OFF",
             "-DPYTHON3_LIMITED_API=ON",
             "-DBUILD_OPENEXR=ON",
-            "-DWITH_OBSENSOR=OFF",
         ]
         + (
             # CMake flags for windows/arm64 build
