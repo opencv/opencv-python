@@ -28,12 +28,14 @@ jobs:
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
+        cuda: [0, 1]  # 添加 CUDA 选项，0 表示禁用，1 表示启用
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
+      WITH_CUDA: ${{ matrix.cuda }}  # 定义 CUDA 环境变量
     steps:
     - name: Cleanup
       shell: bash
@@ -61,6 +63,11 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
     - name: Setup NASM
       uses: ilammy/setup-nasm@v1
+    - name: Setup CUDA Toolkit
+      if: ${{ matrix.cuda == 1 }}
+      uses: Jimver/cuda-toolkit@v0.2.1
+      with:
+        cuda: '11.8.0'  # 指定 CUDA 版本
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
@@ -69,12 +76,26 @@ jobs:
         python -m pip install --upgrade setuptools
         python -m pip install cmake==3.24.2
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
+        
+        # 设置 CUDA 相关环境变量
+        if "%WITH_CUDA%"=="1" (
+            set "ENABLE_CUDA=1"
+            set "ENABLE_CUDNN=1"
+            set "CUDA_ARCH_BIN=5.2 6.0 6.1 7.0 7.5 8.0 8.6"  # 支持的 CUDA 架构
+            set "BUILD_opencv_cudacodec=1"
+            echo "CUDA support enabled"
+        ) else (
+            set "ENABLE_CUDA=0"
+            echo "CUDA support disabled"
+        )
+        
+        # 构建命令，添加 CUDA 相关选项
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
+        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}-${{ matrix.cuda }}
         path: wheelhouse/opencv*
 
   Test:
@@ -91,6 +112,7 @@ jobs:
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
+        cuda: [0, 1]  # 添加 CUDA 选项
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
@@ -115,7 +137,7 @@ jobs:
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
+        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}-${{ matrix.cuda }}
         path: wheelhouse/
     - name: Package installation
       run: |
