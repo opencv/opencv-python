@@ -58,11 +58,6 @@ jobs:
         python${{ matrix.python-version }} -m pip install toml && python${{ matrix.python-version }} -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python${{ matrix.python-version }} -m pip install -r /dev/stdin
         python${{ matrix.python-version }} setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
         delocate-wheel ${{ github.workspace }}/wheelhouse/opencv*
-    - name: Saving all wheels
-      uses: actions/upload-artifact@v4
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v4
       with:

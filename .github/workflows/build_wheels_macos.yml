@@ -85,11 +85,6 @@ jobs:
         echo $ENABLE_HEADLESS > headless.enabled
         set -x
         build_wheel $REPO_DIR $PLAT
-    - name: Saving all wheels
-      uses: actions/upload-artifact@v4
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v4
       with:
