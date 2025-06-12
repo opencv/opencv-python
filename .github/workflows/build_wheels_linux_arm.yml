@@ -64,11 +64,6 @@ jobs:
         fetch-depth: 0
     - name: Build a package
       run: source scripts/build.sh
-    - name: Saving all wheels
-      uses: actions/upload-artifact@v4
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v4
       with:
