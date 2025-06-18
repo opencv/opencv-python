@@ -20,7 +20,7 @@ on:
 
 jobs:
   Build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -41,7 +41,7 @@ jobs:
       MB_ML_VER: 2014
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20241202
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250611
       USE_CCACHE: 0
       UNICODE_WIDTH: 32
       PLAT: x86_64
@@ -64,20 +64,15 @@ jobs:
         fetch-depth: 0
     - name: Build a package
       run: source scripts/build.sh
-    - name: Saving all wheels
-      uses: actions/upload-artifact@v3
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/opencv*.whl
 
   Test:
     needs: [Build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -108,7 +103,7 @@ jobs:
     - name: Setup Environment variables
       run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
     - name: Download a wheel accordingly to matrix
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
@@ -116,7 +111,7 @@ jobs:
       run: source scripts/install.sh
 
   Build_sdist:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -139,7 +134,7 @@ jobs:
       NP_TEST_DEP: numpy==1.19.4
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20241202
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250611
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
@@ -177,21 +172,21 @@ jobs:
         set -x
         echo "skipping tests because of sdist"
     - name: saving artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: wheels
+        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: dist/opencv*.tar.gz
 
   Release_rolling:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-rolling-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse/
@@ -215,13 +210,13 @@ jobs:
   Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
     needs: [Build, Build_sdist, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: test-opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse/
@@ -233,13 +228,13 @@ jobs:
   Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
     needs: [Build, Build_sdist, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse/

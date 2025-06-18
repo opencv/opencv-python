@@ -42,7 +42,7 @@ jobs:
       MB_ML_VER: 2014
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20241202
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20250611
       USE_CCACHE: 0
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
@@ -64,13 +64,8 @@ jobs:
         fetch-depth: 0
     - name: Build a package
       run: source scripts/build.sh
-    - name: Saving all wheels
-      uses: actions/upload-artifact@v3
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/opencv*.whl
@@ -110,7 +105,7 @@ jobs:
     - name: Setup Environment variables
       run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
     - name: Download a wheel accordingly to matrix
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
@@ -120,13 +115,13 @@ jobs:
   Release_rolling:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-rolling-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse/
@@ -150,13 +145,13 @@ jobs:
   Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: test-opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse/
@@ -168,13 +163,13 @@ jobs:
   Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse/

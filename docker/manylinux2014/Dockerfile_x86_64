@@ -1,4 +1,4 @@
-# Version: 20241202
+# Version: 20250611
 # Image name: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64
 
 FROM quay.io/pypa/manylinux2014_x86_64:latest
@@ -6,12 +6,14 @@ FROM quay.io/pypa/manylinux2014_x86_64:latest
 ARG CCACHE_VERSION=3.7.9
 ARG FFMPEG_VERSION=5.1.6
 ARG FREETYPE_VERSION=2.13.3
-ARG LIBPNG_VERSION=1.6.44
-ARG VPX_VERSION=v1.15.0
+ARG LIBPNG_VERSION=1.6.48
+ARG VPX_VERSION=v1.15.1
 ARG NASM_VERSION=2.15.04
 ARG OPENSSL_VERSION=1_1_1w
 ARG QT_VERSION=5.15.16
 ARG YASM_VERSION=1.3.0
+ARG AOM_VERSION=v3.12.1
+ARG AVIF_VERSION=v1.3.0
 
 ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
@@ -100,6 +102,24 @@ RUN mkdir ~/libvpx_sources && \
     make install && \
     cd .. && \
     rm -rf ~/libvpx_sources
+
+RUN mkdir ~/aom_sources && \
+    cd ~/aom_sources && \
+    git clone --depth 1 -b ${AOM_VERSION} https://aomedia.googlesource.com/aom && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_C_COMPILER=$(dirname $(which g++))/gcc -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=ON -DENABLE_TESTS=OFF ../aom/ && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    cd / && rm -rf ~/aom_sources
+
+RUN mkdir ~/avif_sources && \
+    cd ~/avif_sources && \
+    git clone -b ${AVIF_VERSION} https://github.com/AOMediaCodec/libavif.git && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DAVIF_CODEC_AOM=SYSTEM -DAVIF_LIBYUV=LOCAL -DAVIF_BUILD_APPS=OFF ../libavif && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    cd / && rm -rf ~/avif_sources
 
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \
