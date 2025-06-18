@@ -51,7 +51,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: false
-        fetch-depth: 0    
+        fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -65,11 +65,10 @@ jobs:
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
-        set "VISUAL_STUDIO=17"
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        python -m pip install cmake==3.24.2
+        python -m pip install cmake
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
