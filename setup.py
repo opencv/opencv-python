@@ -161,22 +161,9 @@ def main():
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
-
-    if os.name == "nt": 
-        vs_env = os.environ.get("VISUAL_STUDIO")
-        if vs_env == "17":
-           generator_name = "Visual Studio 17 2022"
-           arch = "x64" if is64 else "Win32"
-           ci_cmake_generator = ["-G", generator_name, "-A", arch]
-        else:
-           generator_name = "Visual Studio 14" + (" Win64" if is64 else "")
-           ci_cmake_generator = ["-G", generator_name]
-    else:
-        ci_cmake_generator = ["-G", "Unix Makefiles"]
         
     cmake_args = (
-        (ci_cmake_generator if is_CI_build else [])
-        + [
+         [
             # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
             "-DPYTHON3_EXECUTABLE=%s" % sys.executable,
             "-DPYTHON_DEFAULT_EXECUTABLE=%s" % sys.executable,
