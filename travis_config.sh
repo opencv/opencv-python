@@ -103,6 +103,7 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     brew install lapack
+    brew install libavif
   fi
 
   if [ -n "$IS_OSX" ]; then

@@ -48,7 +48,7 @@ def main():
         "\\", "/"
     )
 
-    if os.path.exists(".git"):
+    if not bool(os.environ.get('OPENCV_PYTHON_SKIP_GIT_COMMANDS', False)) and os.path.exists(".git"):
         import pip._internal.vcs.git as git
 
         g = git.Git()  # NOTE: pip API's are internal, this has to be refactored
@@ -94,6 +94,8 @@ def main():
 
     if build_rolling:
         package_name += "-rolling"
+
+    package_name = os.environ.get('OPENCV_PYTHON_PACKAGE_NAME', package_name)
 
     long_description = io.open("README.md", encoding="utf-8").read()
 
