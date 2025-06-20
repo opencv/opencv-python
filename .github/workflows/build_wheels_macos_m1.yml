@@ -36,19 +36,7 @@ jobs:
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
       PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
     steps:
-    - name: Check pyenv versions
-      run: pyenv versions
-
-    - name: Check Python versions
-      run: |
-          python3.7 --version || echo "python3.7 not found"
-          python3.8 --version || echo "python3.8 not found"
-          python3.9 --version || echo "python3.9 not found"
-          python3.10 --version || echo "python3.10 not found"
-          python3.11 --version || echo "python3.11 not found"
-          python3.12 --version || echo "python3.12 not found"
-          python3.13 --version || echo "python3.13 not found"
-
+    
     - name: Cleanup
       run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
