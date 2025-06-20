@@ -36,7 +36,6 @@ jobs:
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
       PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
     steps:
-    
     - name: Cleanup
       run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
