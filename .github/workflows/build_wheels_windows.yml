@@ -19,7 +19,7 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2022
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
@@ -61,11 +61,9 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
     - name: Setup NASM
       uses: ilammy/setup-nasm@v1
-
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
-        set "VISUAL_STUDIO=17"
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
@@ -73,7 +71,6 @@ jobs:
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
-
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
@@ -82,7 +79,7 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: windows-2022
+    runs-on: windows-2019
     defaults:
       run:
         shell: cmd
