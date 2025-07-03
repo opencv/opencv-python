@@ -19,7 +19,7 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2019
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
@@ -48,7 +48,7 @@ jobs:
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: false
         fetch-depth: 0
@@ -79,7 +79,7 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: windows-2019
+    runs-on: windows-2025
     defaults:
       run:
         shell: cmd
@@ -95,6 +95,7 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
       PYLINT_TEST_FILE: ${{ github.workspace }}\opencv\samples\python\squares.py
+      PlatformToolset: v143
     steps:
     - name: Cleanup
       shell: bash
@@ -103,7 +104,7 @@ jobs:
         rm -rf ./.??* || true
       working-directory: ${{ github.workspace }}
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: true
         fetch-depth: 0
