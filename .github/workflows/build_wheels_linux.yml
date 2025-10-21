@@ -25,19 +25,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-       include:
-         - python-version: "3.9"
-           platform: x64
-           manylinux: 2014
-           docker-image: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630
-         - python-version: "3.9"
-           platform: x64
-           manylinux: 2_28
-           docker-image: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20251013
-         - python-version: "3.9"
-           platform: aarch64
-           manylinux: 2_28
-           docker-image: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20251013
+       platform_matrix:
+         include:
+            - platform: x64
+              manylinux: 2014
+              docker-image: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630
+            - platform: x64
+              manylinux: 2_28
+              docker-image: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20251013
+            - platform: aarch64
+              manylinux: 2_28
+              docker-image: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20251013
+       python-version: ['3.9']
        with_contrib: [0, 1]
        without_gui: [0, 1]
        build_sdist: [0]
