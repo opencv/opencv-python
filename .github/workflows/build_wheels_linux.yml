@@ -24,22 +24,14 @@ jobs:
         shell: bash
     strategy:
       fail-fast: false
-      matrix:
-       platform_matrix:
-         include:
-            - platform: x64
-              manylinux: 2014
-              docker-image: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630
-            - platform: x64
-              manylinux: 2_28
-              docker-image: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20251013
-            - platform: aarch64
-              manylinux: 2_28
-              docker-image: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20251013
-       python-version: ['3.9']
-       with_contrib: [0, 1]
-       without_gui: [0, 1]
-       build_sdist: [0]
+      matrix: 
+        python-version: ['3.9'] 
+        platform: [x64, aarch64] 
+        manylinux: [2014, 2_28] 
+        with_contrib: [0, 1] 
+        without_gui: [0, 1] 
+        build_sdist: [0]
+
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       REPO_DIR: .
@@ -49,7 +41,7 @@ jobs:
       MB_ML_VER: ${{ matrix.manylinux }}
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: ${{ matrix.docker-image }}
+      DOCKER_IMAGE: ${{ matrix.manylinux == '2014' && (matrix.platform == 'x64' && 'quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630') || '' || (matrix.platform == 'x64' && 'quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20251013') || 'quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20251013' }}
       USE_CCACHE: 0
       UNICODE_WIDTH: 32
       PLAT: ${{ matrix.platform == 'x64' && 'x86_64' || 'aarch64' }}
