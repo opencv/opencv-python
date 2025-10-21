@@ -67,7 +67,7 @@ jobs:
     - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v4
       with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
+        name: wheel-${{ matrix.platform }}-${{ matrix.manylinux }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/opencv*.whl
 
   Test:
@@ -105,7 +105,7 @@ jobs:
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
+        name: wheel-${{ matrix.platform }}-${{ matrix.manylinux }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
     - name: Package installation and run tests
       run: source scripts/install.sh
