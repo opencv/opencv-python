@@ -67,11 +67,6 @@ jobs:
         submodules: false
         fetch-depth: 0
         
-    - name: Setup Python for aarch64
-      if: matrix.platform == 'aarch64'
-      run: |
-        /usr/local/bin/python3.9 -m pip install --upgrade pip setuptools wheel
-        /usr/local/bin/python3.9 -m pip install scikit-build toml cmake ninja
     - name: Build a package
       run: source scripts/build.sh
     - name: Saving a wheel accordingly to matrix
