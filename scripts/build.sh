@@ -15,7 +15,4 @@ echo $ENABLE_CONTRIB > contrib.enabled
 echo $ENABLE_HEADLESS > headless.enabled
 echo $ENABLE_ROLLING > rolling.enabled
 set -x
-python3.9 -m ensurepip --upgrade || true
-python3.9 -m pip install --upgrade pip setuptools wheel
-python3.9 -m pip install scikit-build toml cmake ninja
 build_wheel $REPO_DIR $PLAT
