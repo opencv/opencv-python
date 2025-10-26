@@ -67,13 +67,6 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
-
-    - name: Force official PyPI on runner
-      run: |
-         mkdir -p ~/.config/pip
-         printf "[global]\nindex-url = https://pypi.org/simple\n" > ~/.config/pip/pip.conf
-         echo "Runner pip.conf now:"
-         cat ~/.config/pip/pip.conf
         
     - name: Build a package
       run: source scripts/build.sh
