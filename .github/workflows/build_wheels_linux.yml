@@ -67,7 +67,10 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
-        
+
+    - name: Debug pip vars
+      run: env | grep -i pip   
+    
     - name: Build a package
       run: source scripts/build.sh
     - name: Saving a wheel accordingly to matrix
