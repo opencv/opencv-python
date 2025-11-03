@@ -14,6 +14,10 @@ source multibuild/travis_steps.sh
 echo $ENABLE_CONTRIB > contrib.enabled
 echo $ENABLE_HEADLESS > headless.enabled
 echo $ENABLE_ROLLING > rolling.enabled
+if [[ "$PLAT" == "aarch64" ]]; then
+    export MULTIBUILD_DOCKER_IMAGE="multibuild/focal_arm64v8"
+    echo "Using local Docker image: $MULTIBUILD_DOCKER_IMAGE"
+fi
 set -x
 install_run $PLAT
 set +x
