@@ -90,6 +90,9 @@ jobs:
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
+        exclude:
+          - platform: aarch64
+            manylinux: 2014
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
