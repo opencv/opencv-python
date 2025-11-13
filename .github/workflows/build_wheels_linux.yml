@@ -104,6 +104,7 @@ jobs:
       SDIST: ${{ matrix.build_sdist || 0 }}                          
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
+      DOCKER_TEST_IMAGE: ${{ matrix.platform == 'aarch64' && 'quay.io/opencv-ci/multibuild-focal_arm64v8:2025-11-13' || '' }}
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete
