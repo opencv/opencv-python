@@ -75,21 +75,7 @@ def main():
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     is64 = sys.maxsize > 2 ** 32
 
-    package_name = "opencv-python"
-
-    if build_contrib and not build_headless:
-        package_name = "opencv-contrib-python"
-
-    if build_contrib and build_headless:
-        package_name = "opencv-contrib-python-headless"
-
-    if build_headless and not build_contrib:
-        package_name = "opencv-python-headless"
-
-    if build_rolling:
-        package_name += "-rolling"
-
-    package_name = os.environ.get('OPENCV_PYTHON_PACKAGE_NAME', package_name)
+    package_name = "opencv-python-cuda"
 
     long_description = io.open("README.md", encoding="utf-8").read()
 
@@ -162,18 +148,23 @@ def main():
         else ["-G", "Unix Makefiles"]
     )
 
+    cudnn_library = os.environ["CUDNN_LIBRARY"]
+    cudnn_include_dir = os.environ["CUDNN_INCLUDE_DIR"]
+    cuda_arch_bin = "6.0;6.1;7.0;7.5"
+    cuda_arch_ptx = "7.5"
+
     cmake_args = (
         (ci_cmake_generator if is_CI_build else [])
         + [
             # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
-            "-DPYTHON3_EXECUTABLE=%s" % sys.executable,
-            "-DPYTHON_DEFAULT_EXECUTABLE=%s" % sys.executable,
-            "-DPYTHON3_INCLUDE_DIR=%s" % python_include_dir,
-            "-DPYTHON3_LIBRARY=%s" % python_lib_path,
+            f"-DPYTHON3_EXECUTABLE={sys.executable}",
+            f"-DPYTHON_DEFAULT_EXECUTABLE={sys.executable}",
+            f"-DPYTHON3_INCLUDE_DIR={python_include_dir}",
+            f"-DPYTHON3_LIBRARY={python_lib_path}",
             "-DBUILD_opencv_python3=ON",
             "-DBUILD_opencv_python2=OFF",
             # Disable the Java build by default as it is not needed
-            "-DBUILD_opencv_java=%s" % build_java,
+            f"-DBUILD_opencv_java={build_java}",
             # Relative dir to install the built module to in the build tree.
             # The default is generated from sysconfig, we'd rather have a constant for simplicity
             "-DOPENCV_PYTHON3_INSTALL_PATH=python",
@@ -189,6 +180,13 @@ def main():
             "-DBUILD_DOCS=OFF",
             "-DPYTHON3_LIMITED_API=ON",
             "-DBUILD_OPENEXR=ON",
+            "-DWITH_CUDA=ON",
+            "-DWITH_NVCUVID=OFF",
+            f"-DCUDA_ARCH_BIN={cuda_arch_bin}",
+            f"-DCUDA_ARCH_PTX={cuda_arch_ptx}",
+            "-DOPENCV_ENABLE_NONFREE=ON",
+            f"-DCUDNN_LIBRARY={cudnn_library}",
+            f"-DCUDNN_INCLUDE_DIR={cudnn_include_dir}",
         ]
         + (
             # CMake flags for windows/arm64 build
@@ -266,17 +264,17 @@ def main():
     setup(
         name=package_name,
         version=package_version,
-        url="https://github.com/opencv/opencv-python",
+        url="https://github.com/Breakthrough/opencv-python-cuda",
         license="Apache 2.0",
-        description="Wrapper package for OpenCV python bindings.",
+        description="[Unofficial] OpenCV Python bindings with CUDA support.",
         long_description=long_description,
         long_description_content_type="text/markdown",
         packages=packages,
         package_data=package_data,
-        maintainer="OpenCV Team",
+        maintainer="Breakthrough",
         ext_modules=EmptyListWithLength(),
         install_requires=install_requires,
-        python_requires=">=3.6",
+        python_requires=">=3.7",
         classifiers=[
             "Development Status :: 5 - Production/Stable",
             "Environment :: Console",
@@ -292,7 +290,6 @@ def main():
             "Programming Language :: Python",
             "Programming Language :: Python :: 3",
             "Programming Language :: Python :: 3 :: Only",
-            "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3.9",

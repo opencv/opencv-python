@@ -1,4 +1,13 @@
-name: Windows x86_64
+# GitHub Actions Workflow: Build opencv-python with CUDA support on Windows
+#
+# This workflow compiles opencv-python from source with CUDA enabled on a
+# GitHub-hosted Windows runner. The resulting Python wheel is then uploaded
+# as a build artifact.
+#
+# This is a complex and long-running process. It is configured to run only
+# on manual trigger (workflow_dispatch).
+
+name: Windows CUDA x64
 
 on:
   workflow_dispatch:
@@ -12,14 +21,11 @@ jobs:
       matrix:
         python-version: ['3.9']
         platform: [x64]
-        with_contrib: [1]
-        headless: [0]
-        build_sdist: [0]
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      SDIST: ${{ matrix.build_sdist || 0 }}
-      ENABLE_HEADLESS: ${{ matrix.headless }}
-      ENABLE_CONTRIB: ${{ matrix.with_contrib }}
+      SDIST: 0
+      ENABLE_HEADLESS: 0
+      ENABLE_CONTRIB: 1
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
     steps:
     - name: Cleanup
@@ -48,6 +54,58 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
     - name: Setup NASM
       uses: ilammy/setup-nasm@v1
+    - name: Cache CUDA Toolkit Installer
+      id: cache-cuda-installer
+      uses: actions/cache@v3
+      with:
+        path: ./.cache/cuda_installer.exe
+        key: cuda-installer-12.0.0
+    - name: 🔧 Install NVIDIA CUDA Toolkit
+      run: |
+        $installer_path = "./.cache/cuda_installer.exe"
+        if (-not (Test-Path $installer_path)) {
+          echo "Downloading CUDA Toolkit..."
+          $cuda_installer_url = "https://developer.download.nvidia.com/compute/cuda/12.0.0/network_installers/cuda_12.0.0_windows_network.exe"
+          New-Item -Path (Split-Path $installer_path) -ItemType Directory -Force
+          curl -L -o $installer_path $cuda_installer_url
+        } else {
+          echo "CUDA Toolkit installer found in cache."
+        }
+        echo "Installing CUDA Toolkit silently..."
+        $arguments = "-s nvcc_12.0 cudart_12.0 cublas_12.0 cublas_dev_12.0 cufft_12.0 cufft_dev_12.0 npp_12.0 npp_dev_12.0"
+        Start-Process -FilePath $installer_path -ArgumentList $arguments -Wait -NoNewWindow
+        echo "Adding CUDA to PATH..."
+        $CUDA_PATH = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.0"
+        echo "CUDA_PATH=$CUDA_PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
+      shell: pwsh
+      #$arguments = "-s cublas_12.0 cublas_dev_12.0 cudart_12.0 cufft_12.0 cufft_dev_12.0 npp_12.0 npp_dev_12.0 nvcc_12.0"
+      #echo "$CUDA_PATH\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+      #echo "$CUDA_PATH\lib\x64" | Out-File -FilePath $env:GITHUB_PATH -Append
+      #echo "$CUDA_PATH"
+    - name: Cache CuDNN Installer
+      id: cache-cudnn-installer
+      uses: actions/cache@v3
+      with:
+        path: ./.cache/cudnn.zip
+        key: cudnn-8.9.7.29-cuda-12-windows
+    - name: 🔧 Install NVIDIA CuDNN
+      run: |
+        $cudnn_path = "./.cache/cudnn.zip"
+        if (-not (Test-Path $cudnn_path)) {
+          echo "Downloading CuDNN..."
+          $cudnn_installer_url = "https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-8.9.7.29_cuda12-archive.zip"
+          New-Item -Path (Split-Path $cudnn_path) -ItemType Directory -Force
+          curl -L -o $cudnn_path $cudnn_installer_url
+        } else {
+          echo "CuDNN installer found in cache."
+        }
+        echo "Installing CuDNN..."
+        7z x $cudnn_path
+        $CUDNN_PATH = "D:/a/opencv-python-cuda/opencv-python-cuda/cudnn-windows-x86_64-8.9.7.29_cuda12-archive"
+        echo "CUDNN_LIBRARY=$CUDNN_PATH/lib/x64" | Out-File -FilePath $env:GITHUB_ENV -Append
+        echo "CUDNN_INCLUDE_DIR=$CUDNN_PATH/include" | Out-File -FilePath $env:GITHUB_ENV -Append
+      shell: pwsh
+
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
@@ -61,7 +119,7 @@ jobs:
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.headless }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
+        name: wheel-cuda-${{ matrix.platform }}
         path: wheelhouse/opencv*
 
   Test:
@@ -75,9 +133,6 @@ jobs:
       matrix:
         python-version: ['3.12']
         platform: [x64]
-        with_contrib: [1]
-        headless: [0]
-        build_sdist: [0]
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
@@ -103,7 +158,7 @@ jobs:
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.headless }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
+        name: wheel-cuda-${{ matrix.platform }}
         path: wheelhouse/
     - name: Package installation
       run: |
