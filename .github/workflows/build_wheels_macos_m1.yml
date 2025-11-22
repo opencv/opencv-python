@@ -1,18 +1,6 @@
 name: macOS ARM64
 
 on:
-  pull_request:
-    branches:
-      - 4.x
-      - 5.x
-    paths-ignore:
-      - '.github/workflows/build_wheels_linux*'
-      - '.github/workflows/build_wheels_windows*'
-      - '.github/workflows/build_wheels_macos.yml'
-  release:
-    types: [published, edited]
-  schedule:
-    - cron: '0 3 * * 6'
   workflow_dispatch:
 
 
