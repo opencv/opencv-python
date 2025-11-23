@@ -102,7 +102,7 @@ jobs:
         echo "Installing CuDNN..."
         7z x $cudnn_path
         $CUDNN_PATH = "D:/a/opencv-python-cuda/opencv-python-cuda/cudnn-windows-x86_64-8.9.7.29_cuda12-archive"
-        echo "CUDNN_LIBRARY=$CUDNN_PATH/lib/x64" | Out-File -FilePath $env:GITHUB_ENV -Append
+        echo "CUDNN_LIBRARY=$CUDNN_PATH/lib/x64/cudnn.lib" | Out-File -FilePath $env:GITHUB_ENV -Append
         echo "CUDNN_INCLUDE_DIR=$CUDNN_PATH/include" | Out-File -FilePath $env:GITHUB_ENV -Append
       shell: pwsh
 
