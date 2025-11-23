@@ -59,26 +59,26 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ./.cache/cuda_installer.exe
-        key: cuda-installer-12.0.0
+        key: cuda-installer-12.4.0
     - name: 🔧 Install NVIDIA CUDA Toolkit
       run: |
         $installer_path = "./.cache/cuda_installer.exe"
         if (-not (Test-Path $installer_path)) {
           echo "Downloading CUDA Toolkit..."
-          $cuda_installer_url = "https://developer.download.nvidia.com/compute/cuda/12.0.0/network_installers/cuda_12.0.0_windows_network.exe"
+          $cuda_installer_url = "https://developer.download.nvidia.com/compute/cuda/12.4.0/network_installers/cuda_12.4.0_windows_network.exe"
           New-Item -Path (Split-Path $installer_path) -ItemType Directory -Force
           curl -L -o $installer_path $cuda_installer_url
         } else {
           echo "CUDA Toolkit installer found in cache."
         }
         echo "Installing CUDA Toolkit silently..."
-        $arguments = "-s nvcc_12.0 cudart_12.0 cublas_12.0 cublas_dev_12.0 cufft_12.0 cufft_dev_12.0 npp_12.0 npp_dev_12.0"
+        $arguments = "-s nvcc_12.4 cudart_12.4 cublas_12.4 cublas_dev_12.4 cufft_12.4 cufft_dev_12.4 npp_12.4 npp_dev_12.4"
         Start-Process -FilePath $installer_path -ArgumentList $arguments -Wait -NoNewWindow
         echo "Adding CUDA to PATH..."
-        $CUDA_PATH = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.0"
+        $CUDA_PATH = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4"
         echo "CUDA_PATH=$CUDA_PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
       shell: pwsh
-      #$arguments = "-s cublas_12.0 cublas_dev_12.0 cudart_12.0 cufft_12.0 cufft_dev_12.0 npp_12.0 npp_dev_12.0 nvcc_12.0"
+      #$arguments = "-s cublas_12.4 cublas_dev_12.4 cudart_12.4 cufft_12.4 cufft_dev_12.4 npp_12.4 npp_dev_12.4 nvcc_12.4"
       #echo "$CUDA_PATH\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
       #echo "$CUDA_PATH\lib\x64" | Out-File -FilePath $env:GITHUB_PATH -Append
       #echo "$CUDA_PATH"
