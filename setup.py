@@ -1,3 +1,4 @@
+import glob
 import io
 import os
 import os.path
@@ -140,7 +141,7 @@ def main():
 
     # Files in sourcetree outside package dir that should be copied to package.
     # Raw paths relative to sourcetree root.
-    files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
+    files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt","*.dll"]}
 
     ci_cmake_generator = (
         ["-G", "Visual Studio 17 2022"]
@@ -453,7 +454,10 @@ class RearrangeCMakeOutput:
 
         for package_name, paths in cls.files_outside_package.items():
             package_dest_reldir = package_name.replace(".", os.path.sep)
+            expanded_paths = []
             for path in paths:
+                expanded_paths += [path] if '*' not in path else glob.glob(path)
+            for path in expanded_paths:
                 new_install_relpath = os.path.join(
                     package_dest_reldir,
                     # Don't yet have a need to copy

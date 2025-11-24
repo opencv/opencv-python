@@ -77,11 +77,8 @@ jobs:
         echo "Adding CUDA to PATH..."
         $CUDA_PATH = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4"
         echo "CUDA_PATH=$CUDA_PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
+        Copy-Item -Path "$CUDA_PATH/bin/*" -Destination .  -Include "*.dll"
       shell: pwsh
-      #$arguments = "-s cublas_12.4 cublas_dev_12.4 cudart_12.4 cufft_12.4 cufft_dev_12.4 npp_12.4 npp_dev_12.4 nvcc_12.4"
-      #echo "$CUDA_PATH\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
-      #echo "$CUDA_PATH\lib\x64" | Out-File -FilePath $env:GITHUB_PATH -Append
-      #echo "$CUDA_PATH"
     - name: Cache CuDNN Installer
       id: cache-cudnn-installer
       uses: actions/cache@v3
@@ -104,8 +101,16 @@ jobs:
         $CUDNN_PATH = "D:/a/opencv-python-cuda/opencv-python-cuda/cudnn-windows-x86_64-8.9.7.29_cuda12-archive"
         echo "CUDNN_LIBRARY=$CUDNN_PATH/lib/x64/cudnn.lib" | Out-File -FilePath $env:GITHUB_ENV -Append
         echo "CUDNN_INCLUDE_DIR=$CUDNN_PATH/include" | Out-File -FilePath $env:GITHUB_ENV -Append
+        Copy-Item -Path "$CUDNN_PATH/bin/*" -Destination .  -Include "*.dll"
       shell: pwsh
 
+    - name: Cache build artifacts
+      uses: actions/cache@v3
+      with:
+        path: _skbuild
+        key: ${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python-version }}-
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
@@ -114,8 +119,12 @@ jobs:
         python -m pip install --upgrade setuptools
         python -m pip install cmake==3.24.2
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
-        set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
-      shell: cmd
+        $CI_BUILD = 1
+        if (Test-Path _skbuild) {
+          $SKIP_CMAKE = "--skip-cmake"
+        }
+        python setup.py $SKIP_CMAKE bdist_wheel --py-limited-api=cp37 --dist-dir="$PWD\wheelhouse" -v
+      shell: pwsh
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
