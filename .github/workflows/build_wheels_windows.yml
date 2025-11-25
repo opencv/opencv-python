@@ -201,6 +201,8 @@ jobs:
         if ($LastExitCode -ne 0) {throw $LastExitCode}
         python get_build_info.py
       shell: powershell
+    # TODO: This fails because the runner doesn't have a GPU. Add a custom test that ensures the
+    # CUDA DLLs can be loaded by invoking some functions (e.g. checking for device availability).
     - name: Run tests
       run: |
         cd ${{ github.workspace }}/opencv
