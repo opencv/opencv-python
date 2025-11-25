@@ -11,6 +11,19 @@ name: Windows CUDA x64
 
 on:
   workflow_dispatch:
+    inputs:
+      # TODO: Right now we don't correctly determine when things have changed and we require a
+      # rebuild, so for now we just manually trigger rebuilds between runs.
+      restore_build_cache:
+        description: "Restore build cache. Uncheck to force re-build."
+        required: false
+        type: boolean
+        default: true
+      save_build_cache:
+        description: "Save build cache."
+        required: false
+        type: boolean
+        default: true
 
 
 jobs:
@@ -104,13 +117,18 @@ jobs:
         Copy-Item -Path "$CUDNN_PATH/bin/*" -Destination .  -Include "*.dll"
       shell: pwsh
 
-    - name: Cache build artifacts
-      uses: actions/cache@v3
+      # TODO: This isn't the correct cache key since it relies on the CMake options we build with.
+      # This is good enough for now though to cache build artifacts; we can manually skip restoring
+      # the cache to rebuild it.
+    - name: Restore build artifacts
+      uses: actions/cache/restore@v3
+      if: ${{ inputs.restore_build_cache }}
       with:
         path: _skbuild
         key: ${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/CMakeLists.txt') }}
         restore-keys: |
           ${{ runner.os }}-${{ matrix.python-version }}-
+
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
@@ -125,6 +143,13 @@ jobs:
         }
         python setup.py $SKIP_CMAKE bdist_wheel --py-limited-api=cp37 --dist-dir="$PWD\wheelhouse" -v
       shell: pwsh
+
+    - name: Save build artifacts to cache
+      uses: actions/cache/save@v3
+      if: ${{ inputs.save_build_cache }}
+      with:
+        path: _skbuild
+        key: ${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/CMakeLists.txt') }}
     - name: Saving all wheels
       uses: actions/upload-artifact@v4
       with:
