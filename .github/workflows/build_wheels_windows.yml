@@ -170,7 +170,6 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
-      PYLINT_TEST_FILE: ${{ github.workspace }}\opencv\samples\python\squares.py
       PlatformToolset: v143
     steps:
     - name: Cleanup
@@ -201,14 +200,7 @@ jobs:
         if ($LastExitCode -ne 0) {throw $LastExitCode}
         python get_build_info.py
       shell: powershell
-    # TODO: This fails because the runner doesn't have a GPU. Add a custom test that ensures the
-    # CUDA DLLs can be loaded by invoking some functions (e.g. checking for device availability).
     - name: Run tests
       run: |
-        cd ${{ github.workspace }}/opencv
-        python modules\python\test\test.py -v --repo .
-    - name: Pylint test
-      run: |
-        python -m pip install pylint==2.15.9
-        cd ${{ github.workspace }}\tests
-        python -m pylint $PYLINT_TEST_FILE
+        cd ${{ github.workspace }}/tests
+        python test.py

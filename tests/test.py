@@ -9,6 +9,10 @@ class OpenCVTest(unittest.TestCase):
         """ Test that the cv2 module can be imported. """
         import cv2
 
+    def test_cuda(self):
+        import cv2
+        assert hasattr(cv2.cuda, "createBackgroundSubtractorMOG2"), "Missing expected function!"
+
     def test_video_capture(self):
 
         import cv2
