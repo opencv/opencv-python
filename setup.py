@@ -86,6 +86,8 @@ def main():
         build_contrib, build_headless, build_rolling, cuda_arch_bin, cuda_arch_ptx
     )
 
+    print(f"package_version={package_version} build_contrib={build_contrib}, build_headless={build_headless}, build_rolling={build_rolling}, cuda_arch_bin={cuda_arch_bin}, cuda_arch_ptx={cuda_arch_ptx}")
+
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     is64 = sys.maxsize > 2 ** 32
 
@@ -194,6 +196,7 @@ def main():
             "-DPYTHON3_LIMITED_API=ON",
             "-DBUILD_OPENEXR=ON",
             "-DWITH_CUDA=ON",
+            # TODO(@Breakthrough): Download and install the required dependencies to enable this in build_wheels_windows.yml.
             "-DWITH_NVCUVID=OFF",
             f"-DCUDA_ARCH_BIN={cuda_arch_bin}",
             f"-DCUDA_ARCH_PTX={cuda_arch_ptx}",
@@ -318,8 +321,6 @@ def main():
         cmake_args=cmake_args,
         cmake_source_dir=cmake_source_dir,
     )
-
-    print("OpenCV is raising funds to keep the library free for everyone, and we need the support of the entire community to do it. Donate to OpenCV on GitHub:\nhttps://github.com/sponsors/opencv\n")
 
 class RearrangeCMakeOutput:
     """
@@ -502,6 +503,7 @@ class RearrangeCMakeOutput:
 
 
 def generate_version_file(contrib, headless, rolling, cuda_arch_bin, cuda_arch_ptx):
+
     version = {}
 
     # generate version.py
