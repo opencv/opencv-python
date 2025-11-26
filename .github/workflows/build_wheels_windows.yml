@@ -25,7 +25,7 @@ on:
         type: boolean
         default: true
       rolling_build:
-        description: "Use latest commit from upstream OpenCV repo."
+        description: "Use latest commit from upstream OpenCV repo. Cache settings will be ignored."
         required: false
         type: boolean
         default: false
@@ -117,12 +117,9 @@ jobs:
         Copy-Item -Path "$CUDNN_PATH/bin/*" -Destination .  -Include "*.dll"
       shell: pwsh
 
-      # TODO: This isn't the correct cache key since it relies on the CMake options we build with.
-      # This is good enough for now though to cache build artifacts; we can manually skip restoring
-      # the cache to rebuild it.
     - name: Restore build artifacts
       uses: actions/cache/restore@v3
-      if: ${{ inputs.restore_build_cache }}
+      if: ${{ inputs.restore_build_cache && !inputs.rolling_build }}
       with:
         path: _skbuild
         key: ${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/CMakeLists.txt') }}
@@ -146,7 +143,7 @@ jobs:
 
     - name: Save build artifacts to cache
       uses: actions/cache/save@v3
-      if: ${{ inputs.save_build_cache }}
+      if: ${{ inputs.save_build_cache && !inputs.rolling_build }}
       with:
         path: _skbuild
         key: ${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/CMakeLists.txt') }}
