@@ -1,6 +1,11 @@
 ## What is `opencv-python-cuda`?
 
-Pre-built NVIDIA® CUDA™ enabled OpenCV packages for Python that come with all batteries included. This is a fork of [the official opencv-python project](https://github.com/opencv/opencv-python). Right now packages are only produced for Windows x64.
+Pre-built NVIDIA® CUDA™ enabled OpenCV packages for Python that come with all batteries included. This is a fork of [the official opencv-python project](https://github.com/opencv/opencv-python). Right now packages are only produced for Windows x64, and devices must be Maxwell class (GeForce 900 series) or newer.  Once installed via `pip` (or another Python package manager like `uv`), the following should *just work*:
+
+```
+import cv2
+print(cv2.cuda.getCudaEnabledDeviceCount())
+```
 
 ### Installation and Usage
 
