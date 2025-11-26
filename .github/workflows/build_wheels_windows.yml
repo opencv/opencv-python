@@ -24,6 +24,11 @@ on:
         required: false
         type: boolean
         default: true
+      rolling_build:
+        description: "Use latest commit from upstream OpenCV repo."
+        required: false
+        type: boolean
+        default: false
 
 
 jobs:
@@ -39,6 +44,7 @@ jobs:
       SDIST: 0
       ENABLE_HEADLESS: 0
       ENABLE_CONTRIB: 1
+      ENABLE_ROLLING: ${{ inputs.rolling_build && 1 || 0 }}
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
     steps:
     - name: Cleanup
@@ -47,12 +53,6 @@ jobs:
         rm -rf ./* || true
         rm -rf ./.??* || true
       working-directory: ${{ github.workspace }}
-    - name: Setup environment
-      shell: bash
-      run: |
-        if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-          echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
-        fi
     - name: Checkout
       uses: actions/checkout@v4
       with:

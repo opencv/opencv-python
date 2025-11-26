@@ -7,6 +7,8 @@ if __name__ == "__main__":
     headless = sys.argv[2]
     rolling = sys.argv[3]
     ci_build = sys.argv[4]
+    cuda_arch_bin = sys.argv[5]
+    cuda_arch_ptx = sys.argv[6]
 
     opencv_version = ""
     # dig out the version from OpenCV sources
@@ -53,6 +55,12 @@ if __name__ == "__main__":
             print(e.output)
             raise
 
+
+    # TODO(@Breakthrough): Update this so that we just use the tag name directly as the version
+    # identifier. We might need to strip off a "v" suffix if we include that in the repo, but it
+    # will greatly simplify things. This can also get out of sync since we cache artifacts now.
+    # Move invoking this script to the builder!
+
     if len(tag) == 1:
         # tag identifies the build and should be a sequential revision number
         version = tag[0]
@@ -72,4 +80,5 @@ if __name__ == "__main__":
         f.write("contrib = {}\n".format(contrib))
         f.write("headless = {}\n".format(headless))
         f.write("rolling = {}\n".format(rolling))
-        f.write("ci_build = {}".format(ci_build))
+        f.write("cuda_arch_bin = {}".format(cuda_arch_bin))
+        f.write("cuda_arch_ptx = {}".format(cuda_arch_ptx))
