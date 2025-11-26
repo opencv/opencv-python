@@ -1,7 +1,6 @@
 include LICENSE-3RD-PARTY.txt
 include LICENSE.txt
 include README.md
-include find_version.py
 include setup.py
 include pyproject.toml
 include _build_backend/backend.py
