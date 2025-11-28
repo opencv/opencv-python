@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>opencv-python-cuda | Download</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>opencv-python-cuda</h1>
+            <p>Pre-built NVIDIA® CUDA™ enabled OpenCV packages for Python.</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="download-section">
+                <h2>Download</h2>
+                <p class="version">Latest Release: 4.12.0-dev0</p>
+                <div class="platform-selection">
+                    <div class="platform">
+                        <h3>Windows</h3>
+                        <a href="https://github.com/Breakthrough/opencv-python-cuda/releases/tag/4.12.0-dev0" class="download-button">x86_64</a>
+                    </div>
+                    <div class="platform">
+                        <h3>Linux</h3>
+                        <a href="#" class="download-button disabled">x86_64 (Coming Soon)</a>
+                    </div>
+                </div>
+                <div class="eula">
+                    <p>By downloading and using the software, you agree to fully comply with the terms and conditions of the <a href="https://docs.nvidia.com/cuda/eula/index.html" target="_blank">CUDA EULA</a>.</p>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <h2>About opencv-python-cuda</h2>
+                <p>
+                    This project provides pre-built NVIDIA® CUDA™ enabled OpenCV packages for Python that come with all batteries included.
+                    It is a fork of the official <a href="https://github.com/opencv/opencv-python">opencv-python</a> project.
+                    Currently, packages are only produced for Windows x64, and devices must be Maxwell class (GeForce 900 series) or newer.
+                </p>
+                <p>
+                    Once installed via <code>pip</code> (or another Python package manager like <code>uv</code>), the following should just work:
+                </p>
+                <pre><code>import cv2
+print(cv2.cuda.getCudaEnabledDeviceCount())</code></pre>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Breakthrough. All rights reserved. Based on the official <a href="https://github.com/opencv/opencv-python">opencv-python</a> project.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

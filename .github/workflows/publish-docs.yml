@@ -1,0 +1,31 @@
+name: Publish Docs
+
+on:
+  push:
+    branches:
+      - 4.x-cuda
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update gh-pages Branch
+        shell: bash
+        run: |
+          git config --global user.name github-actions
+          git config --global user.email github-actions@github.com
+
+          cp -r docs docs-tmp
+          git fetch origin gh-pages
+          git checkout gh-pages
+          mv -f docs-tmp/* .
+          git add *
+          git commit -m "[docs] @${{ github.triggering_actor }}: Update Documentation" \
+            -m "Source: ${{ github.ref_name }} (${{ github.sha }})"
+          git push
