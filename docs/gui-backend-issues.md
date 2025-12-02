@@ -102,7 +102,7 @@ RUN apt-get update && \
 For headless images:
 ```bash
 pip install opencv-python-headless
-
+```
 ## 7. Fix For CI/CD(GitHub Actions)
 
 ```
