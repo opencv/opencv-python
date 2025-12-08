@@ -89,7 +89,7 @@ jobs:
       NP_TEST_DEP: numpy==1.19.4
       NP_TEST_DEP_LATEST: numpy==2.2.6
       CONFIG_PATH: travis_config.sh
-      DOCKER_TEST_IMAGE: multibuild/focal_arm64v8
+      DOCKER_TEST_IMAGE: quay.io/opencv-ci/multibuild-focal_arm64v8:2025-11-13
       UNICODE_WIDTH: 32
     steps:
     - name: Cleanup
