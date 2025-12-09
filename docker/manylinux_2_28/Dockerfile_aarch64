@@ -1,0 +1,114 @@
+# Version: 20251013
+# Image name: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64
+
+FROM quay.io/pypa/manylinux_2_28_aarch64:latest
+
+ARG FFMPEG_VERSION=5.1.6
+ARG FREETYPE_VERSION=2.13.3
+ARG LIBPNG_VERSION=1.6.48
+ARG VPX_VERSION=v1.15.1
+ARG QT_VERSION=5.15.16
+ARG AOM_VERSION=v3.12.1
+ARG AVIF_VERSION=v1.3.0
+
+ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
+
+# epel-release need for aarch64 to get openblas packages
+RUN yum install zlib-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release -y && \
+    yum install openblas-devel dejavu-sans-fonts ccache yasm nasm ninja-build openssl openssl-devel -y && \
+    # libpng will be built from source
+    yum remove libpng -y
+
+RUN mkdir ~/libpng_sources && \
+    cd ~/libpng_sources && \
+    curl -O -L https://download.sourceforge.net/libpng/libpng-${LIBPNG_VERSION}.tar.gz && \
+    tar -xf libpng-${LIBPNG_VERSION}.tar.gz && \
+    cd libpng-${LIBPNG_VERSION} && \
+    ./configure --prefix=/usr/local && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf ~/libpng_sources
+
+RUN mkdir ~/freetype_sources && \
+    cd ~/freetype_sources && \
+    curl -O -L https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz && \
+    tar -xf freetype-${FREETYPE_VERSION}.tar.gz && \
+    cd freetype-${FREETYPE_VERSION} && \
+    ./configure --prefix="/ffmpeg_build" --enable-freetype-config && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf ~/freetype_sources
+
+RUN curl -O -L https://download.qt.io/archive/qt/5.15/${QT_VERSION}/single/qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
+    tar -xf qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
+    cd qt-everywhere-src-${QT_VERSION} && \
+    export MAKEFLAGS=-j$(nproc) && \
+    ./configure -prefix /opt/Qt${QT_VERSION} -release -opensource -confirm-license -qtnamespace QtOpenCVPython -xcb -xcb-xlib -bundled-xcb-xinput -no-openssl -no-dbus -skip qt3d -skip qtactiveqt -skip qtcanvas3d -skip qtconnectivity -skip qtdatavis3d -skip qtdoc -skip qtgamepad -skip qtgraphicaleffects -skip qtimageformats -skip qtlocation -skip qtmultimedia -skip qtpurchasing -skip qtqa -skip qtremoteobjects -skip qtrepotools -skip qtscript -skip qtscxml -skip qtsensors -skip qtserialbus -skip qtserialport -skip qtspeech -skip qttranslations -skip qtwayland -skip qtwebchannel -skip qtwebengine -skip qtwebsockets -skip qtwebview -skip xmlpatterns -skip declarative -make libs && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf qt-everywhere*
+
+ENV QTDIR /opt/Qt${QT_VERSION}
+ENV PATH "$QTDIR/bin:$PATH"
+
+RUN mkdir ~/libvpx_sources && \
+    cd ~/libvpx_sources && \
+    git clone --depth 1 -b ${VPX_VERSION} https://chromium.googlesource.com/webm/libvpx.git && \
+    cd libvpx && \
+    ./configure --prefix="/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    cd .. && \
+    rm -rf ~/libvpx_sources
+
+RUN mkdir ~/aom_sources && \
+    cd ~/aom_sources && \
+    git clone --depth 1 -b ${AOM_VERSION} https://aomedia.googlesource.com/aom && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_C_COMPILER=$(dirname $(which g++))/gcc -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=ON -DENABLE_TESTS=OFF ../aom/ && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    cd / && rm -rf ~/aom_sources
+
+RUN mkdir ~/avif_sources && \
+    cd ~/avif_sources && \
+    git clone -b ${AVIF_VERSION} https://github.com/AOMediaCodec/libavif.git && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DAVIF_CODEC_AOM=SYSTEM -DAVIF_LIBYUV=LOCAL -DAVIF_BUILD_APPS=OFF ../libavif && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    cd / && rm -rf ~/avif_sources
+
+RUN mkdir ~/ffmpeg_sources && \
+    cd ~/ffmpeg_sources && \
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz && \
+    tar -xf ffmpeg-${FFMPEG_VERSION}.tar.gz && \
+    cd ffmpeg-${FFMPEG_VERSION} && \
+    PATH=~/bin:$PATH && \
+    PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" ./configure --prefix="/ffmpeg_build" --extra-cflags="-I/ffmpeg_build/include" --extra-ldflags="-L/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --bindir="$HOME/bin" && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    echo "/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
+    ldconfig && \
+    rm -rf ~/ffmpeg_sources
+
+# Self-hosted runner UID is 1004
+RUN useradd ci -m -s /bin/bash -G users --uid=1004 && \
+    mkdir /io && \
+    chown -R ci:ci /io && \
+    # This needs to find ffmpeg packages from ci user
+    chown -R ci:ci /ffmpeg_build && \
+    # This calls in mutlibuild scripts and cannot be run without permissions
+    chown -R ci:ci /opt/_internal/pipx/venvs/auditwheel
+
+USER ci
+
+# Git security vulnerability: https://github.blog/2022-04-12-git-security-vulnerability-announced
+RUN git config --global --add safe.directory /io
+
+ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/ffmpeg_build/lib/pkgconfig
+ENV LDFLAGS -L/ffmpeg_build/lib
+ENV PATH "$HOME/bin:$PATH"
