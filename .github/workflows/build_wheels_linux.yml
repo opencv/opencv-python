@@ -31,10 +31,10 @@ jobs:
         with_contrib: [0, 1] 
         without_gui: [0, 1] 
         build_sdist: [0]
-        exclude:
+        include:
           - platform: aarch64
             manylinux: 2014
-        include:
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20250630
           - platform: x86_64
             manylinux: 2014
             DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630
