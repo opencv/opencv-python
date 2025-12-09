@@ -39,7 +39,7 @@ else
   CURRENT_ARCH=$(uname -m)
   if [[ $CURRENT_ARCH == 'aarch64' ]]; then
     # To avoid network issues with pypi.org on OpenCV CN machines
-    export PIP_INDEX_URL=https://pypi.org/simple
+    #export PIP_INDEX_URL=https://pypi.org/simple
     echo "Running for linux aarch64"
   fi
 fi
