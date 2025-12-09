@@ -34,6 +34,16 @@ jobs:
         exclude:
           - platform: aarch64
             manylinux: 2014
+        include:
+          - platform: x86_64
+            manylinux: 2014
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630
+          - platform: x86_64
+            manylinux: 2_28
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20251013
+          - platform: aarch64
+            manylinux: 2_28
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20251013
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -44,7 +54,7 @@ jobs:
       MB_ML_VER: ${{ matrix.manylinux }}
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: ${{ matrix.manylinux == '2014' && (matrix.platform == 'x86_64' && 'quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630') || '' || (matrix.platform == 'x86_64' && 'quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20251013') || 'quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20251013' }}
+      DOCKER_IMAGE: ${{ matrix.DOCKER_IMAGE }}
       USE_CCACHE: 0
       UNICODE_WIDTH: 32
       PLAT: ${{ matrix.platform == 'x86_64' && 'x86_64' || 'aarch64' }}
