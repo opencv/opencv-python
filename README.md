@@ -1,4 +1,24 @@
-[![Downloads](http://pepy.tech/badge/opencv-python)](http://pepy.tech/project/opencv-python)
+[![Downloads](https://static.pepy.tech/badge/opencv-python)](http://pepy.tech/project/opencv-python)
+
+### Keep OpenCV Free
+
+OpenCV is raising funds to keep the library free for everyone, and we need the support of the entire community to do it. [Donate to OpenCV on Github](https://github.com/sponsors/opencv) to show your support.
+
+- [OpenCV on Wheels](#opencv-on-wheels)
+  - [Installation and Usage](#installation-and-usage)
+- [Frequently Asked Questions](#frequently-asked-questions)
+- [Documentation for opencv-python](#documentation-for-opencv-python)
+  - [CI build process](#ci-build-process)
+  - [Manual builds](#manual-builds)
+    - [Manual debug builds](#manual-debug-builds)
+    - [Source distributions](#source-distributions)
+  - [Licensing](#licensing)
+  - [Versioning](#versioning)
+  - [Releases](#releases)
+  - [Development builds](#development-builds)
+  - [Manylinux wheels](#manylinux-wheels)
+  - [Supported Python versions](#supported-python-versions)
+  - [Backward compatibility](#backward-compatibility)
 
 ## OpenCV on Wheels
 
@@ -139,7 +159,7 @@ If some dependency is not enabled in the pre-built wheels, you can also run the 
 4. Select the package flavor which you wish to build with `ENABLE_CONTRIB` and `ENABLE_HEADLESS`: i.e. `export ENABLE_CONTRIB=1` if you wish to build `opencv-contrib-python`
 5. Run ``pip wheel . --verbose``. NOTE: make sure you have the latest ``pip`` version, the ``pip wheel`` command replaces the old ``python setup.py bdist_wheel`` command which does not support ``pyproject.toml``.
     - this might take anything from 5 minutes to over 2 hours depending on your hardware
-6. You'll have the wheel file in the `dist` folder and you can do with that whatever you wish
+6. Pip will print fresh wheel location at the end of build procedure. If you use old approach with `setup.py` file wheel package will be placed in `dist` folder. Package is ready and you can do with that whatever you wish.
     - Optional: on Linux use some of the `manylinux` images as a build hosts if maximum portability is needed and run `auditwheel` for the wheel after build
     - Optional: on macOS use ``delocate`` (same as ``auditwheel`` but for macOS) for better portability
 
@@ -223,6 +243,8 @@ Python 3.x compatible pre-built wheels are provided for the officially supported
 - 3.9
 - 3.10
 - 3.11
+- 3.12
+- 3.13
 
 ### Backward compatibility
 
@@ -230,4 +252,6 @@ Starting from 4.2.0 and 3.4.9 builds the macOS Travis build environment was upda
 
 Starting from 4.3.0 and 3.4.10 builds the Linux build environment was updated from `manylinux1` to `manylinux2014`. This dropped support for old Linux distributions.
 
-Starting from version 4.7.0 the Mac OS GitHub Actions build environment was update to version 11. Mac OS 10.x support depricated. See https://github.com/actions/runner-images/issues/5583
+Starting from version 4.7.0 the Mac OS GitHub Actions build environment was update to version 11. Mac OS 10.x support deprecated. See https://github.com/actions/runner-images/issues/5583
+
+Starting from version 4.9.0 the Mac OS GitHub Actions build environment was update to version 12. Mac OS 10.x support deprecated by Brew and most of used packages.

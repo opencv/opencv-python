@@ -3,8 +3,6 @@ name: macOS ARM64
 on:
   pull_request:
     branches:
-      - master
-      - 3.4
       - 4.x
       - 5.x
     paths-ignore:
@@ -20,11 +18,11 @@ on:
 
 jobs:
   Build:
-    runs-on: python-macos11-m1
+    runs-on: python-macos12-m1
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7']
+        python-version: ['3.9']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -54,28 +52,23 @@ jobs:
         git submodule update --init multibuild
         echo $ENABLE_CONTRIB > contrib.enabled
         echo $ENABLE_HEADLESS > headless.enabled
-        export MACOSX_DEPLOYMENT_TARGET=11.0
-        arch -arm64 python${{ matrix.python-version }} -m pip install toml && python${{ matrix.python-version }} -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python${{ matrix.python-version }} -m pip install -r /dev/stdin
-        arch -arm64 python${{ matrix.python-version }} setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
+        export MACOSX_DEPLOYMENT_TARGET=13.0
+        python${{ matrix.python-version }} -m pip install toml && python${{ matrix.python-version }} -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python${{ matrix.python-version }} -m pip install -r /dev/stdin
+        python${{ matrix.python-version }} setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
         delocate-wheel ${{ github.workspace }}/wheelhouse/opencv*
-    - name: Saving all wheels
-      uses: actions/upload-artifact@v3
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
     - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/opencv*.whl
 
   Test:
     needs: [Build]
-    runs-on: opencv-cn-mac-arm64-tests
+    runs-on: python-macos12-m1
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -94,35 +87,43 @@ jobs:
         submodules: true
         fetch-depth: 0
     - name: Download a wheel accordingly to matrix
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
+    - name: Create Venv for test
+      run: |
+        test -d "${{ github.workspace }}/opencv_test" && rm -rf "${{ github.workspace }}/opencv_test"
+        python${{ matrix.python-version }} -m venv ${{ github.workspace }}/opencv_test
     - name: Package installation
       run: |
-        arch -arm64 python${{ matrix.python-version }} -m pip install --user --no-cache --force-reinstall wheelhouse/opencv*.whl
+        source ${{ github.workspace }}/opencv_test/bin/activate
+        python${{ matrix.python-version }} -m pip install --upgrade pip
+        python${{ matrix.python-version }} -m pip install --no-cache --force-reinstall wheelhouse/opencv*.whl
         cd ${{ github.workspace }}/tests
-        arch -arm64 python${{ matrix.python-version }} get_build_info.py
+        python${{ matrix.python-version }} get_build_info.py
     - name: Run tests
       run: |
+        source ${{ github.workspace }}/opencv_test/bin/activate
         cd ${{ github.workspace }}/opencv
-        arch -arm64 python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
+        python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
     - name: Pylint test
       run: |
-        arch -arm64 python${{ matrix.python-version }} -m pip install pylint==2.15.9
+        source ${{ github.workspace }}/opencv_test/bin/activate
+        python${{ matrix.python-version }} -m pip install pylint==2.15.9
         cd ${{ github.workspace }}/tests
-        arch -arm64 python${{ matrix.python-version }} -m pylint $PYLINT_TEST_FILE
+        python${{ matrix.python-version }} -m pylint $PYLINT_TEST_FILE
 
   Release_rolling:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-rolling-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse/
@@ -146,13 +147,13 @@ jobs:
   Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: test-opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse/
@@ -164,13 +165,13 @@ jobs:
   Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse/

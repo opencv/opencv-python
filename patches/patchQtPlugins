@@ -9,7 +9,7 @@ index 4c0b3880fc..dffa0a4caa 100644
 +      install(DIRECTORY ${Qt5_DIR}/../../../plugins DESTINATION lib/qt)
 +    endif()
 +    if(UNIX AND NOT APPLE)
-+      install(DIRECTORY /opt/Qt5.15.0/plugins DESTINATION lib/qt)
++      install(DIRECTORY /opt/Qt5.15.16/plugins DESTINATION lib/qt)
 +      install(DIRECTORY /usr/share/fonts DESTINATION lib/qt)
 +    endif()
      if(HAVE_QT_OPENGL)

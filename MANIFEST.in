@@ -4,6 +4,7 @@ include README.md
 include find_version.py
 include setup.py
 include pyproject.toml
+include _build_backend/backend.py
 recursive-include cv2 *
 recursive-include docker *
 recursive-include opencv *

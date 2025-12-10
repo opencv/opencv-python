@@ -34,7 +34,7 @@ if [ -n "$IS_OSX" ]; then
   export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 else
   echo "    > Linux environment "
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.15.0/lib
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.15.16/lib
   export MAKEFLAGS="-j$(grep -E '^processor[[:space:]]*:' /proc/cpuinfo | wc -l)"
   CURRENT_ARCH=$(uname -m)
   if [[ $CURRENT_ARCH == 'aarch64' ]]; then
@@ -103,6 +103,7 @@ function pre_build {
 
   if [ -n "$IS_OSX" ]; then
     brew install lapack
+    brew install libavif
   fi
 
   if [ -n "$IS_OSX" ]; then

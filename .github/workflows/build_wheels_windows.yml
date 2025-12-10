@@ -3,8 +3,6 @@ name: Windows x86_64
 on:
   pull_request:
     branches:
-      - master
-      - 3.4
       - 4.x
       - 5.x
     paths-ignore:
@@ -19,11 +17,11 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2019
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7']
+        python-version: ['3.9']
         platform: [x86, x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -48,7 +46,7 @@ jobs:
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: false
         fetch-depth: 0
@@ -59,6 +57,8 @@ jobs:
         architecture: ${{ matrix.platform }}
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1
+    - name: Setup NASM
+      uses: ilammy/setup-nasm@v1
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
@@ -70,26 +70,21 @@ jobs:
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
     - name: Saving all wheels
-      uses: actions/upload-artifact@v3
-      with:
-        name: wheels
-        path: wheelhouse/opencv*.whl
-    - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/opencv*
 
   Test:
     needs: [Build]
-    runs-on: windows-2019
+    runs-on: windows-2025
     defaults:
       run:
         shell: cmd
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
         platform: [x86, x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -98,6 +93,7 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
       PYLINT_TEST_FILE: ${{ github.workspace }}\opencv\samples\python\squares.py
+      PlatformToolset: v143
     steps:
     - name: Cleanup
       shell: bash
@@ -106,7 +102,7 @@ jobs:
         rm -rf ./.??* || true
       working-directory: ${{ github.workspace }}
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: true
         fetch-depth: 0
@@ -116,7 +112,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
     - name: Download a wheel accordingly to matrix
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/
@@ -140,15 +136,14 @@ jobs:
   Release_rolling:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-rolling-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: wheels
           path: wheelhouse/
       - name: Upload wheels for opencv_python_rolling
         run: |
@@ -170,15 +165,14 @@ jobs:
   Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: test-opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: wheels
           path: wheelhouse/
       - name: Upload all wheels
         run: |
@@ -188,15 +182,14 @@ jobs:
   Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
     needs: [Build, Test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: opencv-python-release
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: wheels
           path: wheelhouse/
       - name: Upload wheels for opencv_python
         run: |
