@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - '.github/workflows/build_wheels_windows*'
       - '.github/workflows/build_wheels_macos*'
+      - '.github/workflows/build_wheels_musllinux*'
   release:
     types: [published, edited]
   schedule:
