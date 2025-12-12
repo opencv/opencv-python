@@ -163,7 +163,10 @@ RUN curl -O -L https://github.com/ccache/ccache/releases/download/v${CCACHE_VERS
 
 #  user`s UID is 1001
 RUN adduser -D -u 1001 ci && mkdir /io && chown ci:ci /io &&  \
-    chown -R ci:ci /ffmpeg_build
+    chown -R ci:ci /ffmpeg_build && \
+    # This calls in mutlibuild scripts and cannot be run without permissions
+    chown -R ci:ci /opt/_internal/pipx/venvs/auditwheel
+
 
 USER ci
 

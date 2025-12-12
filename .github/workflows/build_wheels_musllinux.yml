@@ -27,7 +27,6 @@ jobs:
       matrix: 
         python-version: ['3.12']
         platform: [x86_64, aarch64] 
-        manylinux: [2014, 2_28]
         with_contrib: [0, 1] 
         build_sdist: [0]
         include:
@@ -41,7 +40,7 @@ jobs:
       PROJECT_SPEC: opencv-python
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
-      MB_ML_VER: _1_2
+      MB_ML_VER: 1_2
       MB_ML_LIBC: musllinux
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
@@ -73,7 +72,7 @@ jobs:
     - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v4
       with:
-        name: wheel-${{ matrix.platform }}-${{ matrix.manylinux }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
+        name: wheel-${{ matrix.platform }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/opencv*.whl
 
   Test:
@@ -93,7 +92,7 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
-      MB_ML_VER: _1_2
+      MB_ML_VER: 1_2
       MB_ML_LIBC: musllinux
       NP_TEST_DEP: numpy==1.19.5
       NP_TEST_DEP_LATEST: numpy==2.2.6
@@ -117,7 +116,7 @@ jobs:
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
-        name: wheel-${{ matrix.platform }}-${{ matrix.manylinux }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
+        name: wheel-${{ matrix.platform }}-${{ matrix.with_contrib }}-1-${{ matrix.build_sdist }}
         path: wheelhouse/
     - name: Package installation and run tests
       run: source scripts/install.sh
