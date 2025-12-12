@@ -18,7 +18,7 @@ on:
 
 jobs:
   Build:
-    runs-on: macos-13
+    runs-on: macos-14
     defaults:
       run:
         shell: bash
@@ -91,7 +91,7 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: macos-13
+    runs-on: macos-14
     defaults:
       run:
         shell: bash

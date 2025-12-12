@@ -9,7 +9,7 @@ mkdir -p $BREW_LOCAL_BOTTLE_METADATA
 
 # Starting reference point for elapsed build time; seconds since the epoch.
 #TRAVIS_TIMER_START_TIME is set at the start of a log fold, in nanoseconds since the epoch
-BREW_TIME_START=$(($TRAVIS_TIMER_START_TIME/10**9))
+BREW_TIME_START=$(date +%s)
 
 # If after a package is built, elapsed time is more than this many seconds, fail the build but save Travis cache
 # The cutoff moment should leave enough time till Travis' job time limit to process the main project.
