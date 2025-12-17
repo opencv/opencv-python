@@ -189,6 +189,9 @@ def main():
             "-DBUILD_OPENEXR=ON",
         ]
         + (
+        if is_CI_build ["-DBLA_STATIC=ON"] else []
+        )
+        + (
             # CMake flags for windows/arm64 build
             ["-DCMAKE_GENERATOR_PLATFORM=ARM64",
              # Emulated cmake requires following flags to correctly detect
