@@ -253,3 +253,18 @@ Starting from 4.3.0 and 3.4.10 builds the Linux build environment was updated fr
 Starting from version 4.7.0 the Mac OS GitHub Actions build environment was update to version 11. Mac OS 10.x support deprecated. See https://github.com/actions/runner-images/issues/5583
 
 Starting from version 4.9.0 the Mac OS GitHub Actions build environment was update to version 12. Mac OS 10.x support deprecated by Brew and most of used packages.
+
+## Example Usage (Python)
+
+Below is a minimal example that loads an image, converts it to grayscale, and saves the output.
+
+```python
+import cv2
+
+img = cv2.imread("input.jpg")
+if img is None:
+    raise FileNotFoundError("Could not read input.jpg")
+
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+cv2.imwrite("output_gray.jpg", gray)
+print("Saved output_gray.jpg")
