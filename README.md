@@ -133,7 +133,7 @@ The build process for a single entry in the build matrices is as follows (see fo
 
 6. Install the generated wheel
 7. Test that Python can import the library and run some sanity checks
-8. Use twine to upload the generated wheel to PyPI (only in release builds)
+8. Use the [official PyPI publish action](https://github.com/pypa/gh-action-pypi-publish) to upload the generated wheel to PyPI (only in release builds)
 
 Steps 1--4 are handled by ``pip wheel``.
 
