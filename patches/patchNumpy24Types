@@ -1,0 +1,51 @@
+diff --git a/modules/python/test/test_fitline.py b/modules/python/test/test_fitline.py
+index 2197f8db7f..3a04708a68 100644
+--- a/modules/python/test/test_fitline.py
++++ b/modules/python/test/test_fitline.py
+@@ -55,7 +55,7 @@ class fitline_test(NewOpenCVTests):
+         for name in dist_func_names:
+             func = getattr(cv, name)
+             vx, vy, cx, cy = cv.fitLine(np.float32(points), func, 0, 0.01, 0.01)
+-            line = [float(vx), float(vy), float(cx), float(cy)]
++            line = [vx[0], vy[0], cx[0], cy[0]]
+             lines.append(line)
+ 
+         eps = 0.05
+diff --git a/modules/python/test/test_mser.py b/modules/python/test/test_mser.py
+index c76e9d4c79..596c82adb5 100644
+--- a/modules/python/test/test_mser.py
++++ b/modules/python/test/test_mser.py
+@@ -8,6 +8,7 @@ from __future__ import print_function
+ 
+ import numpy as np
+ import cv2 as cv
++import random
+ 
+ from tests_common import NewOpenCVTests
+ 
+@@ -31,19 +32,18 @@ class mser_test(NewOpenCVTests):
+          [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+          [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+         ]
+-        thresharr = [ 0, 70, 120, 180, 255 ]
+         kDelta = 5
+         mserExtractor = cv.MSER_create()
+         mserExtractor.setDelta(kDelta)
+-        np.random.seed(10)
++        random.seed(10)
+ 
+         for _i in range(100):
+ 
+-            use_big_image = int(np.random.rand(1,1)*7) != 0
+-            invert = int(np.random.rand(1,1)*2) != 0
+-            binarize = int(np.random.rand(1,1)*5) != 0 if use_big_image else False
+-            blur = int(np.random.rand(1,1)*2) != 0
+-            thresh = thresharr[int(np.random.rand(1,1)*5)]
++            use_big_image = random.choice([True, False])
++            invert = random.choice([True, False])
++            binarize = random.choice([True, False]) if use_big_image else False
++            blur = random.choice([True, False])
++            thresh = random.choice([0, 70, 120, 180, 255])
+             src0 = img if use_big_image else np.array(smallImg).astype('uint8')
+             src = src0.copy()
+ 
