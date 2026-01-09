@@ -93,7 +93,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         platform: [x86_64, aarch64] 
         manylinux: [2014, 2_28]
         with_contrib: [0, 1]
@@ -122,7 +122,7 @@ jobs:
         fetch-depth: 0
   
     - name: Setup Environment variables
-      run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
+      run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" -o "3.14" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
@@ -152,7 +152,6 @@ jobs:
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
       MB_ML_VER: 2014
-      NP_TEST_DEP: numpy==1.19.4
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
       DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20260102
