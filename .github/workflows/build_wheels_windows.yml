@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9']
+        python-version: ['3.13']
         platform: [x64]
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
