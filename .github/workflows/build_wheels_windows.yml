@@ -67,22 +67,27 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
     - name: Setup NASM
       uses: ilammy/setup-nasm@v1
-    - name: Cache CUDA Toolkit Installer
-      id: cache-cuda-installer
+    - name: Cache NVIDIA dependencies
+      id: cache-nvidia-deps
       uses: actions/cache@v3
       with:
-        path: ./.cache/cuda_installer.exe
-        key: cuda-installer-12.4.0
+        path: .deps/Nvidia
+        key: nvidia-deps-cuda-12.4.0-cudnn-8.9.7.29
+    - name: Clone NVIDIA dependencies
+      if: steps.cache-nvidia-deps.outputs.cache-hit != 'true'
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.DEPS_REPO_SSH_KEY }}
+      run: |
+        eval "$(ssh-agent -s)"
+        ssh-add - <<< "${SSH_PRIVATE_KEY}"
+        ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+        git clone git@github.com:Breakthrough/opencv-python-cuda-deps.git .deps
+      shell: bash
     - name: 🔧 Install NVIDIA CUDA Toolkit
       run: |
-        $installer_path = "./.cache/cuda_installer.exe"
+        $installer_path = ".deps/Nvidia/cuda_12.4.0_windows_network.exe"
         if (-not (Test-Path $installer_path)) {
-          echo "Downloading CUDA Toolkit..."
-          $cuda_installer_url = "https://developer.download.nvidia.com/compute/cuda/12.4.0/network_installers/cuda_12.4.0_windows_network.exe"
-          New-Item -Path (Split-Path $installer_path) -ItemType Directory -Force
-          curl -L -o $installer_path $cuda_installer_url
-        } else {
-          echo "CUDA Toolkit installer found in cache."
+          throw "CUDA Toolkit installer not found at $installer_path"
         }
         echo "Installing CUDA Toolkit silently..."
         $arguments = "-s nvcc_12.4 cudart_12.4 cublas_12.4 cublas_dev_12.4 cufft_12.4 cufft_dev_12.4 npp_12.4 npp_dev_12.4"
@@ -92,22 +97,11 @@ jobs:
         echo "CUDA_PATH=$CUDA_PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
         Copy-Item -Path "$CUDA_PATH/bin/*" -Destination .  -Include "*.dll"
       shell: pwsh
-    - name: Cache CuDNN Installer
-      id: cache-cudnn-installer
-      uses: actions/cache@v3
-      with:
-        path: ./.cache/cudnn.zip
-        key: cudnn-8.9.7.29-cuda-12-windows
     - name: 🔧 Install NVIDIA CuDNN
       run: |
-        $cudnn_path = "./.cache/cudnn.zip"
+        $cudnn_path = ".deps/Nvidia/cudnn-windows-x86_64-8.9.7.29_cuda12-archive.zip"
         if (-not (Test-Path $cudnn_path)) {
-          echo "Downloading CuDNN..."
-          $cudnn_installer_url = "https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-8.9.7.29_cuda12-archive.zip"
-          New-Item -Path (Split-Path $cudnn_path) -ItemType Directory -Force
-          curl -L -o $cudnn_path $cudnn_installer_url
-        } else {
-          echo "CuDNN installer found in cache."
+          throw "CuDNN archive not found at $cudnn_path"
         }
         echo "Installing CuDNN..."
         7z x $cudnn_path
