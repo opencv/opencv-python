@@ -68,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -133,10 +133,10 @@ jobs:
       - name: Select only OpenCV wheels
         run: |
           mkdir dist dist-contrib dist-headless dist-contrib-headless
-          cp wheelhouse/opencv_python_rolling-* dist/
-          cp wheelhouse/opencv_contrib_python_rolling-* dist-contrib/
-          cp wheelhouse/opencv_python_headless_rolling-* dist-headless/
-          cp wheelhouse/opencv_contrib_python_headless_rolling-* dist-contrib-headless/
+          cp wheelhouse/wheel-*/opencv_python_rolling-* dist/
+          cp wheelhouse/wheel-*/opencv_contrib_python_rolling-* dist-contrib/
+          cp wheelhouse/wheel-*/opencv_python_headless_rolling-* dist-headless/
+          cp wheelhouse/wheel-*/opencv_contrib_python_headless_rolling-* dist-contrib-headless/
       - name: Upload wheels for opencv_python_rolling
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -176,12 +176,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wheels
           path: wheelhouse/
       - name: Select only OpenCV wheels
         run: |
+          tree
           mkdir dist
-          cp wheelhouse/opencv_* dist/
+          cp wheelhouse/wheel-*/opencv_* dist/
       - name: Upload all wheels
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -205,15 +205,14 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wheels
           path: wheelhouse/
       - name: Select only OpenCV wheels
         run: |
           mkdir dist dist-contrib dist-headless dist-contrib-headless
-          cp wheelhouse/opencv_python-* dist/
-          cp wheelhouse/opencv_contrib_python-* dist-contrib/
-          cp wheelhouse/opencv_python_headless-* dist-headless/
-          cp wheelhouse/opencv_contrib_python_headless-* dist-contrib-headless/
+          cp wheelhouse/wheel-*/opencv_python-* dist/
+          cp wheelhouse/wheel-*/opencv_contrib_python-* dist-contrib/
+          cp wheelhouse/wheel-*/opencv_python_headless-* dist-headless/
+          cp wheelhouse/wheel-*/opencv_contrib_python_headless-* dist-contrib-headless/
       - name: Upload wheels for opencv_python
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

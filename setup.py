@@ -216,6 +216,10 @@ def main():
         # see: https://github.com/opencv/opencv-python/issues/771
         cmake_args.append("-DWITH_MSMF=OFF")
         cmake_args.append("-DWITH_OBSENSOR=OFF") # Orbbec cameras backend uses MSMF API
+        # see: https://github.com/opencv/opencv/issues/28438
+        # libavdevice is enabled by default, but brings libxcb dependency
+        if sys.platform.startswith("linux"):
+            cmake_args.append("-DOPENCV_FFMPEG_ENABLE_LIBAVDEVICE=OFF")
 
     if sys.platform.startswith("linux") and not is64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
@@ -298,6 +302,7 @@ def main():
             "Programming Language :: Python :: 3.11",
             "Programming Language :: Python :: 3.12",
             "Programming Language :: Python :: 3.13",
+            "Programming Language :: Python :: 3.14",
             "Programming Language :: C++",
             "Programming Language :: Python :: Implementation :: CPython",
             "Topic :: Scientific/Engineering",

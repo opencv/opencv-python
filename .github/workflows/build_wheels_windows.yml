@@ -151,10 +151,10 @@ jobs:
       - name: Select only OpenCV wheels
         run: |
           mkdir dist dist-contrib dist-headless dist-contrib-headless
-          cp wheelhouse/opencv_python_rolling-* dist/
-          cp wheelhouse/opencv_contrib_python_rolling-* dist-contrib/
-          cp wheelhouse/opencv_python_headless_rolling-* dist-headless/
-          cp wheelhouse/opencv_contrib_python_headless_rolling-* dist-contrib-headless/
+          cp wheelhouse/wheel-*/opencv_python_rolling-* dist/
+          cp wheelhouse/wheel-*/opencv_contrib_python_rolling-* dist-contrib/
+          cp wheelhouse/wheel-*/opencv_python_headless_rolling-* dist-headless/
+          cp wheelhouse/wheel-*/opencv_contrib_python_headless_rolling-* dist-contrib-headless/
       - name: Upload wheels for opencv_python_rolling
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -198,7 +198,7 @@ jobs:
       - name: Select only OpenCV wheels
         run: |
           mkdir dist
-          cp wheelhouse/opencv_* dist/
+          cp wheelhouse/wheel-*/opencv_* dist/
       - name: Upload all wheels
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -226,10 +226,10 @@ jobs:
       - name: Select only OpenCV wheels
         run: |
           mkdir dist dist-contrib dist-headless dist-contrib-headless
-          cp wheelhouse/opencv_python-* dist/
-          cp wheelhouse/opencv_contrib_python-* dist-contrib/
-          cp wheelhouse/opencv_python_headless-* dist-headless/
-          cp wheelhouse/opencv_contrib_python_headless-* dist-contrib-headless/
+          cp wheelhouse/wheel-*/opencv_python-* dist/
+          cp wheelhouse/wheel-*/opencv_contrib_python-* dist-contrib/
+          cp wheelhouse/wheel-*/opencv_python_headless-* dist-headless/
+          cp wheelhouse/wheel-*/opencv_contrib_python_headless-* dist-contrib-headless/
       - name: Upload wheels for opencv_python
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

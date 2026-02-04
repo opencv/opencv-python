@@ -23,26 +23,26 @@ jobs:
         shell: bash
     strategy:
       fail-fast: false
-      matrix: 
-        python-version: ['3.9'] 
-        platform: [x86_64, aarch64] 
-        manylinux: [2014, 2_28] 
-        with_contrib: [0, 1] 
-        without_gui: [0, 1] 
+      matrix:
+        python-version: ['3.9']
+        platform: [x86_64, aarch64]
+        manylinux: [2014, 2_28]
+        with_contrib: [0, 1]
+        without_gui: [0, 1]
         build_sdist: [0]
         include:
           - platform: aarch64
             manylinux: 2014
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20250630
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20260102
           - platform: x86_64
             manylinux: 2014
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20260102
           - platform: x86_64
             manylinux: 2_28
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20251013
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20260102
           - platform: aarch64
             manylinux: 2_28
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20251013
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20260102
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -60,7 +60,7 @@ jobs:
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
-     
+
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete
@@ -94,12 +94,12 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
-        platform: [x86_64, aarch64] 
+        platform: [x86_64, aarch64]
         manylinux: [2014, 2_28]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
-            
+
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
@@ -107,7 +107,7 @@ jobs:
       NP_TEST_DEP_LATEST: numpy==2.2.6
       CONFIG_PATH: travis_config.sh
       PLAT: ${{ matrix.platform }}
-      SDIST: ${{ matrix.build_sdist || 0 }}                          
+      SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
       DOCKER_TEST_IMAGE: ${{ matrix.platform == 'aarch64' && 'quay.io/opencv-ci/multibuild-focal_arm64v8:2025-11-13' || '' }}
@@ -120,9 +120,9 @@ jobs:
       with:
         submodules: true
         fetch-depth: 0
-  
+
     - name: Setup Environment variables
-      run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
+      run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" -o "3.14" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
@@ -155,7 +155,7 @@ jobs:
       NP_TEST_DEP: numpy==1.19.4
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20260102
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
@@ -262,6 +262,7 @@ jobs:
           path: wheelhouse/
       - name: Select only OpenCV wheels
         run: |
+          tree
           mkdir dist
           cp wheelhouse/wheel-*/opencv_* wheelhouse/wheel-*/opencv-* dist/
       - name: Upload all wheels
