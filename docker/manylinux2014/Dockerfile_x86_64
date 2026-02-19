@@ -127,7 +127,6 @@ RUN mkdir ~/libdav1d_sources && \
     git clone -b ${LIBDAV1D_VERSION} https://code.videolan.org/videolan/dav1d.git && \
     mkdir build && cd build && \
     PATH=$HOME/bin:$PATH meson setup --prefix="/ffmpeg_build" --libdir lib ../dav1d && \
-    #DESTDIR=/ffmpeg_build meson install && \
     meson install && \
     cd / && rm -rf ~/libdav1d_sources
 
