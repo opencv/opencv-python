@@ -14,7 +14,7 @@ def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     CI_BUILD = os.environ.get("CI_BUILD", "False")
-    is_CI_build = True if CI_BUILD == "1" else False
+    is_CI_build = CI_BUILD == "1"
     cmake_source_dir = "opencv"
     minimum_supported_numpy = "1.13.3"
     build_contrib = get_build_env_var_by_name("contrib")
@@ -29,7 +29,7 @@ def main():
 
     python_version = cmaker.CMaker.get_python_version()
     python_lib_path = cmaker.CMaker.get_python_library(python_version) or ""
-    # HACK: For Scikit-build 0.17.3 and newer that returns None or empty sptring for PYTHON_LIBRARY in manylinux2014
+    # HACK: For Scikit-build 0.17.3 and newer that returns None or empty string for PYTHON_LIBRARY in manylinux2014
     # A small release related to PYTHON_LIBRARY handling changes in 0.17.2; scikit-build 0.17.3 returns an empty string from get_python_library if no Python library is present (like on manylinux), where 0.17.2 returned None, and previous versions returned a non-existent path. Note that adding REQUIRED to find_package(PythonLibs will fail, but it is incorrect (you must not link to libPython.so) and was really just injecting a non-existent path before.
     # TODO: Remove the hack when the issue is handled correctly in main OpenCV CMake.
     if python_lib_path == "":
