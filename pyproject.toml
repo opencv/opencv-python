@@ -8,7 +8,7 @@ requires = [
   "pip",
   "scikit-build>=0.14.0",
   "setuptools==59.2.0; python_version<'3.12'",
-  "setuptools<70.0.0; python_version>='3.12'",
+  "setuptools>=68.0.0; python_version>='3.12'",
 ]
 # use a custom backend to manage CMake check / installation
 # see https://scikit-build.readthedocs.io/en/latest/usage.html#adding-cmake-as-building-requirement-only-if-not-installed-or-too-low-a-version
