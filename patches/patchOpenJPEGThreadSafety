@@ -1,0 +1,49 @@
+diff -ruN opencv/modules/imgcodecs/src/grfmt_jpeg2000_openjpeg.cpp opencv_patched/modules/imgcodecs/src/grfmt_jpeg2000_openjpeg.cpp
+--- opencv/modules/imgcodecs/src/grfmt_jpeg2000_openjpeg.cpp	2024-01-01 00:00:00.000000000 +0000
++++ opencv_patched/modules/imgcodecs/src/grfmt_jpeg2000_openjpeg.cpp	2026-05-09 00:00:00.000000000 +0000
+@@ -10,8 +10,18 @@
+ #include "grfmt_jpeg2000_openjpeg.hpp"
+
+ #include "opencv2/core/utils/logger.hpp"
++#include "opencv2/core/utility.hpp"
+
+ namespace cv {
++namespace detail {
++
++static Mutex& getOpenJpegMutex()
++{
++    static Mutex mutex;
++    return mutex;
++}
++
++}  // namespace detail
+
+ namespace {
+
+@@ -516,6 +526,8 @@ Jpeg2KOpjDecoderBase::Jpeg2KOpjDecoderBase(OPJ_CODEC_FORMAT format)
+
+ bool Jpeg2KOpjDecoderBase::readHeader()
+ {
++    AutoLock lock(detail::getOpenJpegMutex());
++
+     if (!m_buf.empty()) {
+         opjBuf_ = detail::OpjMemoryBuffer(m_buf);
+         stream_ = opjCreateBufferInputStream(&opjBuf_);
+@@ -595,6 +607,8 @@ bool Jpeg2KOpjDecoderBase::readHeader()
+
+ bool Jpeg2KOpjDecoderBase::readData( Mat& img )
+ {
++    AutoLock lock(detail::getOpenJpegMutex());
++
+     using DecodeFunc = bool(*)(const opj_image_t&, cv::Mat&, uint8_t shift, bool use_rgb);
+
+     if (!opj_decode(codec_.get(), stream_.get(), image_.get()))
+@@ -706,6 +720,8 @@ bool Jpeg2KOpjEncoder::isFormatSupported(int depth) const
+
+ bool Jpeg2KOpjEncoder::write(const Mat& img, const std::vector<int>& params)
+ {
++    AutoLock lock(detail::getOpenJpegMutex());
++
+     CV_Assert(params.size() % 2 == 0);
+
+     const int channels = img.channels();
