@@ -33,16 +33,16 @@ jobs:
         include:
           - platform: aarch64
             manylinux: 2014
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20260102
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20260531
           - platform: x86_64
             manylinux: 2014
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20260102
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20260531
           - platform: x86_64
             manylinux: 2_28
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20260102
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20260531
           - platform: aarch64
             manylinux: 2_28
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20260102
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20260531
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
