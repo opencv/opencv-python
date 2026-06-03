@@ -1,19 +1,19 @@
-# Version: 20260102
+# Version: 20260531
 # Image name: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64
 
 FROM quay.io/pypa/manylinux2014_aarch64:latest
 
-ARG CCACHE_VERSION=3.7.9
-ARG FFMPEG_VERSION=8.0.1
-ARG FREETYPE_VERSION=2.14.1
-ARG LIBPNG_VERSION=1.6.53
+ARG CCACHE_VERSION=4.13.6
+ARG FFMPEG_VERSION=8.1.1
+ARG FREETYPE_VERSION=2.14.3
+ARG LIBPNG_VERSION=1.6.58
 ARG VPX_VERSION=v1.15.2
-ARG NASM_VERSION=2.15.04
+ARG NASM_VERSION=2.16.03
 ARG OPENSSL_VERSION=1_1_1w
-ARG QT_VERSION=5.15.18
+ARG QT_VERSION=5.15.19
 ARG YASM_VERSION=1.3.0
-ARG AOM_VERSION=v3.13.1
-ARG AVIF_VERSION=v1.3.0
+ARG AOM_VERSION=v3.14.1
+ARG AVIF_VERSION=v1.4.2
 
 ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
@@ -138,11 +138,13 @@ RUN mkdir ~/ffmpeg_sources && \
 RUN curl -O -L https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz && \
     tar -xf ccache-${CCACHE_VERSION}.tar.gz && \
     cd ccache-${CCACHE_VERSION} && \
-    linux32 ./configure && \
+    mkdir build && \
+    cd build && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install && \
-    cd .. && \
-    rm -rf ccache-${CCACHE_VERSION}.tar.gz
+    cd ../.. && \
+    rm -rf ccache-${CCACHE_VERSION} ccache-${CCACHE_VERSION}.tar.gz
 
 # Self-hosted runner UID is 1004
 RUN useradd ci -m -s /bin/bash -G users --uid=1004 && \
