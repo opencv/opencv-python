@@ -102,11 +102,12 @@ def main():
 
     # Files from CMake output to copy to package.
     # Path regexes with forward slashes relative to CMake install dir.
+    # Note: FFMPEG dlls are not yet provided for Windows ARM64
     rearrange_cmake_output_data = {
         "cv2": (
-            [r"bin/opencv_videoio_ffmpeg\d{4}%s\.dll" % ("_64" if is64 else "")]
-            if os.name == "nt"
-            else []
+            ([r"bin/opencv_videoio_ffmpeg\d{4}%s\.dll" % ("_64" if is64 else "")]
+             if not (platform.machine() == "ARM64" and sys.platform == "win32")
+             else [])
         )
         +
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
@@ -154,22 +155,11 @@ def main():
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
 
-    if os.name != "nt":
-            ci_cmake_generator = ["-G", "Unix Makefiles"]
-        else:
-            try:
-                vswhere = r"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
-                toolset = subprocess.check_output(
-                    [vswhere, "-latest", "-prerelease", "-property", "installationVersion"],
-                    text=True,
-                ).strip().split(".")[0]
-                year = subprocess.check_output(
-                    [vswhere, "-latest", "-prerelease", "-property", "catalog_productLineVersion"],
-                    text=True,
-                ).strip()
-                ci_cmake_generator = ["-G", f"Visual Studio {toolset} {year}"]
-            except Exception:
-                ci_cmake_generator = ["-G", "Visual Studio 17 2022"]
+    ci_cmake_generator = (
+        ["-G", "Visual Studio 17 2022"]
+        if os.name == "nt"
+        else ["-G", "Unix Makefiles"]
+    )
 
     cmake_args = (
         (ci_cmake_generator if is_CI_build else [])
