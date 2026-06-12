@@ -1,4 +1,4 @@
-name: Linux x86_64
+name: Manylinux
 
 on:
   pull_request:
@@ -6,7 +6,6 @@ on:
       - 4.x
       - 5.x
     paths-ignore:
-      - '.github/workflows/build_wheels_linux_arm.yml'
       - '.github/workflows/build_wheels_windows*'
       - '.github/workflows/build_wheels_macos*'
   release:
@@ -18,7 +17,7 @@ on:
 
 jobs:
   Build:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.platform == 'aarch64' && 'opencv-cn-lin-arm64' || 'ubuntu-22.04' }}
     defaults:
       run:
         shell: bash
@@ -26,26 +25,42 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.9']
-        platform: [x64]
+        platform: [x86_64, aarch64]
+        manylinux: [2014, 2_28]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
+        include:
+          - platform: aarch64
+            manylinux: 2014
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20260531
+          - platform: x86_64
+            manylinux: 2014
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20260531
+          - platform: x86_64
+            manylinux: 2_28
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20260531
+          - platform: aarch64
+            manylinux: 2_28
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20260531
+
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       REPO_DIR: .
       PROJECT_SPEC: opencv-python
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       TRAVIS_PYTHON_VERSION: ${{ matrix.python-version }}
-      MB_ML_VER: 2014
+      MB_ML_VER: ${{ matrix.manylinux }}
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630
+      DOCKER_IMAGE: ${{ matrix.DOCKER_IMAGE }}
       USE_CCACHE: 0
       UNICODE_WIDTH: 32
-      PLAT: x86_64
+      PLAT: ${{ matrix.platform }}
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
+
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete
@@ -60,17 +75,18 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
+
     - name: Build a package
       run: source scripts/build.sh
     - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v4
       with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
+        name: wheel-${{ matrix.platform }}-${{ matrix.manylinux }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/opencv*.whl
 
   Test:
     needs: [Build]
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.platform == 'aarch64' && 'opencv-cn-lin-arm64' || 'ubuntu-22.04' }}
     defaults:
       run:
         shell: bash
@@ -78,17 +94,23 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
-        platform: [x64]
+        platform: [x86_64, aarch64]
+        manylinux: [2014, 2_28]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
+
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       NP_TEST_DEP: numpy==1.19.4
       NP_TEST_DEP_LATEST: numpy==2.2.6
       CONFIG_PATH: travis_config.sh
-      PLAT: x86_64
+      PLAT: ${{ matrix.platform }}
+      SDIST: ${{ matrix.build_sdist || 0 }}
+      ENABLE_HEADLESS: ${{ matrix.without_gui }}
+      ENABLE_CONTRIB: ${{ matrix.with_contrib }}
+      DOCKER_TEST_IMAGE: ${{ matrix.platform == 'aarch64' && 'quay.io/opencv-ci/multibuild-focal_arm64v8:2025-11-13' || '' }}
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete
@@ -98,12 +120,13 @@ jobs:
       with:
         submodules: true
         fetch-depth: 0
+
     - name: Setup Environment variables
-      run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
+      run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" -o "3.14" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
-        name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
+        name: wheel-${{ matrix.platform }}-${{ matrix.manylinux }}-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
     - name: Package installation and run tests
       run: source scripts/install.sh
@@ -132,7 +155,7 @@ jobs:
       NP_TEST_DEP: numpy==1.19.4
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20250630
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20260102
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
@@ -217,9 +240,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: wheelhouse/
-          
+
       - name: Upload all wheels
         run: |
+          tree
           python -m pip install twine
           python -m twine upload --repository testpypi -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_* wheelhouse/wheel-*/opencv-*
 

@@ -1,0 +1,168 @@
+# version: 20260531
+# Image name: quay.io/opencv-ci/opencv-python-musllinux_1_2-aarch64
+FROM quay.io/pypa/musllinux_1_2_aarch64:latest
+
+ARG CCACHE_VERSION=4.13.6
+ARG FFMPEG_VERSION=8.1.1
+ARG FREETYPE_VERSION=2.14.3
+ARG LIBPNG_VERSION=1.6.58
+ARG VPX_VERSION=v1.15.1
+ARG NASM_VERSION=2.16.03
+ARG OPENSSL_VERSION=1_1_1w
+ARG YASM_VERSION=1.3.0
+ARG AOM_VERSION=v3.14.1
+ARG AVIF_VERSION=v1.4.2
+
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+
+RUN apk add --no-cache \
+    build-base \
+    diffutils \
+    cmake \
+    bash \
+    git \
+    curl \
+    wget \
+    tar \
+    xz \
+    zlib-dev \
+    xz-dev \
+    nasm \
+    yasm \
+    pkgconfig \
+    openssl-dev \
+    libjpeg-turbo-dev \
+    fontconfig-dev \
+    freetype-dev \
+    expat-dev \
+    libpng-dev \
+    alsa-lib-dev \
+    musl-dev \
+    ttf-dejavu \
+    linux-headers \
+    perl
+
+RUN apk del libpng-dev
+
+### libpng
+RUN mkdir ~/libpng_sources && \
+    cd ~/libpng_sources && \
+    curl -O -L https://download.sourceforge.net/libpng/libpng-${LIBPNG_VERSION}.tar.gz && \
+    tar -xf libpng-${LIBPNG_VERSION}.tar.gz && \
+    cd libpng-${LIBPNG_VERSION} && \
+    ./configure --prefix=/usr/local && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf ~/libpng_sources
+
+### freetype
+RUN mkdir ~/freetype_sources && \
+    cd ~/freetype_sources && \
+    curl -O -L https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz && \
+    tar -xf freetype-${FREETYPE_VERSION}.tar.gz && \
+    cd freetype-${FREETYPE_VERSION} && \
+    ./configure --prefix="/ffmpeg_build" --enable-freetype-config && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf ~/freetype_sources
+
+### OpenSSL
+RUN mkdir ~/openssl_sources && \
+    cd ~/openssl_sources && \
+    curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_${OPENSSL_VERSION}.tar.gz && \
+    tar -xf OpenSSL_${OPENSSL_VERSION}.tar.gz && \
+    cd openssl-OpenSSL_${OPENSSL_VERSION} && \
+    ./config --prefix="/ffmpeg_build" --openssldir="/ffmpeg_build" no-pinshared shared zlib && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install_sw && \
+    cd .. && \
+    rm -rf ~/openssl_build ~/openssl_sources
+
+### libvpx
+RUN mkdir ~/libvpx_sources && \
+    cd ~/libvpx_sources && \
+    git clone --depth 1 -b ${VPX_VERSION} https://chromium.googlesource.com/webm/libvpx.git && \
+    cd libvpx && \
+    ./configure --prefix="/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    cd .. && \
+    rm -rf ~/libvpx_sources
+
+
+### aom
+RUN mkdir -p /tmp/aom_sources && \
+    cd /tmp/aom_sources && \
+    git clone --depth 1 -b ${AOM_VERSION} https://aomedia.googlesource.com/aom && \
+    mkdir build && cd build && \
+    cmake \
+      -DCMAKE_C_COMPILER=$(dirname $(which g++))/gcc \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DBUILD_SHARED_LIBS=ON \
+      -DENABLE_TESTS=OFF \
+      -DENABLE_EXAMPLES=OFF \
+      ../aom && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install
+### avif
+RUN mkdir ~/avif_sources && \
+    cd ~/avif_sources && \
+    git clone -b ${AVIF_VERSION} https://github.com/AOMediaCodec/libavif.git && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DAVIF_CODEC_AOM=SYSTEM -DAVIF_LIBYUV=LOCAL -DAVIF_BUILD_APPS=OFF ../libavif && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    cd .. && \
+    rm -rf ~/avif_sources
+
+### ffmpeg
+RUN mkdir -p /ffmpeg_sources && \
+    cd /ffmpeg_sources && \
+    curl -LO https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz && \
+    tar -xf ffmpeg-${FFMPEG_VERSION}.tar.gz && \
+    cd ffmpeg-${FFMPEG_VERSION} && \
+    PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" ./configure \
+        --prefix="/ffmpeg_build" \
+        --extra-cflags="-I/ffmpeg_build/include" \
+        --extra-ldflags="-L/ffmpeg_build/lib" \
+        --enable-openssl \
+        --enable-libvpx \
+        --enable-shared \
+        --enable-pic \
+        --disable-indev=v4l2 \
+        --disable-outdev=v4l2 && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    rm -rf /ffmpeg_sources
+
+### ccache
+RUN curl -O -L https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz && \
+    tar -xf ccache-${CCACHE_VERSION}.tar.gz && \
+    cd ccache-${CCACHE_VERSION} && \
+    mkdir build && \
+    cd build && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make install && \
+    cd ../.. && \
+    rm -rf ccache-${CCACHE_VERSION} ccache-${CCACHE_VERSION}.tar.gz
+
+# Self-hosted runner UID is 1004
+RUN useradd ci -m -s /bin/bash -G users --uid=1004 && \
+    mkdir /io && \
+    chown -R ci:ci /io && \
+    # This needs to find ffmpeg packages from ci user
+    chown -R ci:ci /ffmpeg_build && \
+    # This calls in mutlibuild scripts and cannot be run without permissions
+    chown -R ci:ci /opt/_internal/pipx/venvs/auditwheel
+
+USER ci
+
+RUN git config --global --add safe.directory /io
+ENV PATH="/ffmpeg_build/bin:$PATH"
+ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/ffmpeg_build/lib/pkgconfig
+ENV LDFLAGS -L/ffmpeg_build/lib
+ENV PATH "$HOME/bin:$PATH"
+ENV LD_LIBRARY_PATH="/ffmpeg_build/lib:$LD_LIBRARY_PATH"

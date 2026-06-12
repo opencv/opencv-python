@@ -6,7 +6,7 @@ on:
       - 4.x
       - 5.x
     paths-ignore:
-      - '.github/workflows/build_wheels_linux*'
+      - '.github/workflows/build_wheels_manylinux*'
       - '.github/workflows/build_wheels_macos*'
       - '.github/workflows/build_wheels_windows_arm.yml'
   release:
@@ -150,19 +150,19 @@ jobs:
       - name: Upload wheels for opencv_python_rolling
         run: |
           python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_python_rolling-*
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_python_rolling-*
       - name: Upload wheels for opencv_contrib_python_rolling
         run: |
           python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python_rolling-*
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_contrib_python_rolling-*
       - name: Upload wheels for opencv_python_headless_rolling
         run: |
           python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_python_headless_rolling-*
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_python_headless_rolling-*
       - name: Upload wheels for opencv_contrib_python_headless_rolling
         run: |
           python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python_headless_rolling-*
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_contrib_python_headless_rolling-*
 
   Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
@@ -179,7 +179,7 @@ jobs:
       - name: Upload all wheels
         run: |
           python -m pip install twine
-          python -m twine upload --repository testpypi -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} --skip-existing wheelhouse/opencv_*
+          python -m twine upload --repository testpypi -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_*
 
   Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
@@ -196,16 +196,16 @@ jobs:
       - name: Upload wheels for opencv_python
         run: |
           python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_PASSWORD }} --skip-existing wheelhouse/opencv_python-*
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_python-*
       - name: Upload wheels for opencv_contrib_python
         run: |
           python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python-*
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_contrib_python-*
       - name: Upload wheels for opencv_python_headless
         run: |
           python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_PASSWORD }} --skip-existing wheelhouse/opencv_python_headless-*
+          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_python_headless-*
       - name: Upload wheels for opencv_contrib_python_headless
         run: |
           python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python_headless-*
+          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_contrib_python_headless-*

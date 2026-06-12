@@ -22,11 +22,9 @@ def main():
     build_java = "ON" if get_build_env_var_by_name("java") else "OFF"
     build_rolling = get_build_env_var_by_name("rolling")
 
-    # NOTE: since 2.3.0 numpy upgraded from manylinux2014 to manylinux_2_28
-    # see https://numpy.org/doc/stable/release/2.3.0-notes.html#numpy-2-3-0-release-notes
     install_requires = [
         'numpy<2.0; python_version<"3.9"',
-        'numpy(>=2, <=2.3.1); python_version>="3.9"',
+        'numpy>=2; python_version>="3.9"',
     ]
 
     python_version = cmaker.CMaker.get_python_version()
@@ -218,6 +216,10 @@ def main():
         # see: https://github.com/opencv/opencv-python/issues/771
         cmake_args.append("-DWITH_MSMF=OFF")
         cmake_args.append("-DWITH_OBSENSOR=OFF") # Orbbec cameras backend uses MSMF API
+        # see: https://github.com/opencv/opencv/issues/28438
+        # libavdevice is enabled by default, but brings libxcb dependency
+        if sys.platform.startswith("linux"):
+            cmake_args.append("-DOPENCV_FFMPEG_ENABLE_LIBAVDEVICE=OFF")
 
     if sys.platform.startswith("linux") and not is64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
@@ -305,6 +307,7 @@ def main():
             "Programming Language :: Python :: 3.11",
             "Programming Language :: Python :: 3.12",
             "Programming Language :: Python :: 3.13",
+            "Programming Language :: Python :: 3.14",
             "Programming Language :: C++",
             "Programming Language :: Python :: Implementation :: CPython",
             "Topic :: Scientific/Engineering",

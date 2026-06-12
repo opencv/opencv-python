@@ -1,17 +1,13 @@
 # Version: 20260531
-# Image name: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64
+# Image name: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64
 
-FROM quay.io/pypa/manylinux2014_aarch64:latest
+FROM quay.io/pypa/manylinux_2_28_aarch64:latest
 
-ARG CCACHE_VERSION=4.13.6
 ARG FFMPEG_VERSION=8.1.1
 ARG FREETYPE_VERSION=2.14.3
 ARG LIBPNG_VERSION=1.6.58
 ARG VPX_VERSION=v1.15.2
-ARG NASM_VERSION=2.16.03
-ARG OPENSSL_VERSION=1_1_1w
 ARG QT_VERSION=5.15.19
-ARG YASM_VERSION=1.3.0
 ARG AOM_VERSION=v3.14.1
 ARG AVIF_VERSION=v1.4.2
 
@@ -19,9 +15,7 @@ ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
 # epel-release need for aarch64 to get openblas packages
 RUN yum install zlib-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release -y && \
-    yum install openblas-devel dejavu-sans-fonts -y && \
-    cp /usr/include/lapacke/lapacke*.h /usr/include/ && \
-    cp /usr/include/openblas/*.h /usr/include/ && \
+    yum install openblas-devel dejavu-sans-fonts ccache yasm nasm ninja-build openssl openssl-devel -y && \
     # libpng will be built from source
     yum remove libpng -y
 
@@ -36,10 +30,9 @@ RUN mkdir ~/libpng_sources && \
     cd .. && \
     rm -rf ~/libpng_sources
 
-# looks like download.savannah.gnu.org suffers from https://savannah.gnu.org/bugs/?48150 in Manylinux 2014 env on aarch64
 RUN mkdir ~/freetype_sources && \
     cd ~/freetype_sources && \
-    curl -O -L https://download-mirror.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz && \
+    curl -O -L https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz && \
     tar -xf freetype-${FREETYPE_VERSION}.tar.gz && \
     cd freetype-${FREETYPE_VERSION} && \
     ./configure --prefix="/ffmpeg_build" --enable-freetype-config && \
@@ -48,7 +41,7 @@ RUN mkdir ~/freetype_sources && \
     cd .. && \
     rm -rf ~/freetype_sources
 
-RUN curl -C - -O -L https://download.qt.io/archive/qt/5.15/${QT_VERSION}/single/qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
+RUN curl -O -L https://download.qt.io/archive/qt/5.15/${QT_VERSION}/single/qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
     tar -xf qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
     cd qt-everywhere-src-${QT_VERSION} && \
     export MAKEFLAGS=-j$(nproc) && \
@@ -61,42 +54,9 @@ RUN curl -C - -O -L https://download.qt.io/archive/qt/5.15/${QT_VERSION}/single/
 ENV QTDIR /opt/Qt${QT_VERSION}
 ENV PATH "$QTDIR/bin:$PATH"
 
-RUN mkdir ~/openssl_sources && \
-    cd ~/openssl_sources && \
-    curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_${OPENSSL_VERSION}.tar.gz && \
-    tar -xf OpenSSL_${OPENSSL_VERSION}.tar.gz && \
-    cd openssl-OpenSSL_${OPENSSL_VERSION} && \
-    ./config --prefix="/ffmpeg_build" --openssldir="/ffmpeg_build" no-pinshared shared zlib && \
-    make -j$(getconf _NPROCESSORS_ONLN) && \
-    # skip installing documentation
-    make install_sw && \
-    cd .. && \
-    rm -rf ~/openssl_build ~/openssl_sources
-
-RUN mkdir ~/nasm_sources && \
-    cd ~/nasm_sources && \
-    curl -O -L http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.gz && \
-    tar -xf nasm-${NASM_VERSION}.tar.gz && cd nasm-${NASM_VERSION} && ./autogen.sh && \
-    ./configure --prefix="/ffmpeg_build" --bindir="$HOME/bin" && \
-    make -j$(getconf _NPROCESSORS_ONLN) && \
-    make install && \
-    cd .. && \
-    rm -rf ~/nasm_sources
-
-RUN mkdir ~/yasm_sources && \
-    cd ~/yasm_sources && \
-    curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-${YASM_VERSION}.tar.gz && \
-    tar -xf yasm-${YASM_VERSION}.tar.gz && \
-    cd yasm-${YASM_VERSION} && \
-    ./configure --prefix="/ffmpeg_build" --bindir="$HOME/bin" && \
-    make -j$(getconf _NPROCESSORS_ONLN) && \
-    make install && \
-    cd .. && \
-    rm -rf ~/yasm_sources
-
 RUN mkdir ~/libvpx_sources && \
     cd ~/libvpx_sources && \
-    git clone --depth 1 -b ${VPX_VERSION} https://github.com/webmproject/libvpx.git && \
+    git clone --depth 1 -b ${VPX_VERSION} https://chromium.googlesource.com/webm/libvpx.git && \
     cd libvpx && \
     ./configure --prefix="/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-pic --enable-shared && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
@@ -134,17 +94,6 @@ RUN mkdir ~/ffmpeg_sources && \
     echo "/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
     ldconfig && \
     rm -rf ~/ffmpeg_sources
-
-RUN curl -O -L https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz && \
-    tar -xf ccache-${CCACHE_VERSION}.tar.gz && \
-    cd ccache-${CCACHE_VERSION} && \
-    mkdir build && \
-    cd build && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
-    make -j$(getconf _NPROCESSORS_ONLN) && \
-    make install && \
-    cd ../.. && \
-    rm -rf ccache-${CCACHE_VERSION} ccache-${CCACHE_VERSION}.tar.gz
 
 # Self-hosted runner UID is 1004
 RUN useradd ci -m -s /bin/bash -G users --uid=1004 && \

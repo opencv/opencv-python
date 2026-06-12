@@ -34,12 +34,12 @@ if [ -n "$IS_OSX" ]; then
   export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 else
   echo "    > Linux environment "
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.15.16/lib
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.15.19/lib
   export MAKEFLAGS="-j$(grep -E '^processor[[:space:]]*:' /proc/cpuinfo | wc -l)"
   CURRENT_ARCH=$(uname -m)
   if [[ $CURRENT_ARCH == 'aarch64' ]]; then
     # To avoid network issues with pypi.org on OpenCV CN machines
-    export PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+    #export PIP_INDEX_URL=https://pypi.org/simple
     echo "Running for linux aarch64"
   fi
 fi
