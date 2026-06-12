@@ -17,7 +17,7 @@ on:
 
 jobs:
   Build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.platform == 'arm64' && 'windows-11-arm' || 'windows-2025' }}
     strategy:
       fail-fast: false
       matrix:
@@ -25,23 +25,14 @@ jobs:
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
-        os: [windows-2025]
-        python-version: ['3.9']
-        cmake-version: ['3.24.2']
-        include:
-          - platform: arm64
-            os: windows-11-arm
-            python-version: '3.11'
-            cmake-version: '4.1.0'
-        exclude:
-          - platform: arm64
-            os: windows-2025
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
+      PYTHON_VERSION: ${{ matrix.platform == 'arm64' && '3.11' || '3.9' }}
+      CMAKE_VERSION: ${{ matrix.platform == 'arm64' && '4.1.0' || '3.24.2' }}
     steps:
     - name: Cleanup
       shell: bash
@@ -60,10 +51,10 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ env.PYTHON_VERSION }}
         architecture: ${{ matrix.platform }}
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1
@@ -78,7 +69,7 @@ jobs:
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        python -m pip install cmake==${{ matrix.cmake-version }}
+        python -m pip install cmake==${{ env.CMAKE_VERSION }}
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
@@ -87,10 +78,10 @@ jobs:
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/opencv*
-
+  
   Test:
     needs: [Build]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.platform == 'arm64' && 'windows-11-arm' || 'windows-2025' }}
     defaults:
       run:
         shell: cmd
@@ -102,7 +93,6 @@ jobs:
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
-        os: [windows-2025]
         exclude:
           # actions/setup-python does not provide prebuilt arm64 Python before 3.11
           - platform: arm64
@@ -113,18 +103,6 @@ jobs:
             python-version: '3.9'
           - platform: arm64
             python-version: '3.10'
-          - platform: arm64
-            os: windows-2025
-        include:
-          - platform: arm64
-            os: windows-11-arm
-            python-version: '3.11'
-          - platform: arm64
-            os: windows-11-arm
-            python-version: '3.12'
-          - platform: arm64
-            os: windows-11-arm
-            python-version: '3.13'
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
