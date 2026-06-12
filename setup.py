@@ -154,11 +154,22 @@ def main():
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
 
-    ci_cmake_generator = (
-        ["-G", "Visual Studio 17 2022"]
-        if os.name == "nt"
-        else ["-G", "Unix Makefiles"]
-    )
+    if os.name != "nt":
+            ci_cmake_generator = ["-G", "Unix Makefiles"]
+        else:
+            try:
+                vswhere = r"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
+                toolset = subprocess.check_output(
+                    [vswhere, "-latest", "-prerelease", "-property", "installationVersion"],
+                    text=True,
+                ).strip().split(".")[0]
+                year = subprocess.check_output(
+                    [vswhere, "-latest", "-prerelease", "-property", "catalog_productLineVersion"],
+                    text=True,
+                ).strip()
+                ci_cmake_generator = ["-G", f"Visual Studio {toolset} {year}"]
+            except Exception:
+                ci_cmake_generator = ["-G", "Visual Studio 17 2022"]
 
     cmake_args = (
         (ci_cmake_generator if is_CI_build else [])
