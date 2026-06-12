@@ -60,7 +60,6 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
       with:
         msbuild-architecture: ${{ matrix.platform }}
-        vs-version: '[17.0,18.0)' 
     - name: Setup NASM
       if: matrix.platform != 'arm64'
       uses: ilammy/setup-nasm@v1
