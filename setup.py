@@ -147,8 +147,11 @@ def main():
     # Raw paths relative to sourcetree root.
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
 
+    # HACK: Disabled generic assembler for now.
+    # Windows 2025 CI environment does not provide suitable assembler or build is broken in OpenCV MLAS.
     ci_cmake_generator = (
-        ["-G", "Visual Studio 17 2022"]
+        ["-G", "Visual Studio 17 2022",
+         "-DCMAKE_ASM_COMPILER="]
         if os.name == "nt"
         else ["-G", "Unix Makefiles"]
     )
