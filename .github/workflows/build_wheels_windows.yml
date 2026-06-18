@@ -62,6 +62,7 @@ jobs:
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
+        set PATH=C:\Users\runneradmin\nasm\;%PATH%
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
@@ -100,7 +101,6 @@ jobs:
       run: |
         rm -rf ./* || true
         rm -rf ./.??* || true
-        mv C:/mingw64/bin/cc.exe C:/mingw64/bin/cc.exe.qqq
       working-directory: ${{ github.workspace }}
     - name: Checkout
       uses: actions/checkout@v4
