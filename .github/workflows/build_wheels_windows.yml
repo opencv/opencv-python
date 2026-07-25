@@ -17,7 +17,7 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2025
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -46,7 +46,7 @@ jobs:
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         submodules: false
         fetch-depth: 0
@@ -70,7 +70,7 @@ jobs:
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
     - name: Saving all wheels
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/opencv*
@@ -84,7 +84,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         platform: [x86, x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -102,7 +102,7 @@ jobs:
         rm -rf ./.??* || true
       working-directory: ${{ github.workspace }}
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         submodules: true
         fetch-depth: 0
@@ -112,7 +112,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.platform }}
     - name: Download a wheel accordingly to matrix
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/
@@ -142,7 +142,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: wheelhouse/
       - name: Upload wheels for opencv_python_rolling
@@ -171,7 +171,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: wheelhouse/
       - name: Upload all wheels
@@ -188,7 +188,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: wheelhouse/
       - name: Upload wheels for opencv_python

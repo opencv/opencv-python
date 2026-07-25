@@ -55,7 +55,7 @@ jobs:
           echo "ENABLE_ROLLING=1" >> $GITHUB_ENV
         fi
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         submodules: false
         fetch-depth: 0
@@ -69,7 +69,7 @@ jobs:
         python${{ matrix.python-version }} setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
         delocate-wheel ${{ github.workspace }}/wheelhouse/opencv*
     - name: Saving a wheel accordingly to matrix
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/opencv*.whl
@@ -100,12 +100,12 @@ jobs:
       run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         submodules: true
         fetch-depth: 0
     - name: Download a wheel accordingly to matrix
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}
         path: wheelhouse/
@@ -141,7 +141,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: wheels
           path: wheelhouse/
@@ -171,7 +171,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: wheelhouse/
       - name: Upload all wheels
@@ -189,7 +189,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: wheelhouse/
       - name: Upload wheels for opencv_python
