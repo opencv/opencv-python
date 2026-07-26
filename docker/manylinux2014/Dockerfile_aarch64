@@ -19,7 +19,7 @@ ARG LIBDAV1D_VERSION=1.5.3
 ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
 # epel-release need for aarch64 to get openblas packages
-RUN yum install zlib-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release meson -y && \
+RUN yum install zlib-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release -y && \
     yum install openblas-devel dejavu-sans-fonts -y && \
     cp /usr/include/lapacke/lapacke*.h /usr/include/ && \
     cp /usr/include/openblas/*.h /usr/include/ && \
@@ -123,7 +123,9 @@ RUN mkdir ~/avif_sources && \
     make install && \
     cd / && rm -rf ~/avif_sources
 
-RUN mkdir ~/libdav1d_sources && \
+RUN python3.10 -m pip install meson ninja && \
+    export PATH=/opt/python/cp310-cp310/bin:$PATH && \
+    mkdir ~/libdav1d_sources && \
     cd ~/libdav1d_sources && \
     git clone -b ${LIBDAV1D_VERSION} https://code.videolan.org/videolan/dav1d.git && \
     mkdir build && cd build && \
