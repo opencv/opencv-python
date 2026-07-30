@@ -1,9 +1,9 @@
-# version: 20260531
+# version: 20260723
 # Image name: quay.io/opencv-ci/opencv-python-musllinux_1_2-aarch64
 FROM quay.io/pypa/musllinux_1_2_aarch64:latest
 
 ARG CCACHE_VERSION=4.13.6
-ARG FFMPEG_VERSION=8.1.1
+ARG FFMPEG_VERSION=8.1.2
 ARG FREETYPE_VERSION=2.14.3
 ARG LIBPNG_VERSION=1.6.58
 ARG VPX_VERSION=v1.15.1
