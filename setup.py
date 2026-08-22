@@ -24,9 +24,9 @@ def main():
 
     install_requires = [
         'numpy<2.0; python_version<"3.9"',
-        'numpy>=2.0.2; python_version>="3.9" and python_version<"3.13"',
-        'numpy>=2.1.3; python_version>="3.13" and python_version<"3.14"',
-        'numpy>=2.3.0; python_version>="3.14"',
+        'numpy>=2.0; python_version>="3.9" and python_version<"3.13"',
+        'numpy>=2.1; python_version>="3.13" and python_version<"3.14"',
+        'numpy>=2.3.2; python_version>="3.14"',
     ]
 
     python_version = cmaker.CMaker.get_python_version()
