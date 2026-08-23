@@ -1,0 +1,193 @@
+name: Release
+
+on:
+  release:
+    types: [published, edited]
+  schedule:
+    - cron: '0 3 * * 6'
+  workflow_dispatch:
+
+jobs:
+  Build-macos-m1:
+    uses: $/.github/workflows/build_wheels_macos_m1.yml
+    with:
+      rolling: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+  Build-macos:
+    uses: $/.github/workflows/build_wheels_macos.yml
+    with:
+      rolling: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+  Build-windows:
+    uses: $/.github/workflows/build_wheels_windows.yml
+    with:
+      rolling: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+  Build-manylinux:
+    uses: $/.github/workflows/build_wheels_manylinux.yml
+    with:
+      rolling: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+  Build_sdist:
+    uses: $/.github/workflows/build_sdist.yml
+    with:
+      rolling: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+
+  Release_opencv_python_rolling:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs: [Build-macos-m1, Build-macos, Build-windows, Build-manylinux, Build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-python-rolling
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: build-*-*-0-0-0
+          path: dist/
+
+      - name: Upload wheels for opencv_python_rolling
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          skip-existing: true
+          packages-dir: dist/build-*/opencv_python_rolling-*
+
+  Release_opencv_contrib_python_rolling:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs: [Build-macos-m1, Build-macos, Build-windows, Build-manylinux, Build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-contrib-python-rolling
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: build-*-*-1-0-0
+          path: dist/
+      - name: Upload wheels for opencv_contrib_python_rolling
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          skip-existing: true
+          packages-dir: dist/build-*/opencv_contrib_python_rolling-*
+
+  Release_opencv_python_headless_rolling:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs: [Build-macos-m1, Build-macos, Build-windows, Build-manylinux, Build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-python-headless-rolling
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: build-*-*-0-1-0
+          path: dist/
+      - name: Upload wheels for opencv_python_headless_rolling
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          skip-existing: true
+          packages-dir: dist/build-*/opencv_python_headless_rolling-*
+
+  Release_opencv_contrib_python_headless_rolling:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs: [Build-macos-m1, Build-macos, Build-windows, Build-manylinux, Build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-contrib-python-headless-rolling
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: build-*-*-1-1-0
+          path: dist/
+      - name: Upload wheels for opencv_contrib_python_headless_rolling
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          skip-existing: true
+          packages-dir: dist/build-*/opencv_contrib_python_headless_rolling-*
+
+  Pre-release:
+    if: github.event_name == 'release' && github.event.release.prerelease
+    needs: [Build-macos-m1, Build-macos, Build-windows, Build-manylinux, Build_sdist]
+    runs-on: ubuntu-latest
+    environment: test-opencv-python-release
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist/
+      - name: Upload all wheels
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          skip-existing: true
+          packages-dir: dist/build-*/opencv_*
+          repository-url: https://test.pypi.org/legacy/
+
+  Release_opencv_python:
+    if: github.event_name == 'release' && !github.event.release.prerelease
+    needs: [Build-macos-m1, Build-macos, Build-windows, Build-manylinux, Build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-python
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: build-*-*-0-0-0
+          path: dist/
+      - name: Upload wheels for opencv_python
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          skip-existing: true
+          packages-dir: dist/build-*/opencv-python-[^h]*
+
+  Release_opencv_contrib_python:
+    if: github.event_name == 'release' && !github.event.release.prerelease
+    needs: [Build-macos-m1, Build-macos, Build-windows, Build-manylinux, Build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-contrib-python
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: build-*-*-0-1-0
+          path: dist/
+      - name: Upload wheels for opencv_contrib_python
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          skip-existing: true
+          packages-dir: dist/build-*/opencv-contrib-python-[^h]*
+
+  Release_opencv_python_headless:
+    if: github.event_name == 'release' && !github.event.release.prerelease
+    needs: [Build-macos-m1, Build-macos, Build-windows, Build-manylinux, Build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-python-headless
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: build-*-*-0-1-0
+          path: dist/
+      - name: Upload wheels for opencv_python_headless
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          skip-existing: true
+          packages-dir: dist/build-*/opencv-python-headless-*
+
+  Release_opencv_contrib_python_headless:
+    if: github.event_name == 'release' && !github.event.release.prerelease
+    needs: [Build-macos-m1, Build-macos, Build-windows, Build-manylinux, Build_sdist]
+    runs-on: ubuntu-latest
+    environment: opencv-contrib-python-headless
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: build-*-*-0-1-0
+          path: dist/
+      - name: Upload wheels for opencv_contrib_python_headless
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          skip-existing: true
+          packages-dir: dist/build-*/opencv-contrib-python-headless-*
