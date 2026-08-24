@@ -99,16 +99,14 @@ A: It's easier for users to understand ``opencv-python`` than ``cv2`` and it mak
 
 ## Documentation for opencv-python
 
-[![Windows Build Status](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml)
-[![(Linux Build status)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_linux.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_linux.yml)
-[![(Mac OS Build status)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_macos.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_macos.yml)
+[![CI Status](https://github.com/opencv/opencv-python/actions/workflows/ci.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/ci.yml)
 
 The aim of this repository is to provide means to package each new [OpenCV release](https://github.com/opencv/opencv/releases) for the most used Python versions and platforms.
 
 ### CI build process
 
 The project is structured like a normal Python package with a standard ``setup.py`` file.
-The build process for a single entry in the build matrices is as follows (see for example `.github/workflows/build_wheels_linux.yml` file):
+The build process for a single entry in the build matrices is as follows (see for example `.github/workflows/ci.yml` file):
 
 0. In Linux and MacOS build: get OpenCV's optional C dependencies that we compile against
 
