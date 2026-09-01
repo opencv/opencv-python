@@ -17,7 +17,7 @@ on:
 
 jobs:
   Build:
-    runs-on: ${{ matrix.platform == 'aarch64' && 'opencv-cn-lin-arm64' || 'ubuntu-22.04' }}
+    runs-on: ${{ matrix.platform == 'aarch64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04' }}
     defaults:
       run:
         shell: bash
@@ -86,7 +86,7 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: ${{ matrix.platform == 'aarch64' && 'opencv-cn-lin-arm64' || 'ubuntu-22.04' }}
+    runs-on: ${{ matrix.platform == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-22.04' }}
     defaults:
       run:
         shell: bash
