@@ -9,6 +9,7 @@ on:
       - '.github/workflows/build_wheels_manylinux*'
       - '.github/workflows/build_wheels_windows*'
       - '.github/workflows/build_wheels_macos.yml'
+      - '.github/workflows/build_wheels_musllinux*'
   release:
     types: [published, edited]
   schedule:
