@@ -1,4 +1,4 @@
-# version: 20260725
+# version: 20260901
 # Image name: quay.io/opencv-ci/opencv-python-musllinux_1_2-aarch64
 FROM quay.io/pypa/musllinux_1_2_aarch64:latest
 
