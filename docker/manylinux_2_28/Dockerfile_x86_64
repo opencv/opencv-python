@@ -1,21 +1,23 @@
-# Version: 20260531
+# Version: 20260725
 # Image name: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64
 
 FROM quay.io/pypa/manylinux_2_28_x86_64:latest
 
-ARG FFMPEG_VERSION=8.1.1
+ARG FFMPEG_VERSION=8.1.2
 ARG FREETYPE_VERSION=2.14.3
 ARG LIBPNG_VERSION=1.6.58
 ARG VPX_VERSION=v1.15.2
 ARG QT_VERSION=5.15.19
 ARG AOM_VERSION=v3.14.1
 ARG AVIF_VERSION=v1.4.2
+ARG LIBDAV1D_VERSION=1.5.3
 
 ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
 # epel-release need for aarch64 to get openblas packages
-RUN yum install zlib-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release -y && \
+RUN yum install zlib-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release meson -y && \
     yum install openblas-devel dejavu-sans-fonts ccache yasm nasm ninja-build openssl openssl-devel -y && \
+    yum mark install dejavu-sans-fonts && \
     # libpng will be built from source
     yum remove libpng -y
 
@@ -82,13 +84,21 @@ RUN mkdir ~/avif_sources && \
     make install && \
     cd / && rm -rf ~/avif_sources
 
+RUN mkdir ~/libdav1d_sources && \
+    cd ~/libdav1d_sources && \
+    git clone -b ${LIBDAV1D_VERSION} https://code.videolan.org/videolan/dav1d.git && \
+    mkdir build && cd build && \
+    meson setup --prefix="/ffmpeg_build" --libdir lib ../dav1d && \
+    meson install && \
+    cd / && rm -rf ~/libdav1d_sources
+
 RUN mkdir ~/ffmpeg_sources && \
     cd ~/ffmpeg_sources && \
     curl -O -L https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz && \
     tar -xf ffmpeg-${FFMPEG_VERSION}.tar.gz && \
     cd ffmpeg-${FFMPEG_VERSION} && \
     PATH=~/bin:$PATH && \
-    PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" ./configure --prefix="/ffmpeg_build" --extra-cflags="-I/ffmpeg_build/include" --extra-ldflags="-L/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --bindir="$HOME/bin" && \
+    PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" ./configure --prefix="/ffmpeg_build" --extra-cflags="-I/ffmpeg_build/include" --extra-ldflags="-L/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --enable-libdav1d --bindir="$HOME/bin" && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install && \
     echo "/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
