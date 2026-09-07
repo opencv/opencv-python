@@ -1,4 +1,4 @@
-name: Windows x86_64
+name: Windows
 
 on:
   pull_request:
@@ -17,12 +17,11 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2022
+    runs-on: ${{ matrix.platform == 'arm64' && 'windows-11-arm' || 'windows-2022' }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9']
-        platform: [x86, x64]
+        platform: [x86, x64, arm64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
@@ -32,6 +31,8 @@ jobs:
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata
+      PYTHON_VERSION: ${{ matrix.platform == 'arm64' && '3.11' || '3.9' }}
+      CMAKE_VERSION: ${{ matrix.platform == 'arm64' && '4.1.0' || '3.24.2' }}
     steps:
     - name: Cleanup
       shell: bash
@@ -50,22 +51,25 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ env.PYTHON_VERSION }}
         architecture: ${{ matrix.platform }}
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1
+      with:
+        msbuild-architecture: ${{ matrix.platform }}
     - name: Setup NASM
+      if: matrix.platform != 'arm64'
       uses: ilammy/setup-nasm@v1
     - name: Build a package
-      # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
+      # CMake 3.25 regression fix for x86/x64. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        python -m pip install cmake==3.24.2
+        python -m pip install cmake==${{ env.CMAKE_VERSION }}
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
         set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
@@ -74,10 +78,10 @@ jobs:
       with:
         name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
         path: wheelhouse/opencv*
-
+  
   Test:
     needs: [Build]
-    runs-on: windows-2025
+    runs-on: ${{ matrix.platform == 'arm64' && 'windows-11-arm' || 'windows-2025' }}
     defaults:
       run:
         shell: cmd
@@ -89,6 +93,16 @@ jobs:
         with_contrib: [0, 1]
         without_gui: [0, 1]
         build_sdist: [0]
+        exclude:
+          # actions/setup-python does not provide prebuilt arm64 Python before 3.11
+          - platform: arm64
+            python-version: '3.7'
+          - platform: arm64
+            python-version: '3.8'
+          - platform: arm64
+            python-version: '3.9'
+          - platform: arm64
+            python-version: '3.10'
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}\opencv_extra\testdata

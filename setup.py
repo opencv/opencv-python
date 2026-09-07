@@ -102,11 +102,12 @@ def main():
 
     # Files from CMake output to copy to package.
     # Path regexes with forward slashes relative to CMake install dir.
+    # Note: FFMPEG dlls are not yet provided for Windows ARM64
     rearrange_cmake_output_data = {
         "cv2": (
-            [r"bin/opencv_videoio_ffmpeg\d{4}%s\.dll" % ("_64" if is64 else "")]
-            if os.name == "nt"
-            else []
+            ([r"bin/opencv_videoio_ffmpeg\d{4}%s\.dll" % ("_64" if is64 else "")]
+             if not (platform.machine() == "ARM64" and sys.platform == "win32")
+             else [])
         )
         +
         # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
@@ -259,6 +260,11 @@ def main():
             cmake_args.append("-DWITH_V4L=ON")
             cmake_args.append("-DWITH_LAPACK=ON")
             cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
+
+        if sys.platform.startswith('win') and platform.machine().lower() in ("arm64", "aarch64"):
+            # MSVC does not support OpenCV dispatch features such as NEON_FP16, NEON_BF16 and NEON_DOTPROD. So use NEON as both baseline and dispatch units
+            cmake_args.append("-DCPU_BASELINE=NEON")
+            cmake_args.append("-DCPU_DISPATCH=NEON")
 
     # works via side effect
     RearrangeCMakeOutput(
