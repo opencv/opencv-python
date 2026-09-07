@@ -97,6 +97,18 @@ A: Non-free algorithms such as SURF are not included in these packages because t
 
 A: It's easier for users to understand ``opencv-python`` than ``cv2`` and it makes it easier to find the package with search engines. `cv2` (old interface in old OpenCV versions was named as `cv`) is the name that OpenCV developers chose when they created the binding generators. This is kept as the import name to be consistent with different kind of tutorials around the internet. Changing the import name or behaviour would be also confusing to experienced users who are accustomed to the ``import cv2``.
 
+**Q: How can I contribute to this project?**
+
+A: You can contribute by fixing typos, improving documentation, optimizing code, or adding new features. First, fork the repo, make your changes in a new branch, and submit a pull request. Make sure to follow contribution guidelines.
+
+**Q: Why use opencv-python instead of installing OpenCV manually?**
+
+A:The opencv-python package simplifies installation by providing pre-built wheels, saving you from compiling OpenCV from source and managing complex dependencies.
+
+**Q: Can I use this package for commercial projects?**
+
+A: Yes. This package (MIT license) and OpenCV (Apache 2.0 license) are both permissive open-source licenses that allow commercial usage. Please verify third-party licenses in the LICENSE-3RD-PARTY.txt.
+
 ## Documentation for opencv-python
 
 [![Windows Build Status](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml/badge.svg)](https://github.com/opencv/opencv-python/actions/workflows/build_wheels_windows.yml)
