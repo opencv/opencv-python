@@ -213,6 +213,9 @@ jobs:
     needs: [Build, Test]
     runs-on: ubuntu-22.04
     environment: opencv-python-rolling-release
+    permissions:
+      contents: read
+      id-token: write
     defaults:
       run:
         shell: bash
@@ -220,29 +223,46 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           path: wheelhouse/
-
+      - name: Select only OpenCV wheels
+        run: |
+          mkdir dist dist-contrib dist-headless dist-contrib-headless
+          cp wheelhouse/wheel-*/opencv_python_rolling-* dist/
+          cp wheelhouse/wheel-*/opencv_contrib_python_rolling-* dist-contrib/
+          cp wheelhouse/wheel-*/opencv_python_headless_rolling-* dist-headless/
+          cp wheelhouse/wheel-*/opencv_contrib_python_headless_rolling-* dist-contrib-headless/
       - name: Upload wheels for opencv_python_rolling
-        run: |
-          python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_python_rolling-*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          print-hash: true
+          skip-existing: true
       - name: Upload wheels for opencv_contrib_python_rolling
-        run: |
-          python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_ROLLING_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_contrib_python_rolling-*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist-contrib/
+          print-hash: true
+          skip-existing: true
       - name: Upload wheels for opencv_python_headless_rolling
-        run: |
-          python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_python_headless_rolling-*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist-headless/
+          print-hash: true
+          skip-existing: true
       - name: Upload wheels for opencv_contrib_python_headless_rolling
-        run: |
-          python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_ROLLING_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_contrib_python_headless_rolling-*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist-contrib-headless/
+          print-hash: true
+          skip-existing: true
 
   Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
     needs: [Build, Build_sdist, Test]
     runs-on: ubuntu-22.04
     environment: test-opencv-python-release
+    permissions:
+      contents: read
+      id-token: write
     defaults:
       run:
         shell: bash
@@ -250,18 +270,28 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           path: wheelhouse/
-
-      - name: Upload all wheels
+      - name: Select only OpenCV wheels
         run: |
           tree
-          python -m pip install twine
-          python -m twine upload --repository testpypi -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_* wheelhouse/wheel-*/opencv-*
+          mkdir dist
+          cp wheelhouse/wheel-*/opencv_* wheelhouse/wheel-*/opencv-* dist/
+      - name: Upload all wheels
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          print-hash: true
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+          verbose: true
 
   Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
     needs: [Build, Build_sdist, Test]
     runs-on: ubuntu-22.04
     environment: opencv-python-release
+    permissions:
+      contents: read
+      id-token: write
     defaults:
       run:
         shell: bash
@@ -269,19 +299,34 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           path: wheelhouse/
+      - name: Select only OpenCV wheels
+        run: |
+          mkdir dist dist-contrib dist-headless dist-contrib-headless
+          cp wheelhouse/opencv_python-* wheelhouse/opencv-python-[^h]* dist/
+          cp wheelhouse/opencv_contrib_python-* wheelhouse/opencv-contrib-python-[^h]* dist-contrib/
+          cp wheelhouse/opencv_python_headless-* wheelhouse/opencv-python-headless-* dist-headless/
+          cp wheelhouse/opencv_contrib_python_headless-* wheelhouse/opencv-contrib-python-headless-* dist-contrib-headless/
       - name: Upload wheels for opencv_python
-        run: |
-          python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_PASSWORD }} --skip-existing wheelhouse/opencv_python-* wheelhouse/opencv-python-[^h]*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          print-hash: true
+          skip-existing: true
       - name: Upload wheels for opencv_contrib_python
-        run: |
-          python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python-* wheelhouse/opencv-contrib-python-[^h]*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist-contrib/
+          print-hash: true
+          skip-existing: true
       - name: Upload wheels for opencv_python_headless
-        run: |
-          python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_PYTHON_HEADLESS_USERNAME }} -p ${{ secrets.OPENCV_PYTHON_HEADLESS_PASSWORD }} --skip-existing wheelhouse/opencv_python_headless-* wheelhouse/opencv-python-headless-*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist-headless/
+          print-hash: true
+          skip-existing: true
       - name: Upload wheels for opencv_contrib_python_headless
-        run: |
-          python -m pip install twine
-          python -m twine upload -u ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_USERNAME }} -p ${{ secrets.OPENCV_CONTRIB_PYTHON_HEADLESS_PASSWORD }} --skip-existing wheelhouse/opencv_contrib_python_headless-* wheelhouse/opencv-contrib-python-headless-*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist-contrib-headless/
+          print-hash: true
+          skip-existing: true
