@@ -18,11 +18,11 @@ on:
 
 jobs:
   Build:
-    runs-on: python-macos-intel
+    runs-on: macos-15-intel
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9']
+        python-version: ['3.10']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -46,6 +46,9 @@ jobs:
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
       PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
     steps:
+    - uses: actions/setup-python@v7
+      with:
+        python-version: ${{ matrix.python-version }}
     - name: Cleanup
       run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
@@ -65,8 +68,9 @@ jobs:
         echo $ENABLE_CONTRIB > contrib.enabled
         echo $ENABLE_HEADLESS > headless.enabled
         export MACOSX_DEPLOYMENT_TARGET=14.0
-        python${{ matrix.python-version }} -m pip install toml && python${{ matrix.python-version }} -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python${{ matrix.python-version }} -m pip install -r /dev/stdin
-        python${{ matrix.python-version }} setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
+        python --version
+        python -m pip install delocate toml && python -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python -m pip install -r /dev/stdin
+        python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
         delocate-wheel ${{ github.workspace }}/wheelhouse/opencv*
     - name: Saving a wheel accordingly to matrix
       uses: actions/upload-artifact@v7
@@ -76,11 +80,11 @@ jobs:
 
   Test:
     needs: [Build]
-    runs-on: python-macos-intel
+    runs-on: macos-15-intel
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
         platform: [x64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -88,14 +92,15 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
-      NP_TEST_DEP: numpy==1.19.4
-      NP_TEST_DEP_LATEST: numpy==2.2.6
       CONFIG_PATH: travis_config.sh
       PLAT: x86_64
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}/opencv_extra/testdata
       PYLINT_TEST_FILE: ${{ github.workspace }}/opencv/samples/python/squares.py
       PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
     steps:
+    - uses: actions/setup-python@v7
+      with:
+        python-version: ${{ matrix.python-version }}
     - name: Cleanup
       run: find . -mindepth 1 -delete
       working-directory: ${{ github.workspace }}
@@ -112,22 +117,23 @@ jobs:
     - name: Create Venv for test
       run: |
         test -d "${{ github.workspace }}/opencv_test" && rm -rf "${{ github.workspace }}/opencv_test"
-        python${{ matrix.python-version }} -m venv ${{ github.workspace }}/opencv_test
+        python -m venv ${{ github.workspace }}/opencv_test
     - name: Package installation
       run: |
         source ${{ github.workspace }}/opencv_test/bin/activate
-        python${{ matrix.python-version }} -m pip install --upgrade pip
-        python${{ matrix.python-version }} -m pip install --no-cache --force-reinstall wheelhouse/opencv*.whl
+        python --version
+        python -m pip install --upgrade pip
+        python -m pip install --no-cache --force-reinstall wheelhouse/opencv*.whl
         cd ${{ github.workspace }}/tests
-        python${{ matrix.python-version }} get_build_info.py
+        python get_build_info.py
     - name: Run tests
       run: |
         source ${{ github.workspace }}/opencv_test/bin/activate
         cd ${{ github.workspace }}/opencv
-        python${{ matrix.python-version }} modules/python/test/test.py -v --repo .
+        python modules/python/test/test.py -v --repo .
     - name: Pylint test
       run: |
         source ${{ github.workspace }}/opencv_test/bin/activate
-        python${{ matrix.python-version }} -m pip install pylint==2.15.9
+        python -m pip install pylint==2.15.9
         cd ${{ github.workspace }}/tests
-        python${{ matrix.python-version }} -m pylint $PYLINT_TEST_FILE
+        python -m pylint $PYLINT_TEST_FILE
