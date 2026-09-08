@@ -19,11 +19,6 @@ jobs:
     with:
       enable-rolling: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
 
-  Build-macosm1:
-    uses: $/.github/workflows/build_wheels_macos_m1.yml # includes testing
-    with:
-      enable-rolling: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
-
   Build-macos:
     uses: $/.github/workflows/build_wheels_macos.yml # includes testing
     with:
@@ -31,7 +26,7 @@ jobs:
 
   Release_rolling:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
-    needs: [Build-manylinux, Build-windows, Build-macosm1, Build-macos]
+    needs: [Build-manylinux, Build-windows, Build-macos]
     runs-on: ubuntu-22.04
     environment: opencv-python-rolling-release
     defaults:
@@ -60,7 +55,7 @@ jobs:
 
   Pre-release:
     if: github.event_name == 'release' && github.event.release.prerelease
-    needs: [Build-manylinux, Build-windows, Build-macosm1, Build-macos]
+    needs: [Build-manylinux, Build-windows, Build-macos]
     runs-on: ubuntu-22.04
     environment: test-opencv-python-release
     defaults:
@@ -78,7 +73,7 @@ jobs:
 
   Release:
     if: github.event_name == 'release' && !github.event.release.prerelease
-    needs: [Build-manylinux, Build-windows, Build-macosm1, Build-macos]
+    needs: [Build-manylinux, Build-windows, Build-macos]
     runs-on: ubuntu-22.04
     environment: opencv-python-release
     defaults:
