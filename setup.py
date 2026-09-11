@@ -196,8 +196,6 @@ def main():
              "-DOPENCV_WORKAROUND_CMAKE_20989=ON",
              "-DCMAKE_SYSTEM_PROCESSOR=ARM64"]
             if platform.machine() == "ARM64" and sys.platform == "win32"
-            # If it is not defined 'linker flags: /machine:X86' on Windows x64
-            else ["-DCMAKE_GENERATOR_PLATFORM=x64"] if is64 and sys.platform == "win32"
             else []
           )
         + (
