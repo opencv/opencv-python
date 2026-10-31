@@ -106,7 +106,7 @@ def main():
     rearrange_cmake_output_data = {
         "cv2": (
             ([r"bin/opencv_videoio_ffmpeg\d{4}%s\.dll" % ("_64" if is64 else "")]
-             if not (platform.machine() == "ARM64" and sys.platform == "win32")
+             if os.name == "nt" and platform.machine() != "ARM64"
              else [])
         )
         +
