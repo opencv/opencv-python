@@ -161,6 +161,38 @@ If some dependency is not enabled in the pre-built wheels, you can also run the 
     - Optional: on Linux use some of the `manylinux` images as a build hosts if maximum portability is needed and run `auditwheel` for the wheel after build
     - Optional: on macOS use ``delocate`` (same as ``auditwheel`` but for macOS) for better portability
 
+#### Building with GStreamer on Windows
+
+To build opencv-python with GStreamer support on Windows, you must install
+the official GStreamer MSVC binaries and make them available to CMake during
+the build process.
+
+**Prerequisites**
+- Windows 10 or later (64-bit)
+- Visual Studio 2019 or newer (MSVC)
+- CMake
+- Python (matching the target wheel version)
+- GStreamer 1.x MSVC (runtime + development packages)
+
+**Install GStreamer**
+Download and install both the **runtime** and **development** installers for
+GStreamer 1.x (MSVC 64-bit) from the official GStreamer website.
+
+**Environment variables**
+Before building, ensure the following paths are available:
+
+set PATH=C:\gstreamer\1.0\msvc_x86_64\bin;%PATH%
+set GST_PLUGIN_PATH=C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0
+
+Adjust paths if GStreamer is installed in a different location.
+
+**Build**
+Run the standard manual build command:
+
+If GStreamer is detected correctly, the CMake output will indicate that
+GStreamer support is enabled.
+
+
 #### Manual debug builds
 
 In order to build `opencv-python` in an unoptimized debug build, you need to side-step the normal process a bit.
