@@ -270,11 +270,6 @@ def main():
             cmake_args.append("-DWITH_LAPACK=ON")
             cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
 
-        if sys.platform.startswith('win') and platform.machine().lower() in ("arm64", "aarch64"):
-            # MSVC does not support OpenCV dispatch features such as NEON_FP16, NEON_BF16 and NEON_DOTPROD. So use NEON as both baseline and dispatch units
-            cmake_args.append("-DCPU_BASELINE=NEON")
-            cmake_args.append("-DCPU_DISPATCH=NEON")
-
     # works via side effect
     RearrangeCMakeOutput(
         rearrange_cmake_output_data, files_outside_package_dir, package_data.keys()
