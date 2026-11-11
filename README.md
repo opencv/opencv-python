@@ -37,14 +37,14 @@ Check the manual build section if you wish to compile the bindings from source t
     **a.** Packages for standard desktop environments (Windows, macOS, almost any GNU/Linux distribution)
 
     - Option 1 - Main modules package: ``pip install opencv-python``
-    - Option 2 - Full package (contains both main modules and contrib/extra modules): ``pip install opencv-contrib-python`` (check contrib/extra modules listing from [OpenCV documentation](https://docs.opencv.org/master/))
+    - Option 2 - Full package (contains both main modules and contrib/extra modules): ``pip install opencv-contrib-python`` (check contrib/extra modules listing from [OpenCV documentation](https://docs.opencv.org/))
 
     **b.** Packages for server (headless) environments (such as Docker, cloud environments etc.), no GUI library dependencies
 
     These packages are smaller than the two other packages above because they do not contain any GUI functionality (not compiled with Qt / other GUI components). This means that the packages avoid a heavy dependency chain to X11 libraries and you will have for example smaller Docker images as a result. You should always use these packages if you do not use `cv2.imshow` et al. or you are using some other package (such as PyQt) than OpenCV to create your GUI.
 
     - Option 3 - Headless main modules package: ``pip install opencv-python-headless``
-    - Option 4 - Headless full package (contains both main modules and contrib/extra modules): ``pip install opencv-contrib-python-headless`` (check contrib/extra modules listing from [OpenCV documentation](https://docs.opencv.org/master/))
+    - Option 4 - Headless full package (contains both main modules and contrib/extra modules): ``pip install opencv-contrib-python-headless`` (check contrib/extra modules listing from [OpenCV documentation](https://docs.opencv.org/))
 
 4. Import the package:
 
@@ -54,7 +54,7 @@ Check the manual build section if you wish to compile the bindings from source t
 
     ``cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")``
 
-5. Read [OpenCV documentation](https://docs.opencv.org/master/)
+5. Read [OpenCV documentation](https://docs.opencv.org/)
 
 6. Before opening a new issue, read the FAQ below and have a look at the other issues which are already open.
 
@@ -160,6 +160,38 @@ If some dependency is not enabled in the pre-built wheels, you can also run the 
 6. Pip will print fresh wheel location at the end of build procedure. If you use old approach with `setup.py` file wheel package will be placed in `dist` folder. Package is ready and you can do with that whatever you wish.
     - Optional: on Linux use some of the `manylinux` images as a build hosts if maximum portability is needed and run `auditwheel` for the wheel after build
     - Optional: on macOS use ``delocate`` (same as ``auditwheel`` but for macOS) for better portability
+
+#### Building with GStreamer on Windows
+
+To build opencv-python with GStreamer support on Windows, you must install
+the official GStreamer MSVC binaries and make them available to CMake during
+the build process.
+
+**Prerequisites**
+- Windows 10 or later (64-bit)
+- Visual Studio 2019 or newer (MSVC)
+- CMake
+- Python (matching the target wheel version)
+- GStreamer 1.x MSVC (runtime + development packages)
+
+**Install GStreamer**
+Download and install both the **runtime** and **development** installers for
+GStreamer 1.x (MSVC 64-bit) from the official GStreamer website.
+
+**Environment variables**
+Before building, ensure the following paths are available:
+
+set PATH=C:\gstreamer\1.0\msvc_x86_64\bin;%PATH%
+set GST_PLUGIN_PATH=C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0
+
+Adjust paths if GStreamer is installed in a different location.
+
+**Build**
+Run the standard manual build command:
+
+If GStreamer is detected correctly, the CMake output will indicate that
+GStreamer support is enabled.
+
 
 #### Manual debug builds
 
