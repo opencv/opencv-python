@@ -204,6 +204,8 @@ def main():
              # target architecture for windows/arm64 build
              "-DOPENCV_WORKAROUND_CMAKE_20989=ON",
              "-DCMAKE_SYSTEM_PROCESSOR=ARM64",
+             # Adreno GPUs (used on Windows ARM64 devices) produce numerically
+             # divergent OpenCL kernel results.
              "-DWITH_OPENCL=OFF"]
             if platform.machine() == "ARM64" and sys.platform == "win32"
             # If it is not defined 'linker flags: /machine:X86' on Windows x64
