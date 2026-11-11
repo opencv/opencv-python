@@ -57,12 +57,14 @@ RUN curl -O -L https://download.qt.io/archive/qt/5.15/${QT_VERSION}/single/qt-ev
 ENV QTDIR /opt/Qt${QT_VERSION}
 ENV PATH "$QTDIR/bin:$PATH"
 
+# OpenSSL is linked statically into FFmpeg: a shared libcrypto.so.1.1 in /ffmpeg_build/lib
+# would shadow the system one (Red Hat build) for system tools like git/curl via ldconfig
 RUN mkdir ~/openssl_sources && \
     cd ~/openssl_sources && \
     curl -O -L https://github.com/openssl/openssl/archive/OpenSSL_${OPENSSL_VERSION}.tar.gz && \
     tar -xf OpenSSL_${OPENSSL_VERSION}.tar.gz && \
     cd openssl-OpenSSL_${OPENSSL_VERSION} && \
-    ./config --prefix="/ffmpeg_build" --openssldir="/ffmpeg_build" no-pinshared shared zlib && \
+    ./config --prefix="/ffmpeg_build" --openssldir="/ffmpeg_build" no-shared zlib -fPIC && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     # skip installing documentation
     make install_sw && \
@@ -111,7 +113,7 @@ RUN mkdir ~/ffmpeg_sources && \
     tar -xf ffmpeg-${FFMPEG_VERSION}.tar.gz && \
     cd ffmpeg-${FFMPEG_VERSION} && \
     PATH=~/bin:$PATH && \
-    PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" ./configure --prefix="/ffmpeg_build" --extra-cflags="-I/ffmpeg_build/include" --extra-ldflags="-L/ffmpeg_build/lib" --enable-openssl --enable-libvpx --enable-shared --enable-pic --enable-libdav1d --bindir="$HOME/bin" && \
+    PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" ./configure --prefix="/ffmpeg_build" --extra-cflags="-I/ffmpeg_build/include" --extra-ldflags="-L/ffmpeg_build/lib" --pkg-config-flags="--static" --enable-openssl --enable-libvpx --enable-shared --enable-pic --enable-libdav1d --bindir="$HOME/bin" && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install && \
     echo "/ffmpeg_build/lib/" >> /etc/ld.so.conf && \
