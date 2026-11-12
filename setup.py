@@ -7,7 +7,7 @@ import subprocess
 import re
 import sysconfig
 import platform
-from skbuild import cmaker, setup
+from skbuild import setup
 
 
 def main():
@@ -27,18 +27,9 @@ def main():
         'numpy>=2; python_version>="3.9"',
     ]
 
-    python_version = cmaker.CMaker.get_python_version()
-    python_lib_path = cmaker.CMaker.get_python_library(python_version) or ""
-    # HACK: For Scikit-build 0.17.3 and newer that returns None or empty sptring for PYTHON_LIBRARY in manylinux2014
-    # A small release related to PYTHON_LIBRARY handling changes in 0.17.2; scikit-build 0.17.3 returns an empty string from get_python_library if no Python library is present (like on manylinux), where 0.17.2 returned None, and previous versions returned a non-existent path. Note that adding REQUIRED to find_package(PythonLibs will fail, but it is incorrect (you must not link to libPython.so) and was really just injecting a non-existent path before.
-    # TODO: Remove the hack when the issue is handled correctly in main OpenCV CMake.
-    if python_lib_path == "":
-        python_lib_path = "libpython%sm.a" % python_version
-    python_lib_path = python_lib_path.replace("\\", "/")
-
-    python_include_dir = cmaker.CMaker.get_python_include_dir(python_version).replace(
-        "\\", "/"
-    )
+    python_version = sysconfig.get_config_var("py_version_short")
+    python_lib_path = get_python_library(python_version).replace("\\", "/")
+    python_include_dir = sysconfig.get_paths()["include"].replace("\\", "/")
 
     if not bool(os.environ.get('OPENCV_PYTHON_SKIP_GIT_COMMANDS', False)) and os.path.exists(".git"):
         import pip._internal.vcs.git as git
@@ -100,60 +91,6 @@ def main():
         "cv2.data": ["*.xml"],
     }
 
-    # Files from CMake output to copy to package.
-    # Path regexes with forward slashes relative to CMake install dir.
-    rearrange_cmake_output_data = {
-        "cv2": (
-            [r"bin/opencv_videoio_ffmpeg\d{4}%s\.dll" % ("_64" if is64 else "")]
-            if os.name == "nt"
-            else []
-        )
-        +
-        # In Windows, in python/X.Y/<arch>/; in Linux, in just python/X.Y/.
-        # Naming conventions vary so widely between versions and OSes
-        # had to give up on checking them.
-        # If not specifying PY_LIMITED_API, the Python sources go under python/cv2/python-3.MINOR_VERSION/ instead of python/cv2/python-3/
-        [
-            r"python/cv2/python-%s*/cv2.*"
-            % (sys.version_info[0]) if 'CMAKE_ARGS' in os.environ and "-DPYTHON3_LIMITED_API=ON" in os.environ['CMAKE_ARGS']
-            else r"python/cv2/python-%s.*/cv2.*"
-            % (sys.version_info[0])
-        ]
-        +
-        [
-            r"python/cv2/__init__.py"
-        ]
-        +
-        [
-            r"python/cv2/.*config.*.py"
-        ]
-        +
-        [ r"python/cv2/py.typed" ] if sys.version_info >= (3, 6) else []
-        ,
-        "cv2.data": [  # OPENCV_OTHER_INSTALL_PATH
-            ("etc" if os.name == "nt" else "share/opencv4") + r"/haarcascades/.*\.xml"
-        ],
-        "cv2.gapi": [
-            "python/cv2" + r"/gapi/.*\.py"
-        ],
-        "cv2.mat_wrapper": [
-            "python/cv2" + r"/mat_wrapper/.*\.py"
-        ],
-        "cv2.misc": [
-            "python/cv2" + r"/misc/.*\.py"
-        ],
-        "cv2.utils": [
-            "python/cv2" + r"/utils/.*\.py"
-        ],
-    }
-
-    if sys.version_info >= (3, 6):
-        rearrange_cmake_output_data["cv2.typing"] = ["python/cv2" + r"/typing/.*\.py"]
-
-    # Files in sourcetree outside package dir that should be copied to package.
-    # Raw paths relative to sourcetree root.
-    files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
-
     ci_cmake_generator = (
         ["-G", "Visual Studio 17 2022"]
         if os.name == "nt"
@@ -187,6 +124,8 @@ def main():
             "-DBUILD_DOCS=OFF",
             "-DPYTHON3_LIMITED_API=ON",
             "-DBUILD_OPENEXR=ON",
+            # Installs the cv2 package layout, see cmake/package
+            "-DOPENCV_CMAKE_HOOKS_DIR=%s" % os.path.abspath("cmake/hooks").replace("\\", "/"),
         ]
         + (
             # CMake flags for windows/arm64 build
@@ -235,35 +174,10 @@ def main():
             cmake_args.append("-DWITH_QT=5")
             subprocess.check_call("patch -p1 < patches/patchQtPlugins", shell=True)
 
-            if sys.platform.startswith("linux"):
-                rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
-                    (r"lib/qt/plugins/platforms/libqxcb\.so")
-                ]
-
-                # add fonts for Qt5
-                fonts = []
-                for file in os.listdir("/usr/share/fonts/dejavu"):
-                    if file.endswith(".ttf"):
-                        fonts.append(
-                            (r"lib/qt/fonts/dejavu/%s\.ttf" % file.split(".")[0])
-                        )
-
-                rearrange_cmake_output_data["cv2.qt.fonts"] = fonts
-
-            if sys.platform == "darwin":
-                rearrange_cmake_output_data["cv2.qt.plugins.platforms"] = [
-                    (r"lib/qt/plugins/platforms/libqcocoa\.dylib")
-                ]
-
         if sys.platform.startswith("linux"):
             cmake_args.append("-DWITH_V4L=ON")
             cmake_args.append("-DWITH_LAPACK=ON")
             cmake_args.append("-DENABLE_PRECOMPILED_HEADERS=OFF")
-
-    # works via side effect
-    RearrangeCMakeOutput(
-        rearrange_cmake_output_data, files_outside_package_dir, package_data.keys()
-    )
 
     setup(
         name=package_name,
@@ -311,185 +225,34 @@ def main():
         ],
         cmake_args=cmake_args,
         cmake_source_dir=cmake_source_dir,
+        cmake_process_manifest_hook=keep_package_files,
     )
 
     print("OpenCV is raising funds to keep the library free for everyone, and we need the support of the entire community to do it. Donate to OpenCV on GitHub:\nhttps://github.com/sponsors/opencv\n")
 
-class RearrangeCMakeOutput:
+def get_python_library(python_version):
+    if os.name == "nt":
+        return os.path.join(
+            sys.base_prefix, "libs", "python%s.lib" % python_version.replace(".", "")
+        )
+    libdir = sysconfig.get_config_var("LIBDIR")
+    ldlibrary = sysconfig.get_config_var("LDLIBRARY")
+    if libdir and ldlibrary and os.path.exists(os.path.join(libdir, ldlibrary)):
+        return os.path.join(libdir, ldlibrary)
+    # No libpython (like manylinux); extension modules must not link to it anyway
+    return "libpython%sm.a" % python_version
+
+
+def keep_package_files(cmake_manifest):
     """
-        Patch SKBuild logic to only take files related to the Python package
-        and construct a file hierarchy that SKBuild expects (see below)
+        Only keep the cv2 package assembled by cmake/package, dropping the
+        rest of the OpenCV install. Paths are relative to the install dir
+        (scikit-build 1.0) or to the source dir (older scikit-build).
     """
-
-    _setuptools_wrap = None
-
-    # Have to wrap a function reference, or it's converted
-    # into an instance method on attr assignment
-    import argparse
-
-    wraps = argparse.Namespace(_classify_installed_files=None)
-    del argparse
-
-    package_paths_re = None
-    packages = None
-    files_outside_package = None
-
-    def __init__(self, package_paths_re, files_outside_package, packages):
-        cls = self.__class__
-        assert not cls.wraps._classify_installed_files, "Singleton object"
-        import skbuild.setuptools_wrap
-
-        cls._setuptools_wrap = skbuild.setuptools_wrap
-        cls.wraps._classify_installed_files = (
-            cls._setuptools_wrap._classify_installed_files
-        )
-        cls._setuptools_wrap._classify_installed_files = (
-            self._classify_installed_files_override
-        )
-
-        cls.package_paths_re = package_paths_re
-        cls.files_outside_package = files_outside_package
-        cls.packages = packages
-
-    def __del__(self):
-        cls = self.__class__
-        cls._setuptools_wrap._classify_installed_files = (
-            cls.wraps._classify_installed_files
-        )
-        cls.wraps._classify_installed_files = None
-        cls._setuptools_wrap = None
-
-    def _classify_installed_files_override(
-        self,
-        install_paths,
-        package_data,
-        package_prefixes,
-        py_modules,
-        new_py_modules,
-        scripts,
-        new_scripts,
-        data_files,
-        cmake_source_dir,
-        cmake_install_reldir,
-    ):
-        """
-            From all CMake output, we're only interested in a few files
-            and must place them into CMake install dir according
-            to Python conventions for SKBuild to find them:
-                package\
-                    file
-                    subpackage\
-                        etc.
-        """
-
-        cls = self.__class__
-
-        # 'relpath'/'reldir' = relative to CMAKE_INSTALL_DIR/cmake_install_dir
-        # 'path'/'dir' = relative to sourcetree root
-        cmake_install_dir = os.path.join(
-            cls._setuptools_wrap.CMAKE_INSTALL_DIR(), cmake_install_reldir
-        )
-        install_relpaths = [
-            os.path.relpath(p, cmake_install_dir) for p in install_paths
-        ]
-        fslash_install_relpaths = [
-            p.replace(os.path.sep, "/") for p in install_relpaths
-        ]
-        relpaths_zip = list(zip(fslash_install_relpaths, install_relpaths))
-
-        final_install_relpaths = []
-
-        print("Copying files from CMake output")
-
-        # add lines from the old __init__.py file to the config file
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', '__init__.py'), 'r') as custom_init:
-            custom_init_data = custom_init.read()
-
-        # OpenCV generates config with different name for case with PYTHON3_LIMITED_API=ON
-        config_py = os.path.join(cmake_install_dir, 'python', 'cv2', 'config-%s.%s.py'
-                                 % (sys.version_info[0], sys.version_info[1]))
-        if not os.path.exists(config_py):
-            config_py = os.path.join(cmake_install_dir, 'python', 'cv2', 'config-%s.py' % sys.version_info[0])
-
-        with open(config_py, 'w') as opencv_init_config:
-            opencv_init_config.write(custom_init_data)
-
-        if sys.version_info >= (3, 6):
-            for p in install_relpaths:
-                if p.endswith(".pyi"):
-                    target_rel_path = os.path.relpath(p, "python/cv2")
-                    cls._setuptools_wrap._copy_file(
-                        os.path.join(cmake_install_dir, p),
-                        os.path.join(cmake_install_dir, "cv2", target_rel_path),
-                        hide_listing=False,
-                    )
-                    final_install_relpaths.append(os.path.join("cv2", target_rel_path))
-
-        del install_relpaths, fslash_install_relpaths
-
-        for package_name, relpaths_re in cls.package_paths_re.items():
-            package_dest_reldir = package_name.replace(".", os.path.sep)
-            for relpath_re in relpaths_re:
-                found = False
-                r = re.compile(relpath_re + "$")
-                for fslash_relpath, relpath in relpaths_zip:
-                    m = r.match(fslash_relpath)
-                    if not m:
-                        continue
-                    found = True
-                    new_install_relpath = os.path.join(
-                        package_dest_reldir, os.path.basename(relpath)
-                    )
-                    cls._setuptools_wrap._copy_file(
-                        os.path.join(cmake_install_dir, relpath),
-                        os.path.join(cmake_install_dir, new_install_relpath),
-                        hide_listing=False,
-                    )
-                    final_install_relpaths.append(new_install_relpath)
-                    del m, fslash_relpath, new_install_relpath
-                else:
-                    # gapi can be missed if ADE was not downloaded (network issue)
-                    if not found and "gapi" not in relpath_re:
-                        raise Exception("Not found: '%s'" % relpath_re)
-                del r, found
-
-        del relpaths_zip
-
-        print("Copying files from non-default sourcetree locations")
-
-        for package_name, paths in cls.files_outside_package.items():
-            package_dest_reldir = package_name.replace(".", os.path.sep)
-            for path in paths:
-                new_install_relpath = os.path.join(
-                    package_dest_reldir,
-                    # Don't yet have a need to copy
-                    # to subdirectories of package dir
-                    os.path.basename(path),
-                )
-                cls._setuptools_wrap._copy_file(
-                    path,
-                    os.path.join(cmake_install_dir, new_install_relpath),
-                    hide_listing=False,
-                )
-                final_install_relpaths.append(new_install_relpath)
-
-        final_install_paths = [
-            os.path.join(cmake_install_dir, p) for p in final_install_relpaths
-        ]
-
-        return (cls.wraps._classify_installed_files)(
-            final_install_paths,
-            package_data,
-            package_prefixes,
-            py_modules,
-            new_py_modules,
-            scripts,
-            new_scripts,
-            data_files,
-            # To get around a check that prepends source dir to paths and breaks package detection code.
-            cmake_source_dir="",
-            _cmake_install_dir=cmake_install_reldir,
-        )
+    return [
+        p for p in cmake_manifest
+        if re.match(r"(.*/cmake-install/)?cv2/", p.replace(os.path.sep, "/"))
+    ]
 
 
 def get_and_set_info(contrib, headless, rolling, ci_build):

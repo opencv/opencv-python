@@ -11,3 +11,4 @@ recursive-include opencv *
 recursive-include opencv_contrib *
 recursive-include patches *
 recursive-include scripts *.py
+recursive-include cmake *.cmake CMakeLists.txt
