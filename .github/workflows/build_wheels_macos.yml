@@ -83,7 +83,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.15']
         platform: [x86_64, arm64]
         with_contrib: [0, 1]
         without_gui: [0, 1]
@@ -96,6 +96,7 @@ jobs:
       OPENCV_TEST_DATA_PATH: ${{ github.workspace }}/opencv_extra/testdata
       PYLINT_TEST_FILE: ${{ github.workspace }}/opencv/samples/python/squares.py
       PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
+      OPENCV_SAMPLES_DATA_PATH: ${{ github.workspace }}/opencv/samples/data/
     steps:
     - uses: actions/setup-python@v7
       with:
