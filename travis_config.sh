@@ -152,6 +152,7 @@ function run_tests {
 
     cd /io/opencv
     export OPENCV_TEST_DATA_PATH=/io/opencv_extra/testdata
+    export OPENCV_SAMPLES_DATA_PATH=/io/opencv/samples/data
 
     test_wheels
     pylint_test
