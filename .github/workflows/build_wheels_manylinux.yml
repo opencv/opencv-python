@@ -111,7 +111,7 @@ jobs:
       SDIST: ${{ matrix.build_sdist || 0 }}
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
-      DOCKER_TEST_IMAGE: ${{ matrix.platform == 'aarch64' && 'quay.io/opencv-ci/multibuild-noble_arm64v8:2026-06-15' || '' }}
+      OPENCV_SAMPLES_DATA_PATH: ${{ github.workspace }}/opencv/samples/data/
     steps:
     - name: Cleanup
       run: find . -mindepth 1 -delete
