@@ -101,10 +101,11 @@ def main():
 
     # Files from CMake output to copy to package.
     # Path regexes with forward slashes relative to CMake install dir.
+    # Note: FFMPEG dlls are not yet provided for Windows ARM64
     rearrange_cmake_output_data = {
         "cv2": (
             [r"bin/opencv_videoio_ffmpeg\d{3}%s\.dll" % ("_64" if is64 else "")]
-            if os.name == "nt"
+            if os.name == "nt" and not (platform.machine() == "ARM64" and sys.platform == "win32")
             else []
         )
         +
@@ -157,9 +158,13 @@ def main():
 
     # HACK: Disabled generic assembler for now.
     # Windows 2025 CI environment does not provide suitable assembler or build is broken in OpenCV MLAS.
+    # On ARM64, NOTFOUND also avoids a MinGW toolchain on PATH being misdetected by CMake's ASM probe.
     ci_cmake_generator = (
-        ["-G", "Visual Studio 17 2022",
-         "-DCMAKE_ASM_COMPILER="]
+        ["-G", "Visual Studio 18 2026",
+         "-DCMAKE_ASM_COMPILER=CMAKE_ASM_COMPILER-NOTFOUND"]
+        if os.name == "nt" and platform.machine() == "ARM64"
+        else ["-G", "Visual Studio 17 2022",
+              "-DCMAKE_ASM_COMPILER="]
         if os.name == "nt"
         else ["-G", "Unix Makefiles"]
     )
@@ -198,7 +203,10 @@ def main():
              # Emulated cmake requires following flags to correctly detect
              # target architecture for windows/arm64 build
              "-DOPENCV_WORKAROUND_CMAKE_20989=ON",
-             "-DCMAKE_SYSTEM_PROCESSOR=ARM64"]
+             "-DCMAKE_SYSTEM_PROCESSOR=ARM64",
+             # Adreno GPUs (used on Windows ARM64 devices) produce numerically
+             # divergent OpenCL kernel results.
+             "-DWITH_OPENCL=OFF"]
             if platform.machine() == "ARM64" and sys.platform == "win32"
             # If it is not defined 'linker flags: /machine:X86' on Windows x64
             else ["-DCMAKE_GENERATOR_PLATFORM=x64"] if is64 and sys.platform == "win32"
