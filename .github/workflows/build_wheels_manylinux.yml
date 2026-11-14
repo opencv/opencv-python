@@ -33,16 +33,16 @@ jobs:
         include:
           - platform: aarch64
             manylinux: 2014
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20261110
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64:20261111
           - platform: x86_64
             manylinux: 2014
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20261110
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20261111
           - platform: x86_64
             manylinux: 2_28
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20261110
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-x86-64:20261111
           - platform: aarch64
             manylinux: 2_28
-            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20261110
+            DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux_2_28-aarch64:20261111
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -164,7 +164,7 @@ jobs:
       NP_TEST_DEP: numpy==1.19.4
       TRAVIS_BUILD_DIR: ${{ github.workspace }}
       CONFIG_PATH: travis_config.sh
-      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20261110
+      DOCKER_IMAGE: quay.io/opencv-ci/opencv-python-manylinux2014-x86-64:20261111
       USE_CCACHE: 1
       UNICODE_WIDTH: 32
       SDIST: ${{ matrix.build_sdist || 0 }}
