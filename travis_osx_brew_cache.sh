@@ -1,29 +1,42 @@
-# Library to cache downloaded and locally-built Homebrew bottles in Travis OSX build.
+# Library to cache locally-built Homebrew bottles between macOS CI runs.
+#
+# Packages are installed one by one, dependencies first.
+# If Homebrew has a bottle for the current OS, it is used.
+# If not, the package is built with `--build-bottle`, and the resulting bottle
+#  is saved into $BREW_LOCAL_BOTTLE_DIR to be installed from there in the next runs.
+# $BREW_LOCAL_BOTTLE_DIR is supposed to be saved and restored by CI cache.
+#
+# Homebrew installs core formulae from its JSON API, so there are no formula files to add
+#  bottle blocks to. Cached bottles are installed directly from files instead.
+#
+# If building takes too long, the build goes into "bootstrap mode": the rest of the build is skipped
+#  and the job fails, but the cache is still saved. The next run continues from where this one stopped.
 
 
-#Should be in Travis' cache
-BREW_LOCAL_BOTTLE_METADATA="$HOME/local_bottle_metadata"
-
-#FIXME: temporary fix to enable the build, should be replaced with the proper path to the cache dir
-mkdir -p $BREW_LOCAL_BOTTLE_METADATA
+#Should be in CI cache
+BREW_LOCAL_BOTTLE_DIR="${BREW_LOCAL_BOTTLE_DIR:-$HOME/local_bottle_metadata}"
+mkdir -p "$BREW_LOCAL_BOTTLE_DIR"
 
 # Starting reference point for elapsed build time; seconds since the epoch.
-#TRAVIS_TIMER_START_TIME is set at the start of a log fold, in nanoseconds since the epoch
-BREW_TIME_START=$(($TRAVIS_TIMER_START_TIME/10**9))
+BREW_TIME_START=${BREW_TIME_START:-$(date +%s)}
 
-# If after a package is built, elapsed time is more than this many seconds, fail the build but save Travis cache
-# The cutoff moment should leave enough time till Travis' job time limit to process the main project.
-#  Since we have moved deps into a separate stage, we don't need to leave time for the project any more
-BREW_TIME_LIMIT=$((42*60))
+# If after a package is built, elapsed time is more than this many seconds, go into bootstrap mode.
+# GitHub-hosted runners limit a job to 6 hours. The cutoff should leave enough time
+#  to build the main project and save the cache.
+BREW_TIME_LIMIT=${BREW_TIME_LIMIT:-$((240*60))}
 # If a slow-building package is about to be built and the projected build end moment is beyond this many seconds,
-# skip that build, fail the Travis job and save Travis cache.
-# This cutoff should leave enough time for before_cache and cache save.
-BREW_TIME_HARD_LIMIT=$((43*60))
+# skip that build and go into bootstrap mode.
+# This cutoff should leave enough time for cache save.
+BREW_TIME_HARD_LIMIT=${BREW_TIME_HARD_LIMIT:-$((300*60))}
 
 
-# Auto cleanup can delete locally-built bottles
-# when the caching logic isn't prepared for that
+# Auto cleanup can delete installed old versions of packages
 export HOMEBREW_NO_INSTALL_CLEANUP=1
+# Don't upgrade or rebuild preinstalled packages that depend on what we install
+export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
+export HOMEBREW_NO_AUTO_UPDATE=1
+export HOMEBREW_NO_ANALYTICS=1
+export HOMEBREW_NO_ENV_HINTS=1
 
 # Don't query analytical info online on `brew info`,
 #  this takes several seconds and we don't need it
@@ -32,6 +45,9 @@ export HOMEBREW_NO_GITHUB_API=1
 
 #Packages already installed in the current session to avoid checking them again
 _BREW_ALREADY_INSTALLED='$'     #$ = illegal package name; a blank line would cause macos grep to swallow everything
+
+#Cached bottles that are valid for the current formulae, "<package> <bottle path>" lines
+_BREW_LOCAL_BOTTLES='$'
 
 
 #Public functions
@@ -46,139 +62,50 @@ function brew_install_and_cache_within_time_limit {
 }
 
 function brew_add_local_bottles {
-    # Should be called after `brew update` at startup.
-    # Adds metadata for cached locally-built bottles to local formulas
-    #  so that `brew` commands can find them.
-    # If the package was updated, removes the corresponding files
-    #  and the bottle's entry in the formula, if any.
-
-    # Bottle entry in formula:
-    #   bottle do
-    #     <...>
-    #     sha256 "<sha256>" => :<os_codename>
-    #     <...>
-    #   end
+    # Should be called at startup, after the cache is restored.
+    # Registers cached locally-built bottles so that they are installed instead of building.
+    # If the package was updated, removes the obsolete bottle.
 
     echo "Cached bottles:"
-    ls "$(brew --cache)/downloads" || true  #may not exist initially since it's "$(brew --cache)" that is in Travis cache
-    echo "Saved .json's and links:"
-    ls "$BREW_LOCAL_BOTTLE_METADATA"
+    ls "$BREW_LOCAL_BOTTLE_DIR"
 
-    for JSON in "$BREW_LOCAL_BOTTLE_METADATA"/*.json; do
-        [ -e "$JSON" ] || break    # OSX 10.11 bash has no nullglob
-        local PACKAGE JSON_VERSION JSON_REBUILD OS_CODENAME BOTTLE_HASH
+    for JSON in "$BREW_LOCAL_BOTTLE_DIR"/*.json; do
+        [ -e "$JSON" ] || break
+        local PACKAGE JSON_VERSION BOTTLE_FILE BOTTLE_HASH
+        _brew_parse_bottle_json "$JSON" PACKAGE JSON_VERSION BOTTLE_FILE BOTTLE_HASH
 
-        _brew_parse_bottle_json "$JSON" PACKAGE JSON_VERSION JSON_REBUILD OS_CODENAME BOTTLE_HASH
+        local BOTTLE; BOTTLE="$BREW_LOCAL_BOTTLE_DIR/$BOTTLE_FILE"
+        echo "Local bottle: $PACKAGE $JSON_VERSION"
 
-        echo "Adding local bottle: $PACKAGE ${JSON_VERSION}_${JSON_REBUILD}"
+        local FORMULA_VERSION=""
+        _brew_parse_package_info "$PACKAGE" FORMULA_VERSION || true
 
-        local FORMULA_VERSION FORMULA_REBUILD FORMULA_BOTTLE_HASH
-
-        _brew_parse_package_info "$PACKAGE" "$OS_CODENAME" FORMULA_VERSION FORMULA_REBUILD FORMULA_BOTTLE_HASH
-
-        local FORMULA_HAS_BOTTLE; [ -n "$FORMULA_BOTTLE_HASH" ] && FORMULA_HAS_BOTTLE=1 || true
-
-
-        local BOTTLE_LINK BOTTLE=""; BOTTLE_LINK="${JSON}.bottle.lnk";
-        local BOTTLE_EXISTS= BOTTLE_MISMATCH= VERSION_MISMATCH=
-
-
-        # Check that the bottle file exists and is still appropriate for the formula
-        if [[ "$FORMULA_VERSION" != "$JSON_VERSION" || "$JSON_REBUILD" != "$FORMULA_REBUILD" ]]; then
-            VERSION_MISMATCH=1;
-            echo "The cached bottle is obsolete: formula ${FORMULA_VERSION}_${FORMULA_REBUILD}"
-        fi
-        if [ -f "$BOTTLE_LINK" ]; then
-            BOTTLE=$(cat "$BOTTLE_LINK");
-            BOTTLE=$(cd "$(dirname "$BOTTLE")"; pwd)/$(basename "$BOTTLE")
-
-            if [ -e "$BOTTLE" ]; then
-                BOTTLE_EXISTS=1;
-
-                # The hash in `brew --cache $PACKAGE` entry is generated from download URL,
-                #  which itself is generated from base URL and version
-                # (see Homebrew/Library/Homebrew/download_strategy.rb:cached_location).
-                # So if version changes, hashes will always mismatch anyway
-                #  and we don't need a separate message about this.
-                # XXX: OSX doesn't have `realpath` so can't compare the entire paths
-                if [ -n "$FORMULA_HAS_BOTTLE" -a -z "$VERSION_MISMATCH" -a \
-                    "$(basename "$(brew --cache "$PACKAGE")")" != "$(basename "$BOTTLE")" ]; then
-                        BOTTLE_MISMATCH=1;
-                        echo "Cached bottle file doesn't correspond to formula's cache entry!" \
-                             "This can happen if download URL has changed." >&2
-                fi
-            else
-                echo "Cached bottle file is missing!" >&2
-            fi
+        if [ "$FORMULA_VERSION" != "$JSON_VERSION" ]; then
+            echo "The cached bottle is obsolete: formula ${FORMULA_VERSION:-is not available}"
+        elif [ ! -f "$BOTTLE" ]; then
+            echo "Cached bottle file is missing!" >&2
+        elif [ "$(shasum -a 256 "$BOTTLE" | cut -d' ' -f1)" != "$BOTTLE_HASH" ]; then
+            echo "Cached bottle file is corrupted!" >&2
         else
-            echo "Link file is missing or of invalid type!" >&2
+            _BREW_LOCAL_BOTTLES="$_BREW_LOCAL_BOTTLES"$'\n'"$PACKAGE $BOTTLE"
+            continue
         fi
 
-        # Delete cached bottle and all metadata if invalid
-        if [[ -z "$BOTTLE_EXISTS" || -n "$VERSION_MISMATCH" || -n "$BOTTLE_MISMATCH" ]]; then
-            echo "Deleting the cached bottle and all metadata"
-
-            if [ "$FORMULA_BOTTLE_HASH" == "$BOTTLE_HASH" ]; then
-                echo "A bottle block for the cached bottle was merged into the updated formula. Removing..."
-                local FORMULA; FORMULA=$(brew formula "$PACKAGE")
-                perl -wpe 'BEGIN { our $IN_BLOCK=0; }
-                    if ( ($IN_BLOCK==0) && /^\s*bottle\s+do\s*$/ ) { $IN_BLOCK=1; next; }
-                    if ( ($IN_BLOCK==1) && /^\s*end\s*$/ )         { $IN_BLOCK=-1; next; }
-                    if ( ($IN_BLOCK==1) && /^\s*sha256\s+"(\w+)"\s+=>\s+:\w+\s*$/ )
-                                                 { if ( $1 eq "'"$BOTTLE_HASH"'" ) {$_="";}; next; }
-                '  <"$FORMULA" >"${FORMULA}.new"
-                # Depending on diff version, 1 may mean differences found
-                # https://stackoverflow.com/questions/6971284/what-are-the-error-exit-values-for-diff
-                diff -u "$FORMULA" "${FORMULA}.new" || test $? -le 1
-                (   cd $(dirname "$FORMULA")
-                    FORMULA=$(basename "$FORMULA")
-                    mv -v "${FORMULA}.new" "$FORMULA"
-                    git commit -m "Removed obsolete local bottle ${JSON_VERSION}_${JSON_REBUILD} :${OS_CODENAME}" "$FORMULA"
-                )
-            fi
-
-            if [ -n "$BOTTLE" -a -n "$BOTTLE_EXISTS" ]; then rm "$BOTTLE"; fi
-            rm -f "$BOTTLE_LINK"
-            rm "$JSON"
-
-        #(Re)add metadata to the formula otherwise
-        else
-            if [ "$FORMULA_BOTTLE_HASH" == "$BOTTLE_HASH" ]; then
-                echo "The cached bottle is already present in the formula"
-            else
-                brew bottle --merge --write "$JSON"
-            fi
-        fi
+        echo "Deleting the cached bottle and its metadata"
+        rm -f "$BOTTLE" "$JSON"
     done
+
+    brew_cache_cleanup
 }
 
-
 function brew_cache_cleanup {
-    #Cleanup caching directories
-    # Is supposed to be called in before_cache
-
-    #Lefovers from some failure probably
-    rm -f "$BREW_LOCAL_BOTTLE_METADATA"/*.tar.gz
-
-    #`brew cleanup` may delete locally-built bottles that weren't needed this time
-    # so we're saving and restoring them
-    local BOTTLE_LINK BOTTLE
-    for BOTTLE_LINK in "$BREW_LOCAL_BOTTLE_METADATA"/*.lnk; do
-        [ -e "$BOTTLE_LINK" ] || break
-        BOTTLE=$(cat "$BOTTLE_LINK")
-        ln "$BOTTLE" "$BREW_LOCAL_BOTTLE_METADATA/"
-    done
-    brew cleanup
-    local BOTTLE_BASENAME
-    for BOTTLE_LINK in "$BREW_LOCAL_BOTTLE_METADATA"/*.lnk; do
-        [ -e "$BOTTLE_LINK" ] || break
-        BOTTLE=$(cat "$BOTTLE_LINK")
-        BOTTLE_BASENAME=$(basename "$BOTTLE")
-        if test ! -e "$BOTTLE"; then
-            echo "Restoring: $BOTTLE_BASENAME"
-            mv "$BREW_LOCAL_BOTTLE_METADATA/$BOTTLE_BASENAME" "$BOTTLE"
-        else
-            rm "$BREW_LOCAL_BOTTLE_METADATA/$BOTTLE_BASENAME"
+    # Remove bottle files left without metadata, e.g. after a failure
+    local BOTTLE
+    for BOTTLE in "$BREW_LOCAL_BOTTLE_DIR"/*.tar.gz; do
+        [ -e "$BOTTLE" ] || break
+        if ! grep -qF " $BOTTLE" <<<"$_BREW_LOCAL_BOTTLES"; then
+            echo "Removing stray file: $(basename "$BOTTLE")"
+            rm -f "$BOTTLE"
         fi
     done
 }
@@ -186,33 +113,16 @@ function brew_cache_cleanup {
 
 function brew_go_bootstrap_mode {
 # Can be overridden
-# Terminate the build but ensure saving the cache
+# Make the rest of the build be skipped. The CI job is expected to save the cache anyway.
     local EXIT_CODE=${1:-1}
 
     echo "Going into cache bootstrap mode"
 
     BREW_BOOTSTRAP_MODE=1
 
-    #Can't just `exit` because that would terminate the build without saving the cache
-    #Have to replace further actions with no-ops
-
-    local MESSAGE=""; if [ "$EXIT_CODE" -ne 0 ]; then
-        MESSAGE='Building dependencies took too long. Restart the build in Travis UI to continue from cache.';
+    if [ "$EXIT_CODE" -ne 0 ]; then
+        echo '::warning::Building dependencies took too long. Re-run the job to continue from cache.'
     fi
-
-    eval '
-    function '"$cmd"' { return 0; }
-    function repair_wheelhouse { return 0; }
-    function install_run {'\
-        "$(if [ -n "$MESSAGE" ]; then
-            echo \
-        '        echo -e "\n'"$MESSAGE"'\n"'
-        fi)"\
-    '
-        # Travis runs user scripts via `eval` i.e. in the same shell process.
-        # So have to unset errexit in order to get to cache save stage
-        set +e; return '"$EXIT_CODE"'
-    }'
 }
 
 
@@ -232,7 +142,7 @@ function _brew_install_and_cache_within_time_limit {
         MARKED_INSTALLED=1
     fi
 
-    if [ -n "$MARKED_INSTALLED" ] || (brew list --versions "$PACKAGE" >/dev/null && ! (brew outdated | grep -qxF "$PACKAGE")); then
+    if [ -n "$MARKED_INSTALLED" ] || (brew list --versions "$PACKAGE" >/dev/null && ! (brew outdated | grep -qxF "${PACKAGE##*/}")); then
         echo "Already installed and the latest version: $PACKAGE"
         if [ -z "$MARKED_INSTALLED" ]; then _brew_mark_installed "$PACKAGE"; fi
         return 0
@@ -248,16 +158,17 @@ function _brew_install_and_cache_within_time_limit {
     DEPS=`grep -vxF <(cat <<<"$_BREW_ALREADY_INSTALLED") <<<"$DEPS"` || test $? -eq 1 || return 2
     for dep in $DEPS; do
         #TIME_LIMIT only has to be met if we'll be actually building the main project this iteration, i.e. after the "root" module installation
-        #While we don't know that yet, we can make better use of Travis-given time with a laxer limit
+        #While we don't know that yet, we can make better use of the given time with a laxer limit
         #We still can't overrun TIME_HARD_LIMIT as that wouldn't leave time to save the cache
         _brew_install_and_cache_within_time_limit "$dep" $(((TIME_LIMIT+TIME_HARD_LIMIT)/2)) "$TIME_HARD_LIMIT" "$TIME_START" || return $?
     done
 
-    _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || return $?
+    if [ -n "$BUILD_FROM_SOURCE" ]; then
+        _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || return $?
+    fi
     _brew_install_and_cache "$PACKAGE" "$([[ -z "$BUILD_FROM_SOURCE" ]] && echo 1 || echo 0)" "$KEG_ONLY" || return 2
     _brew_check_elapsed_build_time "$TIME_START" "$TIME_LIMIT" || return $?
 }
-
 
 function _brew_parse_bottle_json {
     # Parse JSON file resulting from `brew bottle --json`
@@ -269,15 +180,14 @@ function _brew_parse_bottle_json {
     import sys,json; j=json.load(open(sys.argv[1],"rb")); [name]=j.keys(); [pdata]=j.values()
     print(name)
     print(pdata["formula"]["pkg_version"])
-    print(pdata["bottle"]["rebuild"])
-    [(tag_name, tag_dict)]=pdata["bottle"]["tags"].items()
-    print(tag_name)
+    [tag_dict]=pdata["bottle"]["tags"].values()
+    print(tag_dict["local_filename"])
     print(tag_dict["sha256"])
     ' "$JSON")
 
     unset JSON
 
-    { local i v; for i in {1..5}; do
+    { local i v; for i in {1..4}; do
         read -r v
         eval "${1:?}=\"$v\""
         shift
@@ -285,34 +195,25 @@ function _brew_parse_bottle_json {
 }
 
 function _brew_parse_package_info {
-    # Get and parse `brew info --json` about a package
-    # and save data into specified variables
+    # Get the current version of a package from `brew info --json`
+    # and save it into the specified variable
 
-    local PACKAGE OS_CODENAME
-    PACKAGE="${1:?}"; shift
-    OS_CODENAME="${1:?}"; shift
+    local PACKAGE; PACKAGE="${1:?}"; shift
 
-    local JSON_DATA; JSON_DATA=$(python3 -c 'if True:
-    import sys, json, subprocess; j=json.loads(subprocess.check_output(("brew","info","--json=v1",sys.argv[1])))
-    data=j[0]
+    local VERSION; VERSION=$(brew info --json=v2 "$PACKAGE" | python3 -c 'if True:
+    import sys, json; data=json.load(sys.stdin)["formulae"][0]
     revision=data["revision"]
     # in bottle''s json, revision is included into version; here, they are separate
     print(data["versions"]["stable"]+("_"+str(revision) if revision else ""))
-    bottle_data=data["bottle"].get("stable",{"rebuild":"","files":{}})
-    print(bottle_data["rebuild"])
-    print(bottle_data["files"].get(sys.argv[2],{"sha256":"!?"})["sha256"])     #prevent losing trailing blank line to command substitution
-    ' \
-    "$PACKAGE" "$OS_CODENAME"); JSON_DATA="${JSON_DATA%\!\?}"  #!? can't occur in a hash
+    ') || return 1
 
-    unset PACKAGE OS_CODENAME
-
-    { local i v; for i in {1..3}; do
-        read -r v
-        eval "${1:?}=\"$v\""
-        shift
-    done } <<< "$JSON_DATA"
+    eval "${1:?}=\"$VERSION\""
 }
 
+function _brew_local_bottle {
+    # Print the path of a cached bottle for the package, if any
+    awk -v p="${1:?}" '$1==p {print $2; exit}' <<<"$_BREW_LOCAL_BOTTLES"
+}
 
 
 function _brew_is_bottle_available {
@@ -331,8 +232,8 @@ function _brew_is_bottle_available {
         fi
     fi
 
-    if grep -qxEe '[[:space:]]*bottle :unneeded' $(brew formula "$PACKAGE"); then
-        echo "Bottle disabled: $PACKAGE"
+    if [ -n "$(_brew_local_bottle "$PACKAGE")" ]; then
+        echo "Local bottle available: $INFO"
         return 0
     fi
 
@@ -349,55 +250,59 @@ function _brew_install_and_cache {
     # Install bottle or make and cache bottle.
     # assumes that deps were already installed
     # and not already the latest version
+    # Is run with || so errexit is off: every step has to be checked explicitly
 
     local PACKAGE USE_BOTTLE KEG_ONLY
     PACKAGE="${1:?}"
     USE_BOTTLE="${2:?}"
     KEG_ONLY="${3:?}"
-    local VERB
+    local VERB LOCAL_BOTTLE
 
     if brew list --versions "$PACKAGE"; then
         # Install alongside the old version to avoid to have to update "runtime dependents"
         # https://discourse.brew.sh/t/can-i-install-a-new-version-without-having-to-upgrade-runtime-dependents/4443
         VERB="install --force"
         if [ "$KEG_ONLY" -eq 0 ]; then
-            brew unlink "$PACKAGE"
+            brew unlink "$PACKAGE" || return 1
         fi
     else
         VERB=install
     fi
 
-    if [[ "$USE_BOTTLE" -gt 0 ]]; then
+    LOCAL_BOTTLE="$(_brew_local_bottle "$PACKAGE")"
+
+    if [ -n "$LOCAL_BOTTLE" ]; then
+        echo "Installing local bottle for: $PACKAGE"
+        brew $VERB "$LOCAL_BOTTLE" || return 1
+    elif [[ "$USE_BOTTLE" -gt 0 ]]; then
         echo "Installing bottle for: $PACKAGE"
-        brew $VERB "$PACKAGE"
+        brew $VERB "$PACKAGE" || return 1
     else
         echo "Building bottle for: $PACKAGE"
-        brew $VERB --build-bottle "$PACKAGE"
+        brew $VERB --build-bottle "$PACKAGE" || return 1
+
+        # `brew bottle` puts the files into the current directory
+        local WORK_DIR; WORK_DIR=$(mktemp -d)
         exec 3>&1
-        local OUT=$(brew bottle --json "$PACKAGE" | tee /dev/fd/3)
+        # --no-rebuild: don't look up already published bottles to determine the rebuild number
+        local OUT=$(cd "$WORK_DIR" && brew bottle --json --no-rebuild "$PACKAGE" | tee /dev/fd/3)
         exec 3>&-
 
-        ls "$PACKAGE"*
         # doesn't seem to be a documented way to get file names
-        local BOTTLE; BOTTLE=$(grep -Ee '^./' <<<"$OUT")
-        #proper procedure as per https://discourse.brew.sh/t/how-are-bottle-and-postinstall-related-is-it-safe-to-run-bottle-after-postinstall/3410/4
-        brew uninstall --ignore-dependencies "$PACKAGE"
-        brew $VERB "$BOTTLE"
-
+        local BOTTLE; BOTTLE="$WORK_DIR/$(grep -Ee '^\./' <<<"$OUT" | head -n 1)"
         local JSON; JSON=$(sed -E 's/bottle(.[[:digit:]]+)?\.tar\.gz$/bottle.json/' <<<"$BOTTLE")
+        test -f "$JSON" -a -f "$BOTTLE" || return 1
 
-        #`brew bottle --merge` doesn't return nonzero on nonexisting json file
-        test -f "$JSON" -a -f "$BOTTLE"
+        #proper procedure as per https://discourse.brew.sh/t/how-are-bottle-and-postinstall-related-is-it-safe-to-run-bottle-after-postinstall/3410/4
+        brew uninstall --ignore-dependencies "$PACKAGE" || return 1
+        brew $VERB "$BOTTLE" || return 1
 
-        brew bottle --merge --write "$JSON"
-        local CACHED_BOTTLE; CACHED_BOTTLE="$(brew --cache "$PACKAGE")"
-        mv "$BOTTLE" "$CACHED_BOTTLE";
-        local CACHED_JSON; CACHED_JSON="${BREW_LOCAL_BOTTLE_METADATA}/$(basename "$JSON")"
-        mv "$JSON" "$CACHED_JSON"
-        #Symlinks aren't cached by Travis. Will just save paths in files then.
-        local BOTTLE_LINK; BOTTLE_LINK="${CACHED_JSON}.bottle.lnk"
-        echo "$CACHED_BOTTLE" >"$BOTTLE_LINK"
-
+        # The file name in the JSON is what the bottle is going to be found by
+        local BOTTLE_FILE; _brew_parse_bottle_json "$JSON" _ _ BOTTLE_FILE _
+        mv "$BOTTLE" "$BREW_LOCAL_BOTTLE_DIR/$BOTTLE_FILE" || return 1
+        mv "$JSON" "$BREW_LOCAL_BOTTLE_DIR/" || return 1
+        rm -rf "$WORK_DIR"
+        _BREW_LOCAL_BOTTLES="$_BREW_LOCAL_BOTTLES"$'\n'"$PACKAGE $BREW_LOCAL_BOTTLE_DIR/$BOTTLE_FILE"
     fi
 
     _brew_mark_installed "$PACKAGE"
@@ -443,7 +348,7 @@ function _brew_check_slow_building_ahead {
     PROJECTED_BUILD_END_ELAPSED_TIME=$(( $(date +%s) - TIME_START + PROJECTED_BUILD_TIME * 60))
 
     if [[ "$PROJECTED_BUILD_END_ELAPSED_TIME" -ge "$TIME_HARD_LIMIT" ]]; then
-        echo -e "\nProjected build end elapsed time for $PACKAGE: $((PROJECTED_BUILD_END_ELAPSED_TIME/60))m ($PROJECTED_BUILD_END_ELAPSED_TIMEs)"
+        echo -e "\nProjected build end elapsed time for $PACKAGE: $((PROJECTED_BUILD_END_ELAPSED_TIME/60))m (${PROJECTED_BUILD_END_ELAPSED_TIME}s)"
         brew_go_bootstrap_mode
         return 1
     fi
