@@ -106,6 +106,12 @@ if [ -n "$IS_OSX" ]; then
 
     function install_ffmpeg_lgpl {
         # Install LGPL FFmpeg and its dependencies, building and caching what has no bottles
+
+        # Runner images may have an outdated Homebrew,
+        #  e.g. 7.0.12 can't install bottles from files
+        brew update
+        brew --version
+
         generate_ffmpeg_formula
         brew_add_local_bottles
         brew_install_and_cache_within_time_limit "$FFMPEG_LGPL_FORMULA" || return $?
