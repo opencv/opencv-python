@@ -120,7 +120,8 @@ if [ -n "$IS_OSX" ]; then
 
         local FF_PREFIX; FF_PREFIX="$(brew --prefix "$FFMPEG_LGPL_FORMULA")"
         local FF_LICENSE; FF_LICENSE="$("$FF_PREFIX/bin/ffmpeg" -hide_banner -L)"
-        if ! grep -qF "GNU Lesser General Public License" <<<"$FF_LICENSE"; then
+        # The license text is wrapped, the phrase can be split between lines
+        if ! tr -s '\n ' '  ' <<<"$FF_LICENSE" | grep -qF "GNU Lesser General Public License"; then
             echo "$FF_LICENSE"
             echo "The built FFmpeg is not LGPL!" >&2
             return 1
