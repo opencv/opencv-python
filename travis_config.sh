@@ -69,7 +69,19 @@ if [ -n "$IS_OSX" ]; then
         brew trust "$TAP"
 
         local FF_FORMULA; FF_FORMULA=$(mktemp)
-        brew cat ffmpeg >"$FF_FORMULA"
+        # Formulae from the JSON API have no source on disk, so `brew cat` doesn't work for them.
+        # Fetch the source for the homebrew-core revision the API data is from.
+        local FF_SOURCE_URL FF_SOURCE_SHA256
+        read -r FF_SOURCE_URL FF_SOURCE_SHA256 < <(brew info --json=v2 ffmpeg | python3 -c 'if True:
+            import sys, json; data=json.load(sys.stdin)["formulae"][0]
+            print("https://raw.githubusercontent.com/Homebrew/homebrew-core/%s/%s" % (data["tap_git_head"], data["ruby_source_path"]),
+                  data["ruby_source_checksum"]["sha256"])
+            ')
+        curl -fsSL --retry 3 -o "$FF_FORMULA" "$FF_SOURCE_URL"
+        if [ "$(shasum -a 256 "$FF_FORMULA" | cut -d' ' -f1)" != "$FF_SOURCE_SHA256" ]; then
+            echo "Checksum mismatch for $FF_SOURCE_URL" >&2
+            return 1
+        fi
         local LFF_FORMULA; LFF_FORMULA="$TAP_DIR/Formula/${FFMPEG_LGPL_FORMULA##*/}.rb"
 
         echo "Generating custom ffmpeg formula"
