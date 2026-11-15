@@ -16,7 +16,47 @@ on:
 
 
 jobs:
+  FFmpeg:
+    # Builds LGPL FFmpeg and its dependencies that have no Homebrew bottles,
+    # and caches the bottles for the Build jobs.
+    # If it runs out of time, the cache is saved anyway: re-run the job to continue.
+    # The cache key has the runner image in it: update it along with runs-on.
+    runs-on: ${{ matrix.platform == 'arm64' && 'macos-15' || 'macos-15-intel' }}
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [x86_64, arm64]
+    env:
+      BREW_LOCAL_BOTTLE_DIR: ${{ github.workspace }}/../local_bottle_metadata
+      BREW_TIME_LIMIT: 19200 # 320 min
+      BREW_TIME_HARD_LIMIT: 20400 # 340 min
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+      with:
+        submodules: false
+    - name: Restore Homebrew bottles
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{ env.BREW_LOCAL_BOTTLE_DIR }}
+        key: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-
+    - name: Build FFmpeg
+      id: ffmpeg
+      run: |
+        export IS_OSX=1
+        source travis_config.sh
+        install_ffmpeg_lgpl
+    - name: Save Homebrew bottles
+      if: ${{ always() && steps.ffmpeg.outcome != 'skipped' }}
+      uses: actions/cache/save@v5
+      with:
+        path: ${{ env.BREW_LOCAL_BOTTLE_DIR }}
+        key: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
+
   Build:
+    needs: [FFmpeg]
     runs-on: ${{ matrix.platform == 'arm64' && 'macos-15' || 'macos-15-intel' }}
     strategy:
       fail-fast: false
@@ -44,6 +84,7 @@ jobs:
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
       PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
+      BREW_LOCAL_BOTTLE_DIR: ${{ github.workspace }}/../local_bottle_metadata
     steps:
     - uses: actions/setup-python@v7
       with:
@@ -61,12 +102,25 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
+    - name: Restore Homebrew bottles
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{ env.BREW_LOCAL_BOTTLE_DIR }}
+        key: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-
+        fail-on-cache-miss: true
+    - name: Install FFmpeg
+      run: |
+        export IS_OSX=1
+        source travis_config.sh
+        install_ffmpeg_lgpl
     - name: Build a package
       run: |
         git submodule update --init multibuild
         echo $ENABLE_CONTRIB > contrib.enabled
         echo $ENABLE_HEADLESS > headless.enabled
-        export MACOSX_DEPLOYMENT_TARGET=14.0
+        # Homebrew bottles are built for macOS 15
+        export MACOSX_DEPLOYMENT_TARGET=15.0
         python --version
         python -m pip install delocate toml && python -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python -m pip install -r /dev/stdin
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
