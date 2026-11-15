@@ -142,7 +142,8 @@ function _brew_install_and_cache_within_time_limit {
         MARKED_INSTALLED=1
     fi
 
-    if [ -n "$MARKED_INSTALLED" ] || (brew list --versions "$PACKAGE" >/dev/null && ! (brew outdated | grep -qxF "${PACKAGE##*/}")); then
+    # Not piping `brew outdated` directly into `grep -q`: brew fails with "Broken pipe" when grep exits early
+    if [ -n "$MARKED_INSTALLED" ] || (brew list --versions "$PACKAGE" >/dev/null && ! grep -qxF "${PACKAGE##*/}" <<<"$(brew outdated --formula --quiet)"); then
         echo "Already installed and the latest version: $PACKAGE"
         if [ -z "$MARKED_INSTALLED" ]; then _brew_mark_installed "$PACKAGE"; fi
         return 0
@@ -221,9 +222,8 @@ function _brew_is_bottle_available {
     local PACKAGE;PACKAGE="${1:?}"
     local VAR_KEG_ONLY="$2"
 
-    # `brew info` prints "Error: Broken pipe" if piped directly to `head` and the info is long
-    # 141 = 128 + SIGPIPE
-    local INFO;INFO="$((brew info "$PACKAGE" | cat || test $? -eq 141) | head -n 1)"
+    # `brew info` prints "Error: Broken pipe" if piped to `head` and the info is long
+    local INFO;INFO="$(brew info "$PACKAGE")"; INFO="$(head -n 1 <<<"$INFO")"
     if [ -n "$VAR_KEG_ONLY" ]; then
         if grep -qwF '[keg-only]' <<<"$INFO"; then
             eval "${VAR_KEG_ONLY}=1"
