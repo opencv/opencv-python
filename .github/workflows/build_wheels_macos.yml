@@ -15,12 +15,21 @@ on:
   workflow_dispatch:
 
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  BREW_CACHE_VERSION: v1
+
 jobs:
   FFmpeg:
     # Builds LGPL FFmpeg and its dependencies that have no Homebrew bottles,
     # and caches the bottles for the Build jobs.
     # If it runs out of time, the cache is saved anyway: re-run the job to continue.
     # The cache key has the runner image in it: update it along with runs-on.
+    # Outdated bottles are dropped by version. Bump BREW_CACHE_VERSION if the bottles change otherwise,
+    # e.g. the ffmpeg formula conversion rules in travis_config.sh.
     runs-on: ${{ matrix.platform == 'arm64' && 'macos-15' || 'macos-15-intel' }}
     timeout-minutes: 360
     strategy:
@@ -40,8 +49,8 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: ${{ env.BREW_LOCAL_BOTTLE_DIR }}
-        key: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
-        restore-keys: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-
+        key: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-
     - name: Build FFmpeg
       id: ffmpeg
       run: |
@@ -53,7 +62,7 @@ jobs:
       uses: actions/cache/save@v5
       with:
         path: ${{ env.BREW_LOCAL_BOTTLE_DIR }}
-        key: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
+        key: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
 
   Build:
     needs: [FFmpeg]
@@ -106,8 +115,8 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: ${{ env.BREW_LOCAL_BOTTLE_DIR }}
-        key: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
-        restore-keys: brew-bottles-macos15-${{ matrix.platform }}-${{ hashFiles('travis_config.sh', 'travis_osx_brew_cache.sh') }}-
+        key: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-
         fail-on-cache-miss: true
     - name: Install FFmpeg
       run: |
