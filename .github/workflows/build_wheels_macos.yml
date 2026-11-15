@@ -37,7 +37,6 @@ jobs:
       matrix:
         platform: [x86_64, arm64]
     env:
-      BREW_LOCAL_BOTTLE_DIR: ${{ github.workspace }}/../local_bottle_metadata
       BREW_TIME_LIMIT: 19200 # 320 min
       BREW_TIME_HARD_LIMIT: 20400 # 340 min
     steps:
@@ -48,7 +47,8 @@ jobs:
     - name: Restore Homebrew bottles
       uses: actions/cache/restore@v5
       with:
-        path: ${{ env.BREW_LOCAL_BOTTLE_DIR }}
+        # The default location of travis_osx_brew_cache.sh. Paths with '..' aren't saved by actions/cache
+        path: ~/local_bottle_metadata
         key: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
         restore-keys: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-
     - name: Build FFmpeg
@@ -61,7 +61,8 @@ jobs:
       if: ${{ always() && steps.ffmpeg.outcome != 'skipped' }}
       uses: actions/cache/save@v5
       with:
-        path: ${{ env.BREW_LOCAL_BOTTLE_DIR }}
+        # The default location of travis_osx_brew_cache.sh. Paths with '..' aren't saved by actions/cache
+        path: ~/local_bottle_metadata
         key: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
 
   Build:
@@ -93,7 +94,6 @@ jobs:
       ENABLE_HEADLESS: ${{ matrix.without_gui }}
       ENABLE_CONTRIB: ${{ matrix.with_contrib }}
       PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
-      BREW_LOCAL_BOTTLE_DIR: ${{ github.workspace }}/../local_bottle_metadata
     steps:
     - uses: actions/setup-python@v7
       with:
@@ -114,7 +114,8 @@ jobs:
     - name: Restore Homebrew bottles
       uses: actions/cache/restore@v5
       with:
-        path: ${{ env.BREW_LOCAL_BOTTLE_DIR }}
+        # The default location of travis_osx_brew_cache.sh. Paths with '..' aren't saved by actions/cache
+        path: ~/local_bottle_metadata
         key: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
         restore-keys: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-
         fail-on-cache-miss: true
