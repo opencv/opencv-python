@@ -48,14 +48,6 @@ if [ -n "$IS_OSX" ]; then
 
     source travis_osx_brew_cache.sh
 
-    # Projected build times in minutes on a GitHub-hosted runner
-    BREW_SLOW_BUILIDING_PACKAGES=$(printf '%s\n' \
-        "cmake 15" \
-        "opencv/local/ffmpeg-lgpl 15" \
-        "openssl@3 15" \
-        "python@3.15 25" \
-    )
-
     FFMPEG_LGPL_FORMULA="opencv/local/ffmpeg-lgpl"
 
     function generate_ffmpeg_formula {
