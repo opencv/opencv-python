@@ -273,13 +273,13 @@ function _brew_install_and_cache {
 
     if [ -n "$LOCAL_BOTTLE" ]; then
         echo "Installing local bottle for: $PACKAGE"
-        brew $VERB "$LOCAL_BOTTLE" || return 1
+        brew $VERB "$LOCAL_BOTTLE" || _brew_check_postinstall_failure "$PACKAGE" || return 1
     elif [[ "$USE_BOTTLE" -gt 0 ]]; then
         echo "Installing bottle for: $PACKAGE"
-        brew $VERB "$PACKAGE" || return 1
+        brew $VERB "$PACKAGE" || _brew_check_postinstall_failure "$PACKAGE" || return 1
     else
         echo "Building bottle for: $PACKAGE"
-        brew $VERB --build-bottle "$PACKAGE" || return 1
+        brew $VERB --build-bottle "$PACKAGE" || _brew_check_postinstall_failure "$PACKAGE" || return 1
 
         # `brew bottle` puts the files into the current directory
         local WORK_DIR; WORK_DIR=$(mktemp -d)
@@ -295,7 +295,7 @@ function _brew_install_and_cache {
 
         #proper procedure as per https://discourse.brew.sh/t/how-are-bottle-and-postinstall-related-is-it-safe-to-run-bottle-after-postinstall/3410/4
         brew uninstall --ignore-dependencies "$PACKAGE" || return 1
-        brew $VERB "$BOTTLE" || return 1
+        brew $VERB "$BOTTLE" || _brew_check_postinstall_failure "$PACKAGE" || return 1
 
         # The file name in the JSON is what the bottle is going to be found by
         local BOTTLE_FILE; _brew_parse_bottle_json "$JSON" _ _ BOTTLE_FILE _
@@ -306,6 +306,20 @@ function _brew_install_and_cache {
     fi
 
     _brew_mark_installed "$PACKAGE"
+}
+
+function _brew_check_postinstall_failure {
+    # `brew install` fails also if only the post-install step failed
+    #  (seen with ca-certificates on Intel, which Homebrew doesn't support any more).
+    # If the current version did get installed, retry the step once and carry on anyway.
+
+    local PACKAGE VERSION
+    PACKAGE="${1:?}"
+    _brew_parse_package_info "$PACKAGE" VERSION || return 1
+    grep -qwF -- "$VERSION" <<<"$(brew list --versions "$PACKAGE")" || return 1
+
+    brew postinstall "$PACKAGE" && return 0
+    echo "::warning::Post-install step of $PACKAGE failed, continuing anyway"
 }
 
 function _brew_mark_installed {
