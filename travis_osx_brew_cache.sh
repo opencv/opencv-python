@@ -24,10 +24,6 @@ BREW_TIME_START=${BREW_TIME_START:-$(date +%s)}
 # GitHub-hosted runners limit a job to 6 hours. The cutoff should leave enough time
 #  to build the main project and save the cache.
 BREW_TIME_LIMIT=${BREW_TIME_LIMIT:-$((240*60))}
-# If a slow-building package is about to be built and the projected build end moment is beyond this many seconds,
-# skip that build and go into bootstrap mode.
-# This cutoff should leave enough time for cache save.
-BREW_TIME_HARD_LIMIT=${BREW_TIME_HARD_LIMIT:-$((300*60))}
 
 
 # Auto cleanup can delete installed old versions of packages
@@ -37,6 +33,8 @@ export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
 export HOMEBREW_NO_AUTO_UPDATE=1
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_ENV_HINTS=1
+# Don't list all new formulae and casks after `brew update`
+export HOMEBREW_NO_UPDATE_REPORT_NEW=1
 
 # Don't query analytical info online on `brew info`,
 #  this takes several seconds and we don't need it
@@ -114,15 +112,11 @@ function brew_cache_cleanup {
 function brew_go_bootstrap_mode {
 # Can be overridden
 # Make the rest of the build be skipped. The CI job is expected to save the cache anyway.
-    local EXIT_CODE=${1:-1}
-
     echo "Going into cache bootstrap mode"
 
     BREW_BOOTSTRAP_MODE=1
 
-    if [ "$EXIT_CODE" -ne 0 ]; then
-        echo '::warning::Building dependencies took too long. Re-run the job to continue from cache.'
-    fi
+    echo '::warning::Building dependencies took too long. Re-run the job to continue from cache.'
 }
 
 
@@ -132,11 +126,8 @@ function brew_go_bootstrap_mode {
 function _brew_install_and_cache_within_time_limit {
     # This fn is run with || so errexit can't be enabled
 
-    local PACKAGE TIME_LIMIT TIME_HARD_LIMIT TIME_START MARKED_INSTALLED
+    local PACKAGE MARKED_INSTALLED
     PACKAGE="${1:?}" || return 2
-    TIME_LIMIT=${2:-$BREW_TIME_LIMIT} || return 2
-    TIME_HARD_LIMIT=${3:-$BREW_TIME_HARD_LIMIT} || return 2
-    TIME_START=${4:-$BREW_TIME_START} || return 2
 
     if grep -qxFf <(cat <<<"$_BREW_ALREADY_INSTALLED") <<<"$PACKAGE"; then
         MARKED_INSTALLED=1
@@ -158,17 +149,11 @@ function _brew_install_and_cache_within_time_limit {
     DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD` || return 2
     DEPS=`grep -vxFf <(cat <<<"$_BREW_ALREADY_INSTALLED") <<<"$DEPS"` || test $? -eq 1 || return 2
     for dep in $DEPS; do
-        #TIME_LIMIT only has to be met if we'll be actually building the main project this iteration, i.e. after the "root" module installation
-        #While we don't know that yet, we can make better use of the given time with a laxer limit
-        #We still can't overrun TIME_HARD_LIMIT as that wouldn't leave time to save the cache
-        _brew_install_and_cache_within_time_limit "$dep" $(((TIME_LIMIT+TIME_HARD_LIMIT)/2)) "$TIME_HARD_LIMIT" "$TIME_START" || return $?
+        _brew_install_and_cache_within_time_limit "$dep" || return $?
     done
 
-    if [ -n "$BUILD_FROM_SOURCE" ]; then
-        _brew_check_slow_building_ahead "$PACKAGE" "$TIME_START" "$TIME_HARD_LIMIT" || return $?
-    fi
     _brew_install_and_cache "$PACKAGE" "$([[ -z "$BUILD_FROM_SOURCE" ]] && echo 1 || echo 0)" "$KEG_ONLY" || return 2
-    _brew_check_elapsed_build_time "$TIME_START" "$TIME_LIMIT" || return $?
+    _brew_check_elapsed_build_time || return $?
 }
 
 function _brew_parse_bottle_json {
@@ -328,44 +313,11 @@ function _brew_mark_installed {
 }
 
 function _brew_check_elapsed_build_time {
-    # If time limit has been reached,
-    # arrange for further build to be skipped and return 1
+    # Return 1 if the time limit has been reached
 
-    local TIME_START TIME_LIMIT ELAPSED_TIME
-    TIME_START="${1:?}"
-    TIME_LIMIT="${2:?}"
+    local ELAPSED_TIME
+    ELAPSED_TIME=$(($(date +%s) - BREW_TIME_START))
+    echo "Elapsed time: $((ELAPSED_TIME/60))m (${ELAPSED_TIME}s)"
 
-    ELAPSED_TIME=$(($(date +%s) - $TIME_START))
-    echo "Elapsed time: "$(($ELAPSED_TIME/60))"m (${ELAPSED_TIME}s)"
-
-    if [[ "$ELAPSED_TIME" -gt $TIME_LIMIT ]]; then
-        brew_go_bootstrap_mode
-        return 1
-    fi
-    return 0
-}
-
-function _brew_check_slow_building_ahead {
-
-    #If the package's projected build completion is higher than hard limit,
-    # skip it and arrange for further build to be skipped and return 1
-
-    local PACKAGE TIME_START TIME_HARD_LIMIT
-    PACKAGE="${1:?}"
-    TIME_START="${2:?}"
-    TIME_HARD_LIMIT="${3:?}"
-
-    local PROJECTED_BUILD_TIME
-    PROJECTED_BUILD_TIME=$(echo "$BREW_SLOW_BUILIDING_PACKAGES" | awk '$1=="'"$PACKAGE"'"{print $2}')
-    [ -z "$PROJECTED_BUILD_TIME" ] && return 0 || true
-
-    local PROJECTED_BUILD_END_ELAPSED_TIME
-    PROJECTED_BUILD_END_ELAPSED_TIME=$(( $(date +%s) - TIME_START + PROJECTED_BUILD_TIME * 60))
-
-    if [[ "$PROJECTED_BUILD_END_ELAPSED_TIME" -ge "$TIME_HARD_LIMIT" ]]; then
-        echo -e "\nProjected build end elapsed time for $PACKAGE: $((PROJECTED_BUILD_END_ELAPSED_TIME/60))m (${PROJECTED_BUILD_END_ELAPSED_TIME}s)"
-        brew_go_bootstrap_mode
-        return 1
-    fi
-    return 0
+    [[ "$ELAPSED_TIME" -le "$BREW_TIME_LIMIT" ]]
 }

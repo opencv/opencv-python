@@ -38,7 +38,6 @@ jobs:
         platform: [x86_64, arm64]
     env:
       BREW_TIME_LIMIT: 19200 # 320 min
-      BREW_TIME_HARD_LIMIT: 20400 # 340 min
     steps:
     - name: Checkout
       uses: actions/checkout@v7
@@ -56,6 +55,8 @@ jobs:
       run: |
         export IS_OSX=1
         source travis_config.sh
+        # travis_config.sh enables tracing for multibuild
+        set +x
         install_ffmpeg_lgpl
     - name: Save Homebrew bottles
       if: ${{ always() && steps.ffmpeg.outcome != 'skipped' }}
@@ -123,6 +124,8 @@ jobs:
       run: |
         export IS_OSX=1
         source travis_config.sh
+        # travis_config.sh enables tracing for multibuild
+        set +x
         install_ffmpeg_lgpl
     - name: Build a package
       run: |

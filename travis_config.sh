@@ -132,30 +132,7 @@ function pre_build {
   set -e -o pipefail
 
   if [ -n "$IS_OSX" ]; then
-    brew install lapack
-    brew install libavif
-  fi
-
-  if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
-
-    local CACHE_STAGE;# (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
-    CACHE_STAGE=
-    export HOMEBREW_NO_AUTO_UPDATE=1
-
-    echo 'Installing FFmpeg'
-
-    brew update
-    install_ffmpeg_lgpl || return $?
-
-    if [ -n "$CACHE_STAGE" ]; then
-        brew_go_bootstrap_mode 0
-        return 0
-    fi
-
-    # Have to install macpython late to avoid conflict with Homebrew Python update
-    before_install
-
   else
     echo "Running for linux"
   fi
