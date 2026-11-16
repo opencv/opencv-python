@@ -156,7 +156,7 @@ function _brew_install_and_cache_within_time_limit {
 
     # Whitespace is illegal in package names so converting all whitespace into single spaces due to no quotes is okay.
     DEPS=`brew deps "$PACKAGE" $INCLUDE_BUILD` || return 2
-    DEPS=`grep -vxF <(cat <<<"$_BREW_ALREADY_INSTALLED") <<<"$DEPS"` || test $? -eq 1 || return 2
+    DEPS=`grep -vxFf <(cat <<<"$_BREW_ALREADY_INSTALLED") <<<"$DEPS"` || test $? -eq 1 || return 2
     for dep in $DEPS; do
         #TIME_LIMIT only has to be met if we'll be actually building the main project this iteration, i.e. after the "root" module installation
         #While we don't know that yet, we can make better use of the given time with a laxer limit
@@ -201,14 +201,15 @@ function _brew_parse_package_info {
 
     local PACKAGE; PACKAGE="${1:?}"; shift
 
-    local VERSION; VERSION=$(brew info --json=v2 "$PACKAGE" | python3 -c 'if True:
+    # The local is named so as not to shadow the caller's variable that the result goes to
+    local _BREW_PKG_VERSION; _BREW_PKG_VERSION=$(brew info --json=v2 "$PACKAGE" | python3 -c 'if True:
     import sys, json; data=json.load(sys.stdin)["formulae"][0]
     revision=data["revision"]
     # in bottle''s json, revision is included into version; here, they are separate
     print(data["versions"]["stable"]+("_"+str(revision) if revision else ""))
     ') || return 1
 
-    eval "${1:?}=\"$VERSION\""
+    eval "${1:?}=\"$_BREW_PKG_VERSION\""
 }
 
 function _brew_local_bottle {
