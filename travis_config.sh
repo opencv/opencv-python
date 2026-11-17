@@ -48,51 +48,81 @@ if [ -n "$IS_OSX" ]; then
 
     source travis_osx_brew_cache.sh
 
-    BREW_SLOW_BUILIDING_PACKAGES=$(printf '%s\n' \
-        "cmake 15" \
-        "ffmpeg 10" \
-    )
+    FFMPEG_LGPL_FORMULA="opencv/local/ffmpeg-lgpl"
 
     function generate_ffmpeg_formula {
-        local FF="ffmpeg"
-        local LFF="ffmpeg"
-        local FF_FORMULA; FF_FORMULA=$(brew formula "${FF}")
-        local LFF_FORMULA; LFF_FORMULA="$(dirname "$FF_FORMULA")/${LFF}.rb"
+        # Make an LGPL build of FFmpeg out of the upstream formula:
+        #  no GPL parts, the same set of external libraries as in Linux builds.
+        local TAP="${FFMPEG_LGPL_FORMULA%/*}"
+        local TAP_DIR; TAP_DIR="$(brew --repository "$TAP")"
+        [ -d "$TAP_DIR" ] || brew tap-new --no-git "$TAP"
+        mkdir -p "$TAP_DIR/Formula"
+        # Homebrew refuses to load formulae from third-party taps otherwise
+        brew trust "$TAP"
 
-        local REGENERATE
-        if [ -f "$LFF_FORMULA" ]; then
-            local UPSTREAM_VERSION VERSION
-            _brew_parse_package_info "$FF" " " UPSTREAM_VERSION _ _
-            _brew_parse_package_info "$LFF" " " VERSION _ _   || REGENERATE=1
-            #`rebuild` clause is ignored on `brew bottle` and deleted
-            # from newly-generated formula on `brew bottle --merge` for some reason
-            # so can't compare rebuild numbers
-            if [ "$UPSTREAM_VERSION" != "$VERSION" ]; then
-                REGENERATE=1
-            fi
-        else
-            REGENERATE=1
+        local FF_FORMULA; FF_FORMULA=$(mktemp)
+        # Formulae from the JSON API have no source on disk, so `brew cat` doesn't work for them.
+        # Fetch the source for the homebrew-core revision the API data is from.
+        local FF_SOURCE_URL FF_SOURCE_SHA256
+        read -r FF_SOURCE_URL FF_SOURCE_SHA256 < <(brew info --json=v2 ffmpeg | python3 -c 'if True:
+            import sys, json; data=json.load(sys.stdin)["formulae"][0]
+            print("https://raw.githubusercontent.com/Homebrew/homebrew-core/%s/%s" % (data["tap_git_head"], data["ruby_source_path"]),
+                  data["ruby_source_checksum"]["sha256"])
+            ')
+        curl -fsSL --retry 3 -o "$FF_FORMULA" "$FF_SOURCE_URL"
+        if [ "$(shasum -a 256 "$FF_FORMULA" | cut -d' ' -f1)" != "$FF_SOURCE_SHA256" ]; then
+            echo "Checksum mismatch for $FF_SOURCE_URL" >&2
+            return 1
         fi
-        if [ -n "$REGENERATE" ]; then
-            echo "Regenerating custom ffmpeg formula"
-            # Bottle block syntax: https://docs.brew.sh/Bottles#bottle-dsl-domain-specific-language
-            perl -wpe 'BEGIN {our ($found_blank, $bottle_block);}
-                if (/(^class )(Ffmpeg)(\s.*)/) {$_=$1."Opencv".$3."\n"; next;}
-                if (!$found_blank && /^$/) {$_.="conflicts_with \"ffmpeg\"\n\n"; $found_blank=1; next;}
-                if (!$bottle_block && /^\s*bottle do$/) { $bottle_block=1; next; }
-                if ($bottle_block) { if (/^\s*end\s*$/) { $bottle_block=0} elsif (/^\s*sha256\s/) {$_=""} next; }
-if (/^\s*depends_on "(x264|x265|xvid|frei0r|rubberband|libvidstab)"$/) {$_=""; next;}
-                if (/^\s*--enable-(gpl|libx264|libx265|libxvid|frei0r|librubberband|libvidstab)$/) {$_=""; next;}
-                ' <"$FF_FORMULA" >"$LFF_FORMULA"
-            diff -u "$FF_FORMULA" "$LFF_FORMULA" || test $? -le 1
+        local LFF_FORMULA; LFF_FORMULA="$TAP_DIR/Formula/${FFMPEG_LGPL_FORMULA##*/}.rb"
 
-            (   cd "$(dirname "$LFF_FORMULA")"
-                # This is the official way to add a formula
-                # https://docs.brew.sh/Formula-Cookbook#commit
-                git add "$(basename "$LFF_FORMULA")"
-                git commit -m "add/update custom ffmpeg ${VERSION}"
-            )
+        echo "Generating custom ffmpeg formula"
+        # Bottle block syntax: https://docs.brew.sh/Bottles#bottle-dsl-domain-specific-language
+        perl -wpe 'BEGIN {our $bottle_block;}
+            if (/^class Ffmpeg < Formula$/) {$_="class FfmpegLgpl < Formula\n"; next;}
+            if (/^(\s*)license\s/) {$_=$1."license \"LGPL-2.1-or-later\"\n".$1."keg_only \"it conflicts with the GPL-licensed ffmpeg formula\"\n"; next;}
+            if (!$bottle_block && /^\s*bottle do$/) { $bottle_block=1; $_=""; next; }
+            if ($bottle_block) { $bottle_block=0 if /^\s*end\s*$/; $_=""; next; }
+            if (/^\s*depends_on "(lame|libvmaf|opus|sdl2-compat|svt-av1|x264|x265|xz)"(\s*#.*)?$/) {$_=""; next;}
+            if (/^\s*--enable-(gpl|version3|libsvtav1|libopus|libx264|libx265|libmp3lame|libvmaf)$/) {$_=""; next;}
+            s/--enable-ffplay$/--disable-ffplay/;
+            ' <"$FF_FORMULA" >"$LFF_FORMULA"
+        diff -u "$FF_FORMULA" "$LFF_FORMULA" || test $? -le 1
+        rm -f "$FF_FORMULA"
+
+        if grep -qE -e '--enable-(gpl|nonfree|version3)$' -e 'depends_on "x26[45]"' "$LFF_FORMULA"; then
+            echo "The generated ffmpeg formula still has GPL parts. Update the conversion rules!" >&2
+            return 1
         fi
+    }
+
+    function install_ffmpeg_lgpl {
+        # Install LGPL FFmpeg and its dependencies, building and caching what has no bottles
+
+        # Runner images may have an outdated Homebrew,
+        #  e.g. 7.0.12 can't install bottles from files
+        brew update
+        brew --version
+
+        generate_ffmpeg_formula
+        brew_add_local_bottles
+        brew_install_and_cache_within_time_limit "$FFMPEG_LGPL_FORMULA" || return $?
+        # OpenCV finds FFmpeg with pkg-config
+        brew_install_and_cache_within_time_limit pkgconf || return $?
+
+        local FF_PREFIX; FF_PREFIX="$(brew --prefix "$FFMPEG_LGPL_FORMULA")"
+        local FF_LICENSE; FF_LICENSE="$("$FF_PREFIX/bin/ffmpeg" -hide_banner -L)"
+        # The license text is wrapped, the phrase can be split between lines
+        if ! tr -s '\n ' '  ' <<<"$FF_LICENSE" | grep -qF "GNU Lesser General Public License"; then
+            echo "$FF_LICENSE"
+            echo "The built FFmpeg is not LGPL!" >&2
+            return 1
+        fi
+
+        # The formula is keg-only, so OpenCV has to be pointed to it
+        local PC_PATH; PC_PATH="$FF_PREFIX/lib/pkgconfig:$(brew --prefix openssl@3)/lib/pkgconfig"
+        export PKG_CONFIG_PATH="$PC_PATH${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+        if [ -n "$GITHUB_ENV" ]; then echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >>"$GITHUB_ENV"; fi
     }
 
 fi
@@ -102,34 +132,7 @@ function pre_build {
   set -e -o pipefail
 
   if [ -n "$IS_OSX" ]; then
-    brew install lapack
-    brew install libavif
-  fi
-
-  if [ -n "$IS_OSX" ]; then
     echo "Running for OSX"
-
-    local CACHE_STAGE;# (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
-    CACHE_STAGE=
-    export HOMEBREW_NO_AUTO_UPDATE=1
-
-    echo 'Installing FFmpeg'
-
-    brew update
-    generate_ffmpeg_formula
-    brew_add_local_bottles
-    brew install --build-bottle ffmpeg
-    # It needs when we use not the latest ffmpeg formula
-    brew link ffmpeg
-
-    if [ -n "$CACHE_STAGE" ]; then
-        brew_go_bootstrap_mode 0
-        return 0
-    fi
-
-    # Have to install macpython late to avoid conflict with Homebrew Python update
-    before_install
-
   else
     echo "Running for linux"
   fi

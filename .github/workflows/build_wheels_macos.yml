@@ -15,8 +15,59 @@ on:
   workflow_dispatch:
 
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  BREW_CACHE_VERSION: v1
+
 jobs:
+  FFmpeg:
+    # Builds LGPL FFmpeg and its dependencies that have no Homebrew bottles,
+    # and caches the bottles for the Build jobs.
+    # If it runs out of time, the cache is saved anyway: re-run the job to continue.
+    # The cache key has the runner image in it: update it along with runs-on.
+    # Outdated bottles are dropped by version. Bump BREW_CACHE_VERSION if the bottles change otherwise,
+    # e.g. the ffmpeg formula conversion rules in travis_config.sh.
+    runs-on: ${{ matrix.platform == 'arm64' && 'macos-15' || 'macos-15-intel' }}
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [x86_64, arm64]
+    env:
+      BREW_TIME_LIMIT: 19200 # 320 min
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+      with:
+        submodules: false
+    - name: Restore Homebrew bottles
+      uses: actions/cache/restore@v5
+      with:
+        # The default location of travis_osx_brew_cache.sh. Paths with '..' aren't saved by actions/cache
+        path: ~/local_bottle_metadata
+        key: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-
+    - name: Build FFmpeg
+      id: ffmpeg
+      run: |
+        export IS_OSX=1
+        source travis_config.sh
+        # travis_config.sh enables tracing for multibuild
+        set +x
+        install_ffmpeg_lgpl
+    - name: Save Homebrew bottles
+      if: ${{ always() && steps.ffmpeg.outcome != 'skipped' }}
+      uses: actions/cache/save@v5
+      with:
+        # The default location of travis_osx_brew_cache.sh. Paths with '..' aren't saved by actions/cache
+        path: ~/local_bottle_metadata
+        key: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
+
   Build:
+    needs: [FFmpeg]
     runs-on: ${{ matrix.platform == 'arm64' && 'macos-15' || 'macos-15-intel' }}
     strategy:
       fail-fast: false
@@ -61,12 +112,28 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
+    - name: Restore Homebrew bottles
+      uses: actions/cache/restore@v5
+      with:
+        # The default location of travis_osx_brew_cache.sh. Paths with '..' aren't saved by actions/cache
+        path: ~/local_bottle_metadata
+        key: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: brew-bottles-${{ env.BREW_CACHE_VERSION }}-macos15-${{ matrix.platform }}-
+        fail-on-cache-miss: true
+    - name: Install FFmpeg
+      run: |
+        export IS_OSX=1
+        source travis_config.sh
+        # travis_config.sh enables tracing for multibuild
+        set +x
+        install_ffmpeg_lgpl
     - name: Build a package
       run: |
         git submodule update --init multibuild
         echo $ENABLE_CONTRIB > contrib.enabled
         echo $ENABLE_HEADLESS > headless.enabled
-        export MACOSX_DEPLOYMENT_TARGET=14.0
+        # Homebrew bottles are built for macOS 15
+        export MACOSX_DEPLOYMENT_TARGET=15.0
         python --version
         python -m pip install delocate toml && python -c 'import toml; c = toml.load("pyproject.toml"); print("\n".join(c["build-system"]["requires"]))' | python -m pip install -r /dev/stdin
         python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=wheelhouse -v
