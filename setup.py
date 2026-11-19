@@ -122,7 +122,7 @@ def main():
             "-DBUILD_TESTS=OFF",
             "-DBUILD_PERF_TESTS=OFF",
             "-DBUILD_DOCS=OFF",
-            "-DPYTHON3_LIMITED_API=ON",
+            "-DPYTHON3_LIMITED_API=%s" % ("OFF" if sysconfig.get_config_var("Py_GIL_DISABLED") else "ON"),
             "-DBUILD_OPENEXR=ON",
             # Installs the cv2 package layout, see cmake/package
             "-DOPENCV_CMAKE_HOOKS_DIR=%s" % os.path.abspath("cmake/hooks").replace("\\", "/"),
